@@ -1,7 +1,10 @@
 const User = require("../../server/models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { UserInputError } = require("apollo-server-express");
+const {
+  UserInputError,
+  AuthenticationError,
+} = require("apollo-server-express");
 const {
   validateRegisterInput,
   validateLoginInput,
@@ -13,6 +16,7 @@ function generateToken(user) {
       id: user.id,
       email: user.email,
       username: user.username,
+      last_login: user.last_login,
     },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
@@ -20,6 +24,20 @@ function generateToken(user) {
 }
 
 module.exports = {
+  Query: {
+    async getUsers(_, { username }) {
+      if (username === "adminjek") {
+        var retArr = [];
+        try {
+          const users = await User.find().sort({ last_login: -1 });
+          users.map((user) => retArr.push({ ...user._doc, id: user._id }));
+          return retArr;
+        } catch (err) {
+          throw new Error(err);
+        }
+      } else throw new AuthenticationError("Action not allowed");
+    },
+  },
   Mutation: {
     async login(_, { username, password }, context, info) {
       const { errors, valid } = validateLoginInput(username, password);
@@ -94,7 +112,7 @@ module.exports = {
         username,
         password,
         mobile_number,
-        signed_using,
+        signed_using: signed_using || "App",
         address,
         createdAt: new Date().toISOString(),
         last_login: new Date().toISOString(),
