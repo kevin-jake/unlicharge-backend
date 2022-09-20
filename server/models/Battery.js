@@ -13,7 +13,7 @@ const batterySchema = new Schema({
   nominal_voltage: { type: String, required: true },
   capacity: { type: String, required: true },
   price_per_pc: { type: String, required: true },
-  supplier: { type: String},
+  supplier: { type: String, required: true },
   publish_status: {
     type: String,
     enum: ["Request", "Approved", "Removed", "Verified"],
@@ -22,7 +22,7 @@ const batterySchema = new Schema({
   createdAt: { type: String, required: true },
   creator: {
     type: Schema.Types.ObjectId,
-    ref: "users",
+    ref: "User",
   },
 });
 

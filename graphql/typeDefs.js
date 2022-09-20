@@ -87,7 +87,7 @@ module.exports = gql`
     getPosts: [Post]
     getPost(postId: ID!): Post
     getUsers(username: String!): [User]
-    getBatteries: [Battery]
+    getBatteries(publish_status: String): [Battery]
     getBattery(battId: ID!): Battery
   }
   type Mutation {
