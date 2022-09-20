@@ -1,7 +1,4 @@
-const {
-  AuthenticationError,
-  UserInputError,
-} = require("apollo-server-express");
+const { UserInputError } = require("apollo-server-express");
 const Battery = require("../../../server/models/Battery");
 const User = require("../../../server/models/User");
 const checkAuth = require("../../../util/check-auth");
