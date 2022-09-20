@@ -35,9 +35,9 @@ module.exports = {
       }
       const token = generateToken(user);
 
-      // add last login step
+      // add last login to check active users
       user.last_login = new Date().toISOString();
-      console.log(user);
+
       try {
         await user.save();
       } catch (err) {
@@ -97,6 +97,7 @@ module.exports = {
         signed_using,
         address,
         createdAt: new Date().toISOString(),
+        last_login: new Date().toISOString(),
       });
 
       const res = await newUser.save();
