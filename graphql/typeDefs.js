@@ -15,8 +15,12 @@ module.exports = gql`
     id: ID!
     username: String!
     email: String!
-    token: String!
+    mobile_number: String!
     createdAt: String!
+    last_login: String!
+    signed_using: String!
+    address: String!
+    token: String!
   }
   type Comment {
     id: ID!
@@ -36,6 +40,9 @@ module.exports = gql`
     password: String!
     confirmPassword: String
     email: String!
+    mobile_number: String!
+    signed_using: String!
+    address: String!
   }
   type Query {
     getPosts: [Post]

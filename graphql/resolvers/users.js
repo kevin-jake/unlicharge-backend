@@ -33,8 +33,19 @@ module.exports = {
         errors.general = "Wrong credentials";
         throw new UserInputError("Wrong credentials", { errors });
       }
-
       const token = generateToken(user);
+
+      // add last login step
+      user.last_login = new Date().toISOString();
+      console.log(user);
+      try {
+        await user.save();
+      } catch (err) {
+        throw new UserInputError("Something went wrong. Could not login", {
+          errors,
+        });
+      }
+
       return {
         ...user._doc,
         id: user._id,
@@ -43,7 +54,17 @@ module.exports = {
     },
     async register(
       _,
-      { registerInput: { username, email, password, confirmPassword } },
+      {
+        registerInput: {
+          username,
+          email,
+          password,
+          confirmPassword,
+          mobile_number,
+          signed_using,
+          address,
+        },
+      },
       context,
       info
     ) {
@@ -72,6 +93,9 @@ module.exports = {
         email,
         username,
         password,
+        mobile_number,
+        signed_using,
+        address,
         createdAt: new Date().toISOString(),
       });
 

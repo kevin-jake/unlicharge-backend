@@ -81,12 +81,12 @@ async function startApolloServer(typeDefs, resolvers) {
 
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("Mongodb connected!");
+  .then((res) => {
+    console.log("🧮 Mongodb connected at: " + res.connection.host);
     return startApolloServer(typeDefs, resolvers);
   })
   .then((res) => {
     console.log(
-      `🚀 Server ready at http://localhost:${process.env.PORT}${res.graphqlPath}`
+      `🚀 Server ready at ${process.env.APP_URL}:${process.env.PORT}${res.graphqlPath}`
     );
   });
