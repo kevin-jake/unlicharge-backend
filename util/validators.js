@@ -55,7 +55,7 @@ module.exports.validateLoginInput = (username, password) => {
   };
 };
 
-module.exports.validateBatteryInput = (
+module.exports.validateBatteryInput = ({
   name,
   type,
   model,
@@ -63,8 +63,10 @@ module.exports.validateBatteryInput = (
   capacity,
   price_per_pc,
   min_voltage,
-  max_voltage
-) => {
+  max_voltage,
+  publish_status,
+  supplier,
+}) => {
   const errors = {};
   const validType = ["Lead Acid", "Li-on", "LiFePo4"];
   if (name.trim() === "") {
