@@ -1,6 +1,22 @@
 const { gql } = require("apollo-server-express");
 
 module.exports = gql`
+  # Global Schema
+  type DeleteRequest {
+    id: ID!
+    requestor: Creator!
+    reason: String!
+    status: String!
+    createdAt: String!
+    updatedAt: String
+  }
+  type Creator {
+    id: ID!
+    username: String!
+    email: String!
+    last_login: String!
+  }
+
   # User graphql model or schema
   type User {
     id: ID!
@@ -43,12 +59,6 @@ module.exports = gql`
     edit_request: [BattEditRequest!]
     delete_request: [DeleteRequest!]
   }
-  type Creator {
-    id: ID!
-    username: String!
-    email: String!
-    last_login: String!
-  }
   type BattEditRequest {
     id: ID!
     name: String!
@@ -60,14 +70,6 @@ module.exports = gql`
     price_per_pc: String!
     supplier: String
     requestor: Creator!
-    status: String!
-    createdAt: String!
-    updatedAt: String
-  }
-  type DeleteRequest {
-    id: ID!
-    requestor: Creator!
-    reason: String!
     status: String!
     createdAt: String!
     updatedAt: String

@@ -1,4 +1,3 @@
-const { UserInputError } = require("apollo-server-express");
 const { mongoose } = require("mongoose");
 const Battery = require("../../../server/models/Battery");
 const checkAuth = require("../../../util/check-auth");
@@ -14,6 +13,7 @@ module.exports = {
         filter.publish_status = publish_status;
       }
       try {
+        // TODO: Add sorting, more filter and publish_status filters for Approved
         const batteries = await Battery.find(filter).populate("creator"); //.sort({ createdAt: -1 });
         return batteries;
       } catch (err) {
@@ -57,6 +57,7 @@ module.exports = {
         min_voltage,
         max_voltage,
         supplier,
+        // TODO: Add publish_status update to Approved and be available to public
         publish_status: "Request",
         creator: user.id,
         createdAt: new Date().toISOString(),
@@ -67,11 +68,10 @@ module.exports = {
       return { ...res._doc, id: res._id, creator: user };
     },
     async editBattery(_, { battId, batteryInput }, context) {
-      var res = {};
       var battData = {};
       const user = checkAuth(context);
       cudValidate(batteryInput, validateBatteryInput);
-
+      // TODO: Make this in a more compact function
       try {
         battData = await Battery.findById(battId).populate("creator");
       } catch (err) {
@@ -164,7 +164,6 @@ module.exports = {
           throw new Error(err);
         }
       }
-      return res;
     },
     async deleteBattery(_, { battId, reason }, context) {
       var battData = {};
