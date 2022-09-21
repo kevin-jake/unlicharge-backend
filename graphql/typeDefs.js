@@ -4,17 +4,11 @@ module.exports = gql`
   # Global Schema
   type DeleteRequest {
     id: ID!
-    requestor: Creator!
+    requestor: User!
     reason: String!
     status: String!
     createdAt: String!
     updatedAt: String
-  }
-  type Creator {
-    id: ID!
-    username: String!
-    email: String!
-    last_login: String!
   }
 
   # User graphql model or schema
@@ -53,7 +47,7 @@ module.exports = gql`
     supplier: String
     publish_status: String!
     createdAt: String!
-    creator: Creator!
+    creator: User!
     updatedAt: String
     new_data_from: ID
     edit_request: [BattEditRequest!]
@@ -69,7 +63,7 @@ module.exports = gql`
     nominal_voltage: String!
     price_per_pc: String!
     supplier: String
-    requestor: Creator!
+    requestor: User!
     status: String!
     createdAt: String!
     updatedAt: String

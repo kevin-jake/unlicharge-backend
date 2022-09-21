@@ -63,9 +63,20 @@ module.exports = {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
-      const res = await newBatt.save();
-
-      return { ...res._doc, id: res._id, creator: user };
+      const ret = await newBatt.save(
+        Battery.populate(newBatt, { path: "creator" }, function (err, res) {
+          if (err) {
+            throw new Error(err);
+          }
+          return {
+            ...res._doc,
+            id: res._id,
+            creator: { ...res.creator, id: res.creator._id },
+          };
+        })
+      );
+      console.log(ret);
+      return ret;
     },
     async editBattery(_, { battId, batteryInput }, context) {
       var battData = {};
