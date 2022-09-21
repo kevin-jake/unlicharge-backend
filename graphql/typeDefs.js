@@ -127,7 +127,7 @@ module.exports = gql`
     deleteComment(postId: ID!, commentId: ID!): Post!
     createBattery(batteryInput: BatteryInput!): Battery!
     editBattery(battId: ID!, batteryInput: BatteryInput!): Battery!
-    deleteBattery(battId: ID!): Battery
+    deleteBattery(battId: ID!, reason: String!): Battery
   }
   type Subscription {
     newPost: Post!
