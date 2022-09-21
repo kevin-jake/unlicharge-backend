@@ -4,16 +4,150 @@ const checkAuth = require("../../../util/check-auth");
 const cudValidate = require("../../../util/create-update-delete-validate");
 const { validateBatteryInput } = require("../../../util/validators");
 
+async function editDeleteOperation(
+  battId,
+  batteryInput,
+  user,
+  reason,
+  operation
+) {
+  var battData = {};
+  var setData = {};
+  var oper = operation;
+
+  try {
+    battData = await Battery.findById(battId).populate("creator");
+  } catch (err) {
+    throw new Error(err);
+  }
+  battData.creator.username === user.username
+    ? (oper += "OWNER")
+    : (oper += "REQ");
+  console.log(oper);
+  switch (oper) {
+    case "EDIT_OWNER": {
+      const editId = mongoose.Types.ObjectId();
+      setData = {
+        $set: {
+          ...batteryInput,
+          updatedAt: new Date().toISOString(),
+          new_data_from: editId,
+          edit_request: [
+            ...battData.edit_request,
+            {
+              ...batteryInput,
+              _id: editId,
+              requestor: user.id,
+              status: "Owner Update",
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
+        },
+      };
+      break;
+    }
+    case "EDIT_REQ": {
+      setData = {
+        $set: {
+          edit_request: [
+            ...battData.edit_request,
+            {
+              ...batteryInput,
+              requestor: user.id,
+              status: "Request",
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
+        },
+      };
+      break;
+    }
+    case "DELETE_OWNER": {
+      if (battData.publish_status === "Removed") {
+        throw new Error("Battery already removed!");
+      }
+      setData = {
+        $set: {
+          updatedAt: new Date().toISOString(),
+          publish_status: "Removed",
+          delete_request: [
+            ...battData.delete_request,
+            {
+              reason,
+              requestor: user.id,
+              status: "Owner Update",
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
+        },
+      };
+      break;
+    }
+    case "DELETE_REQ": {
+      if (battData.publish_status === "Removed") {
+        throw new Error("Battery already removed!");
+      }
+      setData = {
+        $set: {
+          delete_request: [
+            ...battData.delete_request,
+            {
+              reason,
+              requestor: user.id,
+              status: "Request",
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          ],
+        },
+      };
+      break;
+    }
+  }
+
+  try {
+    const battery = await Battery.findByIdAndUpdate({ _id: battId }, setData, {
+      new: true,
+    })
+      .populate("creator")
+      .populate({
+        path: "edit_request",
+        populate: {
+          path: "requestor",
+          model: "User",
+        },
+      })
+      .populate({
+        path: "delete_request",
+        populate: {
+          path: "requestor",
+          model: "User",
+        },
+      }); //.sort({ createdAt: -1 });
+    return battery;
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
 module.exports = {
   Query: {
     //   Get all battery list in the database
-    async getBatteries(_, { publish_status }) {
-      const filter = {};
-      if (publish_status) {
-        filter.publish_status = publish_status;
+    async getBatteries(_, { userId }) {
+      var filter = { publish_status: ["Request", "Approved", "Verified"] };
+
+      if (userId === "6329ad7d621d3b2c46426d3e") {
+        filter = {};
+      } else {
+        filter.$or = [
+          { creator: userId, publish_status: "Request" },
+          { publish_status: ["Approved", "Verified"] },
+        ];
       }
       try {
-        // TODO: Add sorting, more filter and publish_status filters for Approved
         const batteries = await Battery.find(filter).populate("creator"); //.sort({ createdAt: -1 });
         return batteries;
       } catch (err) {
@@ -33,6 +167,7 @@ module.exports = {
     },
   },
   Mutation: {
+    // Create requests
     async createBattery(_, { batteryInput }, context) {
       const {
         name,
@@ -79,200 +214,13 @@ module.exports = {
       return ret;
     },
     async editBattery(_, { battId, batteryInput }, context) {
-      var battData = {};
       const user = checkAuth(context);
       cudValidate(batteryInput, validateBatteryInput);
-      // TODO: Make this in a more compact function
-      try {
-        battData = await Battery.findById(battId).populate("creator");
-      } catch (err) {
-        throw new Error(err);
-      }
-
-      if (battData.creator.username === user.username) {
-        try {
-          const editId = mongoose.Types.ObjectId();
-          const battery = await Battery.findByIdAndUpdate(
-            { _id: battId },
-            {
-              $set: {
-                ...batteryInput,
-                updatedAt: new Date().toISOString(),
-                new_data_from: editId,
-                edit_request: [
-                  ...battData.edit_request,
-                  {
-                    ...batteryInput,
-                    _id: editId,
-                    requestor: user.id,
-                    status: "Owner Update",
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                  },
-                ],
-              },
-            },
-            { new: true }
-          )
-            .populate("creator")
-            .populate({
-              path: "edit_request",
-              populate: {
-                path: "requestor",
-                model: "User",
-              },
-            })
-            .populate({
-              path: "delete_request",
-              populate: {
-                path: "requestor",
-                model: "User",
-              },
-            }); //.sort({ createdAt: -1 });
-          console.log(battery);
-          return battery;
-        } catch (err) {
-          throw new Error(err);
-        }
-      } else {
-        try {
-          const battery = await Battery.findByIdAndUpdate(
-            { _id: battId },
-            {
-              $set: {
-                edit_request: [
-                  ...battData.edit_request,
-                  {
-                    ...batteryInput,
-                    requestor: user.id,
-                    status: "Request",
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                  },
-                ],
-              },
-            },
-            { new: true }
-          )
-            .populate("creator")
-            .populate({
-              path: "edit_request",
-              populate: {
-                path: "requestor",
-                model: "User",
-              },
-            })
-            .populate({
-              path: "delete_request",
-              populate: {
-                path: "requestor",
-                model: "User",
-              },
-            }); //.sort({ createdAt: -1 });
-          console.log(battery);
-          return battery;
-        } catch (err) {
-          throw new Error(err);
-        }
-      }
+      return editDeleteOperation(battId, batteryInput, user, _, "EDIT_");
     },
     async deleteBattery(_, { battId, reason }, context) {
-      var battData = {};
       const user = checkAuth(context);
-
-      try {
-        battData = await Battery.findById(battId).populate("creator");
-      } catch (err) {
-        throw new Error(err);
-      }
-
-      if (battData.publish_status === "Removed") {
-        throw new Error("Battery already removed!");
-      }
-
-      if (battData.creator.username === user.username) {
-        try {
-          const battery = await Battery.findByIdAndUpdate(
-            { _id: battId },
-            {
-              $set: {
-                updatedAt: new Date().toISOString(),
-                publish_status: "Removed",
-                delete_request: [
-                  ...battData.delete_request,
-                  {
-                    reason,
-                    requestor: user.id,
-                    status: "Owner Update",
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                  },
-                ],
-              },
-            },
-            { new: true }
-          )
-            .populate("creator")
-            .populate({
-              path: "edit_request",
-              populate: {
-                path: "requestor",
-                model: "User",
-              },
-            })
-            .populate({
-              path: "delete_request",
-              populate: {
-                path: "requestor",
-                model: "User",
-              },
-            }); //.sort({ createdAt: -1 });
-          console.log(battery);
-          return battery;
-        } catch (err) {
-          throw new Error(err);
-        }
-      } else {
-        try {
-          const battery = await Battery.findByIdAndUpdate(
-            { _id: battId },
-            {
-              $set: {
-                delete_request: [
-                  ...battData.delete_request,
-                  {
-                    reason,
-                    requestor: user.id,
-                    status: "Request",
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                  },
-                ],
-              },
-            },
-            { new: true }
-          )
-            .populate("creator")
-            .populate({
-              path: "edit_request",
-              populate: {
-                path: "requestor",
-                model: "User",
-              },
-            })
-            .populate({
-              path: "delete_request",
-              populate: {
-                path: "requestor",
-                model: "User",
-              },
-            }); //.sort({ createdAt: -1 });
-          console.log(battery);
-          return battery;
-        } catch (err) {
-          throw new Error(err);
-        }
-      }
+      return editDeleteOperation(battId, batteryInput, user, reason, "DELETE_");
     },
   },
 };

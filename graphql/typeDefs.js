@@ -110,17 +110,21 @@ module.exports = gql`
     getPosts: [Post]
     getPost(postId: ID!): Post
     getUsers(username: String!): [User]
-    getBatteries(publish_status: String): [Battery]
+    getBatteries(userId: ID): [Battery]
     getBattery(battId: ID!): Battery
   }
   type Mutation {
+    # User mutations
     register(registerInput: RegisterInput): User!
     login(username: String!, password: String!): User!
+
     createPost(body: String!): Post!
     deletePost(postId: ID!): String!
     likePost(postId: ID!): Post!
     createComment(postId: ID!, body: String!): Post!
     deleteComment(postId: ID!, commentId: ID!): Post!
+
+    # Battery Mutations
     createBattery(batteryInput: BatteryInput!): Battery!
     editBattery(battId: ID!, batteryInput: BatteryInput!): Battery!
     deleteBattery(battId: ID!, reason: String!): Battery
