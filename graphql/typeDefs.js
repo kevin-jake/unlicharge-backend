@@ -38,12 +38,39 @@ module.exports = gql`
     publish_status: String!
     createdAt: String!
     creator: Creator!
+    updatedAt: String
+    new_data_from: ID
+    edit_request: [BattEditRequest!]
+    delete_request: [DeleteRequest!]
   }
   type Creator {
     id: ID!
     username: String!
     email: String!
     last_login: String!
+  }
+  type BattEditRequest {
+    id: ID!
+    name: String!
+    type: String!
+    model: String!
+    min_voltage: String
+    max_voltage: String
+    nominal_voltage: String!
+    price_per_pc: String!
+    supplier: String
+    requestor: Creator!
+    status: String!
+    createdAt: String!
+    updatedAt: String
+  }
+  type DeleteRequest {
+    id: ID!
+    requestor: Creator!
+    reason: String!
+    status: String!
+    createdAt: String!
+    updatedAt: String
   }
   input BatteryInput {
     name: String!
@@ -98,8 +125,9 @@ module.exports = gql`
     likePost(postId: ID!): Post!
     createComment(postId: ID!, body: String!): Post!
     deleteComment(postId: ID!, commentId: ID!): Post!
-
     createBattery(batteryInput: BatteryInput!): Battery!
+    editBattery(battId: ID!, batteryInput: BatteryInput!): Battery!
+    deleteBattery(battId: ID!): Battery
   }
   type Subscription {
     newPost: Post!
