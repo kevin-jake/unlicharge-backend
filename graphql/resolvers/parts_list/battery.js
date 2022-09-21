@@ -84,5 +84,17 @@ module.exports = {
 
       return { ...res._doc, id: res._id, creator: user };
     },
+    async deleteBattery(_, { battId }, context) {
+      const user = checkAuth(context);
+      try {
+        const batteries = await Battery.updateOne(
+          { _id: battId },
+          { publish_status: "Removed" }
+        ).populate("creator"); //.sort({ createdAt: -1 });
+        return batteries;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
   },
 };
