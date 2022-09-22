@@ -128,6 +128,7 @@ module.exports = gql`
     createBattery(batteryInput: BatteryInput!): Battery!
     editBattery(battId: ID!, batteryInput: BatteryInput!): Battery!
     deleteBattery(battId: ID!, reason: String!): Battery
+    approveRequest(operation: String, elementId: ID!, requestId: ID): Battery
   }
   type Subscription {
     newPost: Post!

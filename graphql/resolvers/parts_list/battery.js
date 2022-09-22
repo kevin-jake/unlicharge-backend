@@ -192,7 +192,6 @@ module.exports = {
         min_voltage,
         max_voltage,
         supplier,
-        // TODO: Add publish_status update to Approved and be available to public
         publish_status: "Request",
         creator: user.id,
         createdAt: new Date().toISOString(),
@@ -221,6 +220,165 @@ module.exports = {
     async deleteBattery(_, { battId, reason }, context) {
       const user = checkAuth(context);
       return editDeleteOperation(battId, batteryInput, user, reason, "DELETE_");
+    },
+
+    // Approving requests
+    async approveRequest(_, { operation, elementId, requestId }, context) {
+      const user = checkAuth(context);
+      var filter = {};
+      var setData = {};
+      var resArray = [];
+
+      switch (operation) {
+        case "CREATE": {
+          filter = { _id: elementId };
+          setData = {
+            publish_status: "Approved",
+            updatedAt: new Date().toISOString(),
+          };
+          try {
+            const battery = await Battery.findByIdAndUpdate(filter, setData, {
+              new: true,
+            })
+              .populate("creator")
+              .populate({
+                path: "edit_request",
+                populate: {
+                  path: "requestor",
+                  model: "User",
+                },
+              })
+              .populate({
+                path: "delete_request",
+                populate: {
+                  path: "requestor",
+                  model: "User",
+                },
+              }); //.sort({ createdAt: -1 });
+            return battery;
+          } catch (err) {
+            throw new Error(err);
+          }
+          break;
+        }
+        case "DELETE": {
+          filter = { _id: elementId, "delete_request._id": requestId };
+          setData = {
+            publish_status: "Removed",
+            "delete_request.status": "Approved",
+            "delete_request.updatedAt": new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          try {
+            const battery = await Battery.findByIdAndUpdate(filter, setData, {
+              new: true,
+            })
+              .populate("creator")
+              .populate({
+                path: "edit_request",
+                populate: {
+                  path: "requestor",
+                  model: "User",
+                },
+              })
+              .populate({
+                path: "delete_request",
+                populate: {
+                  path: "requestor",
+                  model: "User",
+                },
+              }); //.sort({ createdAt: -1 });
+            return battery;
+          } catch (err) {
+            throw new Error(err);
+          }
+          break;
+        }
+        // TODO: Add previous data value on the database? Also what will happen on previously approved requests?
+        case "EDIT": {
+          filter = { _id: elementId };
+          try {
+            const res = await Battery.find(filter); //.sort({ createdAt: -1 });
+            resArray = res[0].edit_request;
+            setData = resArray.filter((item) => {
+              return item.id === requestId;
+            });
+          } catch (err) {
+            throw new Error(err);
+          }
+
+          try {
+            await Battery.updateOne(
+              { "edit_request._id": requestId },
+              {
+                $set: {
+                  "edit_request.$.status": "Approved",
+                  "edit_request.$.updatedAt": new Date().toISOString(),
+                },
+              }
+            );
+          } catch (err) {
+            throw new Error(err);
+          }
+
+          const {
+            name,
+            type,
+            model,
+            nominal_voltage,
+            capacity,
+            price_per_pc,
+            min_voltage,
+            max_voltage,
+            supplier,
+          } = setData[0];
+          console.log(name);
+
+          try {
+            const battery = await Battery.findByIdAndUpdate(
+              {
+                _id: elementId,
+              },
+              {
+                name,
+                type,
+                model,
+                nominal_voltage,
+                capacity,
+                price_per_pc,
+                min_voltage,
+                max_voltage,
+                supplier,
+                publish_status: "Approved",
+                new_data_from: requestId,
+                updatedAt: new Date().toISOString(),
+              },
+              {
+                new: true,
+              }
+            )
+              .populate("creator")
+              .populate({
+                path: "edit_request",
+                populate: {
+                  path: "requestor",
+                  model: "User",
+                },
+              })
+              .populate({
+                path: "delete_request",
+                populate: {
+                  path: "requestor",
+                  model: "User",
+                },
+              }); //.sort({ createdAt: -1 });
+            return battery;
+          } catch (err) {
+            throw new Error(err);
+          }
+          break;
+        }
+      }
     },
   },
 };
