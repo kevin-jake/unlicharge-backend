@@ -49,9 +49,22 @@ module.exports = gql`
     createdAt: String!
     creator: User!
     updatedAt: String
+    approved_by: User!
     new_data_from: ID
+    previous_data: BattPreviousData
     edit_request: [BattEditRequest!]
     delete_request: [DeleteRequest!]
+  }
+  type BattPreviousData {
+    name: String!
+    type: String!
+    model: String!
+    min_voltage: String
+    max_voltage: String
+    nominal_voltage: String!
+    price_per_pc: String!
+    supplier: String
+    editor: String!
   }
   type BattEditRequest {
     id: ID!

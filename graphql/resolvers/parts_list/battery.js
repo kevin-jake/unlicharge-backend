@@ -14,9 +14,25 @@ async function editDeleteOperation(
   var battData = {};
   var setData = {};
   var oper = operation;
+  var previous_dataEditor;
 
   try {
-    battData = await Battery.findById(battId).populate("creator");
+    battData = await Battery.findById(battId)
+      .populate("creator")
+      .populate({
+        path: "edit_request",
+        populate: {
+          path: "requestor",
+          model: "User",
+        },
+      });
+    const new_dataId = battData.new_data_from.toString();
+    if (new_dataId) {
+      previous_dataEditor = battData.edit_request.filter((item) => {
+        return item.id === new_dataId;
+      })[0].requestor.username;
+      console.log(battData.edit_request);
+    }
   } catch (err) {
     throw new Error(err);
   }
@@ -24,6 +40,17 @@ async function editDeleteOperation(
     ? (oper += "OWNER")
     : (oper += "REQ");
   console.log(oper);
+  const {
+    name,
+    type,
+    model,
+    nominal_voltage,
+    capacity,
+    price_per_pc,
+    min_voltage,
+    max_voltage,
+    supplier,
+  } = battData;
   switch (oper) {
     case "EDIT_OWNER": {
       const editId = mongoose.Types.ObjectId();
@@ -32,6 +59,19 @@ async function editDeleteOperation(
           ...batteryInput,
           updatedAt: new Date().toISOString(),
           new_data_from: editId,
+          approved_by: user.id,
+          previous_data: {
+            name,
+            type,
+            model,
+            nominal_voltage,
+            capacity,
+            price_per_pc,
+            min_voltage,
+            max_voltage,
+            supplier,
+            editor: previous_dataEditor,
+          },
           edit_request: [
             ...battData.edit_request,
             {
@@ -297,12 +337,29 @@ module.exports = {
         // TODO: Add previous data value on the database? Also what will happen on previously approved requests?
         case "EDIT": {
           filter = { _id: elementId };
+          var previous_dataEditor = "";
           try {
-            const res = await Battery.find(filter); //.sort({ createdAt: -1 });
+            const res = await Battery.find(filter)
+              .populate("creator")
+              .populate({
+                path: "edit_request",
+                populate: {
+                  path: "requestor",
+                  model: "User",
+                },
+              }); //.sort({ createdAt: -1 });
+            const creatorUsername = res[0].creator.username;
+            const new_dataId = res[0].new_data_from.toString();
             resArray = res[0].edit_request;
             setData = resArray.filter((item) => {
               return item.id === requestId;
             });
+            if (new_dataId) {
+              previous_dataEditor = resArray.filter((item) => {
+                return item.id === new_dataId;
+              })[0].requestor.username;
+              console.log(previous_dataEditor);
+            }
           } catch (err) {
             throw new Error(err);
           }
@@ -332,7 +389,6 @@ module.exports = {
             max_voltage,
             supplier,
           } = setData[0];
-          console.log(name);
 
           try {
             const battery = await Battery.findByIdAndUpdate(
@@ -351,6 +407,21 @@ module.exports = {
                 supplier,
                 publish_status: "Approved",
                 new_data_from: requestId,
+                approved_by: user.id,
+                previous_data: {
+                  name: resArray[0].name,
+                  type: resArray[0].type,
+                  model: resArray[0].model,
+                  nominal_voltage: resArray[0].nominal_voltage,
+                  capacity: resArray[0].capacity,
+                  price_per_pc: resArray[0].price_per_pc,
+                  min_voltage: resArray[0].min_voltage,
+                  max_voltage: resArray[0].max_voltage,
+                  supplier: resArray[0].supplier,
+                  editor: previous_dataEditor
+                    ? previous_dataEditor
+                    : creatorUsername,
+                },
                 updatedAt: new Date().toISOString(),
               },
               {
@@ -358,6 +429,7 @@ module.exports = {
               }
             )
               .populate("creator")
+              .populate("approved_by")
               .populate({
                 path: "edit_request",
                 populate: {
