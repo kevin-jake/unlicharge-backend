@@ -334,7 +334,6 @@ module.exports = {
           }
           break;
         }
-        // TODO: Add previous data value on the database? Also what will happen on previously approved requests?
         case "EDIT": {
           filter = { _id: elementId };
           var previous_dataEditor = "";
