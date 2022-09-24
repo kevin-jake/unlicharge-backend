@@ -1,10 +1,15 @@
 const checkAuth = require("../../../util/check-auth");
 const Battery = require("../../../server/models/Battery");
+const { mongoose } = require("mongoose");
 
 module.exports = {
   Mutation: {
     // Approving requests
-    async approveRequest(_, { operation, partsListId, requestId }, context) {
+    async approveRequest(
+      _,
+      { operation, partsListId, requestId, table },
+      context
+    ) {
       const user = checkAuth(context);
       var filter = {};
       var setData = {};
@@ -18,9 +23,11 @@ module.exports = {
             updatedAt: new Date().toISOString(),
           };
           try {
-            const battery = await Battery.findByIdAndUpdate(filter, setData, {
-              new: true,
-            })
+            const battery = await mongoose
+              .model(table)
+              .findByIdAndUpdate(filter, setData, {
+                new: true,
+              })
               .populate("creator")
               .populate({
                 path: "edit_request",
@@ -51,9 +58,11 @@ module.exports = {
             updatedAt: new Date().toISOString(),
           };
           try {
-            const battery = await Battery.findByIdAndUpdate(filter, setData, {
-              new: true,
-            })
+            const battery = await mongoose
+              .model(table)
+              .findByIdAndUpdate(filter, setData, {
+                new: true,
+              })
               .populate("creator")
               .populate({
                 path: "edit_request",
@@ -80,7 +89,9 @@ module.exports = {
           var previous_dataEditor = "";
           var creatorUsername = "";
           try {
-            const res = await Battery.find(filter)
+            const res = await mongoose
+              .model(table)
+              .find(filter)
               .populate("creator")
               .populate({
                 path: "edit_request",
@@ -137,27 +148,29 @@ module.exports = {
           }
 
           try {
-            const battery = await Battery.findByIdAndUpdate(
-              {
-                _id: partsListId,
-              },
-              {
-                ...setData,
-                publish_status: "Approved",
-                new_data_from: requestId,
-                approved_by: user.id,
-                previous_data: {
-                  ...previous_data,
-                  editor: previous_dataEditor
-                    ? previous_dataEditor
-                    : creatorUsername,
+            const battery = await mongoose
+              .model(table)
+              .findByIdAndUpdate(
+                {
+                  _id: partsListId,
                 },
-                updatedAt: new Date().toISOString(),
-              },
-              {
-                new: true,
-              }
-            )
+                {
+                  ...setData,
+                  publish_status: "Approved",
+                  new_data_from: requestId,
+                  approved_by: user.id,
+                  previous_data: {
+                    ...previous_data,
+                    editor: previous_dataEditor
+                      ? previous_dataEditor
+                      : creatorUsername,
+                  },
+                  updatedAt: new Date().toISOString(),
+                },
+                {
+                  new: true,
+                }
+              )
               .populate("creator")
               .populate("approved_by")
               .populate({
