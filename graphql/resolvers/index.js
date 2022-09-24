@@ -2,6 +2,7 @@ const postResolvers = require("./posts");
 const usersResolvers = require("./users");
 const commentsResolvers = require("./comments");
 const batteryResolvers = require("./parts_list/battery");
+const requestResolvers = require("./parts_list/requests");
 
 module.exports = {
   Post: {
@@ -18,6 +19,7 @@ module.exports = {
     ...postResolvers.Mutation,
     ...commentsResolvers.Mutation,
     ...batteryResolvers.Mutation,
+    ...requestResolvers.Mutation,
   },
   Subscription: {
     ...postResolvers.Subscription,
