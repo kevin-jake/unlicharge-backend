@@ -23,7 +23,7 @@ module.exports = {
         arr = battery.edit_request.filter(
           (item) => item.status === statusFilter
         );
-        console.log(arr);
+        // console.log(arr);
         return arr;
       } catch (err) {
         throw new Error(err);
@@ -48,7 +48,7 @@ module.exports = {
         arr = battery.delete_request.filter(
           (item) => item.status === statusFilter
         );
-        console.log(arr);
+        // console.log(arr);
         return arr;
       } catch (err) {
         throw new Error(err);
@@ -56,7 +56,7 @@ module.exports = {
     },
   },
   Mutation: {
-    // TODO: Deleting requests
+    // TODO: Removing the requests completely
     // Approving requests
     async approveRequest(
       _,
@@ -178,7 +178,7 @@ module.exports = {
             _id,
             ...previous_data
           } = resArray[0]._doc;
-          console.log(previous_data);
+          // // console.log(previous_data);
           try {
             await Battery.updateOne(
               { "edit_request._id": requestId },
