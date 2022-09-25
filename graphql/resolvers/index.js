@@ -13,6 +13,7 @@ module.exports = {
     ...usersResolvers.Query,
     ...postResolvers.Query,
     ...batteryResolvers.Query,
+    ...requestResolvers.Query,
   },
   Mutation: {
     ...usersResolvers.Mutation,

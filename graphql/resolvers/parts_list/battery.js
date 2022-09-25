@@ -194,6 +194,8 @@ module.exports = {
         throw new Error(err);
       }
     },
+
+    //   Get a single battery on the list in the database
     async getBattery(_, { battId }) {
       try {
         const batt = await Battery.findById(battId);
@@ -207,7 +209,7 @@ module.exports = {
     },
   },
   Mutation: {
-    // Create requests
+    // Create battery requests into the database
     async createBattery(_, { batteryInput }, context) {
       const {
         name,
@@ -252,11 +254,13 @@ module.exports = {
       console.log(ret);
       return ret;
     },
+    // Edit battery requests into the database
     async editBattery(_, { battId, batteryInput }, context) {
       const user = checkAuth(context);
       cudValidate(batteryInput, validateBatteryInput);
       return editDeleteOperation(battId, batteryInput, user, _, "EDIT_");
     },
+    // Delete battery requests into the database
     async deleteBattery(_, { battId, reason }, context) {
       const user = checkAuth(context);
       return editDeleteOperation(battId, batteryInput, user, reason, "DELETE_");

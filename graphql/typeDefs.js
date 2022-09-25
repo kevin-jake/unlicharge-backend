@@ -5,7 +5,7 @@ module.exports = gql`
   type DeleteRequest {
     id: ID!
     requestor: User!
-    reason: String!
+    reason: String
     status: String!
     createdAt: String!
     updatedAt: String
@@ -125,12 +125,23 @@ module.exports = gql`
     getUsers(username: String!): [User]
     getBatteries(userId: ID): [Battery]
     getBattery(battId: ID!): Battery
+    getPartsEditRequests(
+      partsListId: String!
+      table: String!
+      status: String
+    ): [BattEditRequest]
+    getPartsDeleteRequests(
+      partsListId: String!
+      table: String!
+      status: String
+    ): [DeleteRequest]
   }
   type Mutation {
     # User mutations
     register(registerInput: RegisterInput): User!
     login(username: String!, password: String!): User!
 
+    # Posts mutations
     createPost(body: String!): Post!
     deletePost(postId: ID!): String!
     likePost(postId: ID!): Post!
@@ -150,6 +161,7 @@ module.exports = gql`
       table: String!
     ): Battery
   }
+
   type Subscription {
     newPost: Post!
   }

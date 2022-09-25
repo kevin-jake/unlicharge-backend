@@ -3,7 +3,60 @@ const Battery = require("../../../server/models/Battery");
 const { mongoose } = require("mongoose");
 
 module.exports = {
+  Query: {
+    async getPartsEditRequests(_, { partsListId, table, status }, context) {
+      const user = checkAuth(context);
+      const statusFilter = status || "Request";
+      try {
+        const battery = await mongoose
+          .model(table)
+          .findOne({
+            _id: partsListId,
+          })
+          .populate({
+            path: "edit_request",
+            populate: {
+              path: "requestor",
+              model: "User",
+            },
+          }); //.sort({ createdAt: -1 });
+        arr = battery.edit_request.filter(
+          (item) => item.status === statusFilter
+        );
+        console.log(arr);
+        return arr;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async getPartsDeleteRequests(_, { partsListId, table, status }, context) {
+      const user = checkAuth(context);
+      const statusFilter = status || "Request";
+      try {
+        const battery = await mongoose
+          .model(table)
+          .findOne({
+            _id: partsListId,
+          })
+          .populate({
+            path: "delete_request",
+            populate: {
+              path: "requestor",
+              model: "User",
+            },
+          }); //.sort({ createdAt: -1 });
+        arr = battery.delete_request.filter(
+          (item) => item.status === statusFilter
+        );
+        console.log(arr);
+        return arr;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+  },
   Mutation: {
+    // TODO: Deleting requests
     // Approving requests
     async approveRequest(
       _,
@@ -64,13 +117,6 @@ module.exports = {
                 new: true,
               })
               .populate("creator")
-              .populate({
-                path: "edit_request",
-                populate: {
-                  path: "requestor",
-                  model: "User",
-                },
-              })
               .populate({
                 path: "delete_request",
                 populate: {
@@ -175,13 +221,6 @@ module.exports = {
               .populate("approved_by")
               .populate({
                 path: "edit_request",
-                populate: {
-                  path: "requestor",
-                  model: "User",
-                },
-              })
-              .populate({
-                path: "delete_request",
                 populate: {
                   path: "requestor",
                   model: "User",
