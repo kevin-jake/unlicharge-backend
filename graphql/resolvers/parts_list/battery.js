@@ -1,4 +1,3 @@
-const { mongoose } = require("mongoose");
 const Battery = require("../../../server/models/Battery");
 const checkAuth = require("../../../util/check-auth");
 const {
@@ -10,6 +9,7 @@ const { validateBatteryInput } = require("../../../util/validators");
 module.exports = {
   Query: {
     //   Get all battery list in the database
+    // This only gets Approved and Verified publish_statuses for user that is not the owner.
     async getBatteries(_, { userId }) {
       var filter = { publish_status: ["Request", "Approved", "Verified"] };
 
@@ -30,8 +30,8 @@ module.exports = {
     },
 
     //   Get a single battery on the list in the database
+    // TODO: Add publish_status filter for a single query
     async getBattery(_, { battId }) {
-      // TODO: Add publish_status filter
       try {
         const batt = await Battery.findById(battId);
         if (batt) return batt;
