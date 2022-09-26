@@ -1,178 +1,11 @@
 const { mongoose } = require("mongoose");
 const Battery = require("../../../server/models/Battery");
 const checkAuth = require("../../../util/check-auth");
-const cudValidate = require("../../../util/create-update-delete-validate");
+const {
+  cudValidate,
+  editDeleteOperation,
+} = require("../../../util/crud-functions");
 const { validateBatteryInput } = require("../../../util/validators");
-
-// General function for edit and delete request this will select if Owner or User requests
-async function editDeleteOperation(
-  battId,
-  batteryInput,
-  user,
-  reason,
-  operation
-) {
-  var battData = {};
-  var setData = {};
-  var oper = operation;
-  var previous_dataEditor;
-
-  try {
-    battData = await Battery.findById(battId)
-      .populate("creator")
-      .populate({
-        path: "edit_request",
-        populate: {
-          path: "requestor",
-          model: "User",
-        },
-      });
-    const new_dataId = battData.new_data_from.toString();
-    if (new_dataId) {
-      previous_dataEditor = battData.edit_request.filter((item) => {
-        return item.id === new_dataId;
-      })[0].requestor.username;
-      console.log(battData.edit_request);
-    }
-  } catch (err) {
-    throw new Error(err);
-  }
-  battData.creator.username === user.username
-    ? (oper += "OWNER")
-    : (oper += "REQ");
-  console.log(oper);
-  const {
-    name,
-    type,
-    model,
-    nominal_voltage,
-    capacity,
-    price_per_pc,
-    min_voltage,
-    max_voltage,
-    supplier,
-  } = battData;
-  switch (oper) {
-    case "EDIT_OWNER": {
-      const editId = mongoose.Types.ObjectId();
-      setData = {
-        $set: {
-          ...batteryInput,
-          updatedAt: new Date().toISOString(),
-          new_data_from: editId,
-          approved_by: user.id,
-          previous_data: {
-            name,
-            type,
-            model,
-            nominal_voltage,
-            capacity,
-            price_per_pc,
-            min_voltage,
-            max_voltage,
-            supplier,
-            editor: previous_dataEditor,
-          },
-          edit_request: [
-            ...battData.edit_request,
-            {
-              ...batteryInput,
-              _id: editId,
-              requestor: user.id,
-              status: "Owner Update",
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            },
-          ],
-        },
-      };
-      break;
-    }
-    case "EDIT_REQ": {
-      setData = {
-        $set: {
-          edit_request: [
-            ...battData.edit_request,
-            {
-              ...batteryInput,
-              requestor: user.id,
-              status: "Request",
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            },
-          ],
-        },
-      };
-      break;
-    }
-    case "DELETE_OWNER": {
-      if (battData.publish_status === "Removed") {
-        throw new Error("Battery already removed!");
-      }
-      setData = {
-        $set: {
-          updatedAt: new Date().toISOString(),
-          publish_status: "Removed",
-          delete_request: [
-            ...battData.delete_request,
-            {
-              reason,
-              requestor: user.id,
-              status: "Owner Update",
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            },
-          ],
-        },
-      };
-      break;
-    }
-    case "DELETE_REQ": {
-      if (battData.publish_status === "Removed") {
-        throw new Error("Battery already removed!");
-      }
-      setData = {
-        $set: {
-          delete_request: [
-            ...battData.delete_request,
-            {
-              reason,
-              requestor: user.id,
-              status: "Request",
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            },
-          ],
-        },
-      };
-      break;
-    }
-  }
-
-  try {
-    const battery = await Battery.findByIdAndUpdate({ _id: battId }, setData, {
-      new: true,
-    })
-      .populate("creator")
-      .populate({
-        path: "edit_request",
-        populate: {
-          path: "requestor",
-          model: "User",
-        },
-      })
-      .populate({
-        path: "delete_request",
-        populate: {
-          path: "requestor",
-          model: "User",
-        },
-      }); //.sort({ createdAt: -1 });
-    return battery;
-  } catch (err) {
-    throw new Error(err);
-  }
-}
 
 module.exports = {
   Query: {
@@ -260,12 +93,19 @@ module.exports = {
     async editBattery(_, { battId, batteryInput }, context) {
       const user = checkAuth(context);
       cudValidate(batteryInput, validateBatteryInput);
-      return editDeleteOperation(battId, batteryInput, user, _, "EDIT_");
+      return editDeleteOperation(
+        battId,
+        batteryInput,
+        user,
+        _,
+        "EDIT_",
+        "Battery"
+      );
     },
     // Delete battery requests into the database
     async deleteBattery(_, { battId, reason }, context) {
       const user = checkAuth(context);
-      return editDeleteOperation(battId, batteryInput, user, reason, "DELETE_");
+      return editDeleteOperation(battId, _, user, reason, "DELETE_", "Battery");
     },
   },
 };
