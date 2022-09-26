@@ -51,9 +51,9 @@ module.exports = gql`
     updatedAt: String
     approved_by: User!
     new_data_from: ID
-    previous_data: BattPreviousData
     edit_request: [BattEditRequest!]
     delete_request: [DeleteRequest!]
+    previous_data: BattPreviousData
   }
   type BattPreviousData {
     name: String!
@@ -90,6 +90,69 @@ module.exports = gql`
     price_per_pc: String!
     min_voltage: String
     max_voltage: String
+    supplier: String
+  }
+
+  # BMS
+  type BMS {
+    id: ID!
+    name: String!
+    brand: String
+    strings: String!
+    charge_current: String!
+    discharge_current: String!
+    port_type: String
+    voltage: String
+    price: String!
+    supplier: String
+    publish_status: String!
+    createdAt: String!
+    creator: User!
+    updatedAt: String
+    approved_by: User!
+    new_data_from: ID
+    edit_request: [BMSEditRequest!]
+    delete_request: [DeleteRequest!]
+    previous_data: BMSPreviousData
+  }
+  type BMSPreviousData {
+    id: ID!
+    name: String!
+    brand: String
+    strings: String!
+    charge_current: String!
+    discharge_current: String!
+    port_type: String
+    voltage: String
+    price: String!
+    supplier: String
+    editor: String!
+  }
+  type BMSEditRequest {
+    id: ID!
+    name: String!
+    brand: String
+    strings: String!
+    charge_current: String!
+    discharge_current: String!
+    port_type: String
+    voltage: String
+    price: String!
+    supplier: String
+    requestor: User!
+    status: String!
+    createdAt: String!
+    updatedAt: String
+  }
+  input BMSInput {
+    name: String!
+    brand: String
+    strings: String!
+    charge_current: String!
+    discharge_current: String!
+    port_type: String
+    voltage: String
+    price: String!
     supplier: String
   }
 

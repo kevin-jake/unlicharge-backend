@@ -4,6 +4,7 @@ const checkAuth = require("../../../util/check-auth");
 const cudValidate = require("../../../util/create-update-delete-validate");
 const { validateBatteryInput } = require("../../../util/validators");
 
+// General function for edit and delete request this will select if Owner or User requests
 async function editDeleteOperation(
   battId,
   batteryInput,
@@ -209,6 +210,7 @@ module.exports = {
     },
   },
   Mutation: {
+    // TODO: Add completely remove the record or data
     // Create battery requests into the database
     async createBattery(_, { batteryInput }, context) {
       const {

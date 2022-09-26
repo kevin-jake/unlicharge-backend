@@ -59,6 +59,23 @@ const batterySchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+
+  // Requests
+  edit_request: [editSchema],
+  delete_request: [
+    {
+      reason: { type: String, required: true },
+      requestor: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+      status: { type: String, required: true },
+      createdAt: { type: String, required: true },
+      updatedAt: { type: String },
+    },
+  ],
+
+  // Previous data
   previous_data: {
     name: { type: String, required: true },
     type: {
@@ -75,20 +92,5 @@ const batterySchema = new Schema({
     supplier: { type: String },
     editor: { type: String },
   },
-
-  // Requests
-  edit_request: [editSchema],
-  delete_request: [
-    {
-      reason: { type: String, required: true },
-      requestor: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-      status: { type: String, required: true },
-      createdAt: { type: String, required: true },
-      updatedAt: { type: String },
-    },
-  ],
 });
 module.exports = model("Battery", batterySchema);

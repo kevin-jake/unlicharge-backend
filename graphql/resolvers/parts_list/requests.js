@@ -57,6 +57,8 @@ module.exports = {
   },
   Mutation: {
     // TODO: Removing the requests completely
+    // TODO: Add edit request
+    // TODO: Add edit the delete request reason
     // Approving requests
     async approveRequest(
       _,
