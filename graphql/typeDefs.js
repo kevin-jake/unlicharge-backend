@@ -183,11 +183,14 @@ module.exports = gql`
 
   # Root Query, Mutation and Subscription
   type Query {
+    # Posts get queries
     getPosts: [Post]
     getPost(postId: ID!): Post
+
+    # User get queries
     getUsers(username: String!): [User]
-    getBatteries(userId: ID): [Battery]
-    getBattery(battId: ID!): Battery
+
+    # Requests get queries
     getPartsEditRequests(
       partsListId: String!
       table: String!
@@ -198,6 +201,15 @@ module.exports = gql`
       table: String!
       status: String
     ): [DeleteRequest]
+
+    # Parts queries
+    # Battery get queries
+    getBatteries(userId: ID): [Battery]
+    getBattery(battId: ID!): Battery
+
+    # BMS get queries
+    getBMSes(userId: ID): [BMS]
+    getBMS(bmsId: ID!): BMS
   }
   type Mutation {
     # User mutations
@@ -215,6 +227,11 @@ module.exports = gql`
     createBattery(batteryInput: BatteryInput!): Battery!
     editBattery(battId: ID!, batteryInput: BatteryInput!): Battery!
     deleteBattery(battId: ID!, reason: String!): Battery
+
+    # BMS Mutations
+    createBMS(bmsInput: BMSInput!): BMS!
+    editBMS(bmsId: ID!, bmsInput: BMSInput!): BMS!
+    deleteBMS(bmsId: ID!, reason: String!): BMS
 
     # Requests Mutations
     approveRequest(

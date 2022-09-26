@@ -9,8 +9,8 @@ const { validateBMSInput } = require("../../../util/validators");
 
 module.exports = {
   Query: {
-    //   Get all battery list in the database
-    async getBatteries(_, { userId }) {
+    //   Get all bms list in the database. This only gets Approved and Verified publish_statuses for user that is not the owner.
+    async getBMSes(_, { userId }) {
       var filter = { publish_status: ["Request", "Approved", "Verified"] };
 
       if (userId === "6329ad7d621d3b2c46426d3e") {
@@ -22,18 +22,18 @@ module.exports = {
         ];
       }
       try {
-        const batteries = await BMS.find(filter).populate("creator"); //.sort({ createdAt: -1 });
-        return batteries;
+        const bmses = await BMS.find(filter).populate("creator"); //.sort({ createdAt: -1 });
+        return bmses;
       } catch (err) {
         throw new Error(err);
       }
     },
 
-    //   Get a single battery on the list in the database
-    async getBMS(_, { battId }) {
+    //   Get a single BMS on the list in the database
+    async getBMS(_, { bmsId }) {
       try {
-        const batt = await BMS.findById(battId);
-        if (batt) return batt;
+        const bms = await BMS.findById(bmsId);
+        if (bms) return bms;
         else {
           throw new Error("BMS not found");
         }
@@ -44,38 +44,38 @@ module.exports = {
   },
   Mutation: {
     // TODO: Add completely remove the record or data
-    // Create battery requests into the database
-    async createBMS(_, { batteryInput }, context) {
+    // Create bms requests into the database
+    async createBMS(_, { bmsInput }, context) {
       const {
         name,
-        type,
-        model,
-        nominal_voltage,
-        capacity,
-        price_per_pc,
-        min_voltage,
-        max_voltage,
+        brand,
+        strings,
+        charge_current,
+        discharge_current,
+        port_type,
+        voltage,
+        price,
         supplier,
-      } = batteryInput;
+      } = bmsInput;
       const user = checkAuth(context);
-      cudValidate(batteryInput, validateBMSInput);
-      const newBatt = new BMS({
+      cudValidate(bmsInput, validateBMSInput);
+      const newBMS = new BMS({
         name,
-        type,
-        model,
-        nominal_voltage,
-        capacity,
-        price_per_pc,
-        min_voltage,
-        max_voltage,
+        brand,
+        strings,
+        charge_current,
+        discharge_current,
+        port_type,
+        voltage,
+        price,
         supplier,
         publish_status: "Request",
         creator: user.id,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
-      const ret = await newBatt.save(
-        BMS.populate(newBatt, { path: "creator" }, function (err, res) {
+      const ret = await newBMS.save(
+        BMS.populate(newBMS, { path: "creator" }, function (err, res) {
           if (err) {
             throw new Error(err);
           }
@@ -89,18 +89,18 @@ module.exports = {
       console.log(ret);
       return ret;
     },
-    // Edit battery requests into the database
-    async editBMS(_, { battId, batteryInput }, context) {
+    // Edit bms requests into the database
+    async editBMS(_, { bmsId, bmsInput }, context) {
       const user = checkAuth(context);
-      cudValidate(batteryInput, validateBMSInput);
-      return editDeleteOperation(battId, batteryInput, user, _, "EDIT_", "BMS");
+      cudValidate(bmsInput, validateBMSInput);
+      return editDeleteOperation(bmsId, bmsInput, user, _, "EDIT_", "BMS");
     },
-    // Delete battery requests into the database
-    async deleteBMS(_, { battId, reason }, context) {
+    // Delete bms requests into the database
+    async deleteBMS(_, { bmsId, reason }, context) {
       const user = checkAuth(context);
       return editDeleteOperation(
-        battId,
-        batteryInput,
+        bmsId,
+        bmsInput,
         user,
         reason,
         "DELETE_",

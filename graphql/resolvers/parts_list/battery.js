@@ -31,6 +31,7 @@ module.exports = {
 
     //   Get a single battery on the list in the database
     async getBattery(_, { battId }) {
+      // TODO: Add publish_status filter
       try {
         const batt = await Battery.findById(battId);
         if (batt) return batt;
