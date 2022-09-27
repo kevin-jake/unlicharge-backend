@@ -1,3 +1,4 @@
+// TODO: Edit post model to be shareable builds
 const { model, Schema } = require("mongoose");
 
 const postSchema = new Schema({

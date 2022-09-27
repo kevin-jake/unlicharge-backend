@@ -93,7 +93,7 @@ module.exports = gql`
     supplier: String
   }
 
-  # BMS
+  ## BMS
   type BMS {
     id: ID!
     name: String!
@@ -156,6 +156,61 @@ module.exports = gql`
     supplier: String
   }
 
+  ## Active Balancer
+  type ActiveBalancer {
+    id: ID!
+    name: String!
+    brand: String
+    strings: String!
+    balance_current: String
+    balancing: String!
+    price: String!
+    supplier: String
+    publish_status: String!
+    createdAt: String!
+    creator: User!
+    updatedAt: String
+    approved_by: User!
+    new_data_from: ID
+    edit_request: [ABEditRequest!]
+    delete_request: [DeleteRequest!]
+    previous_data: ABPreviousData
+  }
+  type ABPreviousData {
+    id: ID!
+    name: String!
+    brand: String
+    strings: String!
+    balance_current: String
+    balancing: String!
+    price: String!
+    supplier: String
+    editor: String!
+  }
+  type ABEditRequest {
+    id: ID!
+    name: String!
+    brand: String
+    strings: String!
+    balance_current: String
+    balancing: String!
+    price: String!
+    supplier: String
+    requestor: User!
+    status: String!
+    createdAt: String!
+    updatedAt: String
+  }
+  input ABInput {
+    name: String!
+    brand: String
+    strings: String!
+    balance_current: String
+    balancing: String!
+    price: String!
+    supplier: String
+  }
+
   # Posts related graphql model or schema
   type Post {
     id: ID!
@@ -210,6 +265,10 @@ module.exports = gql`
     # BMS get queries
     getBMSes(userId: ID): [BMS]
     getBMS(bmsId: ID!): BMS
+
+    # AB get queries
+    getActiveBalancers(userId: ID): [ActiveBalancer]
+    getAB(abId: ID!): ActiveBalancer
   }
   type Mutation {
     # User mutations
@@ -232,6 +291,11 @@ module.exports = gql`
     createBMS(bmsInput: BMSInput!): BMS!
     editBMS(bmsId: ID!, bmsInput: BMSInput!): BMS!
     deleteBMS(bmsId: ID!, reason: String!): BMS
+
+    # Active Balancer Mutations
+    createAB(abInput: ABInput!): ActiveBalancer!
+    editAB(abId: ID!, abInput: ABInput!): ActiveBalancer!
+    deleteAB(abId: ID!, reason: String!): ActiveBalancer
 
     # Requests Mutations
     approveRequest(

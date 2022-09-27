@@ -30,10 +30,20 @@ module.exports = {
     },
 
     //   Get a single BMS on the list in the database
-    // TODO: Add publish_status filter for a single query
     async getBMS(_, { bmsId }) {
+      var filter = {
+        _id: bmsId,
+        publish_status: ["Request", "Approved", "Verified"],
+      };
+
+      // If admin condition
+      if (userId === "6329ad7d621d3b2c46426d3e") {
+        filter = {};
+      } else {
+        filter = { _id: bmsId };
+      }
       try {
-        const bms = await BMS.findById(bmsId);
+        const bms = await BMS.findOne(filter);
         if (bms) return bms;
         else {
           throw new Error("BMS not found");

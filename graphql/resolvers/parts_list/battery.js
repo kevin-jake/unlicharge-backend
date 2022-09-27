@@ -30,10 +30,20 @@ module.exports = {
     },
 
     //   Get a single battery on the list in the database
-    // TODO: Add publish_status filter for a single query
     async getBattery(_, { battId }) {
+      var filter = {
+        _id: battId,
+        publish_status: ["Request", "Approved", "Verified"],
+      };
+
+      // If admin condition
+      if (userId === "6329ad7d621d3b2c46426d3e") {
+        filter = {};
+      } else {
+        filter = { _id: battId };
+      }
       try {
-        const batt = await Battery.findById(battId);
+        const batt = await Battery.findOne(filter);
         if (batt) return batt;
         else {
           throw new Error("Battery not found");

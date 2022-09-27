@@ -4,6 +4,7 @@ const commentsResolvers = require("./comments");
 const requestResolvers = require("./parts_list/requests");
 const batteryResolvers = require("./parts_list/battery");
 const bmsResolvers = require("./parts_list/bms");
+const abResolvers = require("./parts_list/activeBalancer");
 
 module.exports = {
   Post: {
