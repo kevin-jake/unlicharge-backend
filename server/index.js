@@ -14,6 +14,9 @@ const { useServer } = require("graphql-ws/lib/use/ws");
 const typeDefs = require("../graphql/typeDefs");
 const resolvers = require("../graphql/resolvers/index");
 
+// TODO: Add login or register via Facebook and Google
+// TODO: Add upload images
+
 async function startApolloServer(typeDefs, resolvers) {
   // Required logic for integrating with Express
   const app = express();
