@@ -17,6 +17,7 @@ module.exports = {
     ...batteryResolvers.Query,
     ...requestResolvers.Query,
     ...bmsResolvers.Query,
+    ...abResolvers.Query,
   },
   Mutation: {
     ...usersResolvers.Mutation,
@@ -25,6 +26,7 @@ module.exports = {
     ...batteryResolvers.Mutation,
     ...requestResolvers.Mutation,
     ...bmsResolvers.Mutation,
+    ...abResolvers.Mutation,
   },
   Subscription: {
     ...postResolvers.Subscription,

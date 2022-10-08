@@ -30,6 +30,7 @@ const bmsSchema = new Schema({
   voltage: { type: String },
   price: { type: String, required: true },
   supplier: { type: String },
+  image: { type: String },
 
   // Data details
   publish_status: {

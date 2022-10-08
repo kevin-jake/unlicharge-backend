@@ -9,6 +9,7 @@ const userSchema = new Schema({
   last_login: { type: String, required: true },
   signed_using: { type: String },
   address: { type: String },
+  image: { type: String },
 });
 
 module.exports = model("User", userSchema);

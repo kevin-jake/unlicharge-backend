@@ -11,6 +11,16 @@ module.exports = gql`
     updatedAt: String
   }
 
+  scalar Upload
+
+  type FileUploadResponse {
+    ETag: String!
+    Location: String!
+    key: String!
+    Key: String!
+    Bucket: String!
+  }
+
   # User graphql model or schema
   type User {
     id: ID!
@@ -21,6 +31,7 @@ module.exports = gql`
     last_login: String!
     signed_using: String!
     address: String!
+    image: String
     token: String
   }
   input RegisterInput {
@@ -45,6 +56,7 @@ module.exports = gql`
     nominal_voltage: String!
     price_per_pc: String!
     supplier: String
+    image: String
     publish_status: String!
     createdAt: String!
     creator: User!
@@ -105,6 +117,7 @@ module.exports = gql`
     voltage: String
     price: String!
     supplier: String
+    image: String
     publish_status: String!
     createdAt: String!
     creator: User!
@@ -166,6 +179,7 @@ module.exports = gql`
     balancing: String!
     price: String!
     supplier: String
+    image: String
     publish_status: String!
     createdAt: String!
     creator: User!
@@ -274,6 +288,9 @@ module.exports = gql`
     # User mutations
     register(registerInput: RegisterInput): User!
     login(username: String!, password: String!): User!
+
+    # S3 Upload
+    singleUpload(file: Upload!): UploadedFileResponse!
 
     # Posts mutations
     createPost(body: String!): Post!
