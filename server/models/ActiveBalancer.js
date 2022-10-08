@@ -34,7 +34,7 @@ const abSchema = new Schema({
   },
   price: { type: String, required: true },
   supplier: { type: String, required: true },
-  image: { type: String },
+  image_url: { type: String },
 
   // Data details
   publish_status: {

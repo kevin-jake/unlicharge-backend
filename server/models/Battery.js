@@ -38,7 +38,7 @@ const batterySchema = new Schema({
   min_voltage: { type: String },
   max_voltage: { type: String },
   supplier: { type: String },
-  image: { type: String },
+  image_url: { type: String },
 
   // Data details
   publish_status: {
