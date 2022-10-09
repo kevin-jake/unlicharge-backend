@@ -24,7 +24,7 @@ const s3DefaultParams = {
 
 // the actual upload happens here
 const handleFileUpload = async (file) => {
-  console.log(await file);
+  console.log(file);
   const { createReadStream, filename } = await file;
 
   const key = uuid();

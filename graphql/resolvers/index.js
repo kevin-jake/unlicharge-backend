@@ -6,8 +6,10 @@ const batteryResolvers = require("./parts_list/battery");
 const bmsResolvers = require("./parts_list/bms");
 const abResolvers = require("./parts_list/activeBalancer");
 const { handleFileUpload } = require("../../util/s3");
+const { GraphQLUpload } = require("graphql-upload");
 
 module.exports = {
+  Upload: GraphQLUpload,
   Post: {
     likeCount: (parent) => parent.likes.length,
     commentCount: (parent) => parent.comments.length,

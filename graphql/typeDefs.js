@@ -10,7 +10,6 @@ module.exports = gql`
     createdAt: String!
     updatedAt: String
   }
-
   scalar Upload
 
   type FileUploadResponse {
