@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 // store each image in it's own unique folder to avoid name duplicates
-const uuidv4 = require("uuid/v4");
+const { uuid } = require("uuidv4");
 // load config data from .env file
 require("dotenv").config();
 // update AWS config env data
@@ -24,9 +24,10 @@ const s3DefaultParams = {
 
 // the actual upload happens here
 const handleFileUpload = async (file) => {
+  console.log(await file);
   const { createReadStream, filename } = await file;
 
-  const key = uuidv4();
+  const key = uuid();
 
   return new Promise((resolve, reject) => {
     s3.upload(

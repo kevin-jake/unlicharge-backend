@@ -11,6 +11,8 @@ module.exports = gql`
     updatedAt: String
   }
 
+  scalar Upload
+
   type FileUploadResponse {
     ETag: String!
     Location: String!
