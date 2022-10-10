@@ -24,23 +24,25 @@ module.exports = gql`
   type User {
     id: ID!
     username: String!
+    name: String!
     email: String!
     mobile_number: String!
     createdAt: String!
     last_login: String!
     signed_using: String!
-    address: String!
+    address: String
     image_url: String
     token: String
   }
   input RegisterInput {
     username: String!
+    name: String!
     password: String!
     confirmPassword: String
     email: String!
     mobile_number: String!
     signed_using: String
-    address: String!
+    address: String
   }
 
   # Parts list related graphql model or schema

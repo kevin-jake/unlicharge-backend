@@ -15,9 +15,9 @@ const typeDefs = require("../graphql/typeDefs");
 const resolvers = require("../graphql/resolvers/index");
 const { graphqlUploadExpress } = require("graphql-upload");
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
 // TODO: Add login or register via Facebook and Google
 // TODO: Add upload images
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 async function startApolloServer(typeDefs, resolvers) {
   // Required logic for integrating with Express

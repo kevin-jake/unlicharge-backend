@@ -22,7 +22,7 @@ function generateToken(user) {
     { expiresIn: "1h" }
   );
 }
-
+// TODO: Add change password or forgot password
 module.exports = {
   Query: {
     async getUsers(_, { username }) {
@@ -43,7 +43,7 @@ module.exports = {
       const { errors, valid } = validateLoginInput(username, password);
       const user = await User.findOne({ username });
       if (!user) {
-        errors.general = "User not found";
+        errors.username = "User not found";
         throw new UserInputError("User not found", { errors });
       }
       const match = await bcrypt.compare(password, user.password);
@@ -75,6 +75,7 @@ module.exports = {
       {
         registerInput: {
           username,
+          name,
           email,
           password,
           confirmPassword,
@@ -86,8 +87,10 @@ module.exports = {
       context,
       info
     ) {
+      console.log(name);
       const { valid, errors } = validateRegisterInput(
         username,
+        name,
         email,
         password,
         confirmPassword
@@ -110,6 +113,7 @@ module.exports = {
       const newUser = new User({
         email,
         username,
+        name,
         password,
         mobile_number,
         signed_using: signed_using || "App",
