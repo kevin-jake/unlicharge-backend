@@ -14,14 +14,54 @@ const { useServer } = require("graphql-ws/lib/use/ws");
 const typeDefs = require("../graphql/typeDefs");
 const resolvers = require("../graphql/resolvers/index");
 const { graphqlUploadExpress } = require("graphql-upload");
+const passport = require("passport");
+var FacebookStrategy = require("passport-facebook");
+const { facebookOptions, facebookCallback } = require("../util/fb-login");
+const { uuid } = require("uuidv4");
+const session = require("express-session");
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-// TODO: Add login or register via Facebook and Google
 // TODO: Add upload images
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+//FIXME: Change this to more secure
+const SESSION_SECRECT = "this is server secret";
+passport.serializeUser(function (user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+  done(null, user);
+});
 
 async function startApolloServer(typeDefs, resolvers) {
   // Required logic for integrating with Express
   const app = express();
+
+  app.use(
+    session({
+      genid: (req) => uuid(),
+      secret: SESSION_SECRECT,
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+  // TODO: Add login or register via Facebook and Google
+  passport.use(new FacebookStrategy(facebookOptions, facebookCallback));
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.get(
+    "/auth/facebook",
+    passport.authenticate("facebook", { scope: ["email"] })
+  );
+  app.get(
+    "/auth/facebook/callback",
+    passport.authenticate("facebook", {
+      successRedirect: "http://localhost:3000/",
+      failureRedirect: "http://localhost:3000/",
+    })
+  );
+
   // Our httpServer handles incoming requests to our Express app.
   // Below, we tell Apollo Server to "drain" this httpServer,
   // enabling our servers to shut down gracefully.

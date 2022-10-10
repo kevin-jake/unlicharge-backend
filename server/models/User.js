@@ -8,6 +8,7 @@ const userSchema = new Schema({
   createdAt: { type: String, required: true },
   last_login: { type: String, required: true },
   signed_using: { type: String },
+  fb_id: { type: String },
   address: { type: String },
   image_url: { type: String },
 });
