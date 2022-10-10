@@ -87,7 +87,6 @@ module.exports = {
       context,
       info
     ) {
-      console.log(name);
       const { valid, errors } = validateRegisterInput(
         username,
         name,
