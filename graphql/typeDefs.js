@@ -102,6 +102,7 @@ module.exports = gql`
     min_voltage: String
     max_voltage: String
     supplier: String
+    image_url: String
   }
 
   ## BMS
@@ -166,6 +167,7 @@ module.exports = gql`
     voltage: String
     price: String!
     supplier: String
+    image_url: String
   }
 
   ## Active Balancer
@@ -222,6 +224,7 @@ module.exports = gql`
     balancing: String!
     price: String!
     supplier: String
+    image_url: String
   }
 
   # Posts related graphql model or schema

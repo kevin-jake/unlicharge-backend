@@ -70,14 +70,14 @@ const bmsSchema = new Schema({
 
   // Previous data
   previous_data: {
-    name: { type: String, required: true },
+    name: { type: String },
     brand: { type: String },
-    strings: { type: String, required: true },
-    charge_current: { type: String, required: true },
-    discharge_current: { type: String, required: true },
+    strings: { type: String },
+    charge_current: { type: String },
+    discharge_current: { type: String },
     port_type: { type: String },
     voltage: { type: String },
-    price: { type: String, required: true },
+    price: { type: String },
     supplier: { type: String },
     editor: { type: String },
   },

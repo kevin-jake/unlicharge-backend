@@ -78,16 +78,15 @@ const batterySchema = new Schema({
 
   // Previous data
   previous_data: {
-    name: { type: String, required: true },
+    name: { type: String },
     type: {
       type: String,
       enum: ["Lead Acid", "Li-on", "LiFePo4"],
-      required: true,
     },
-    model: { type: String, required: true },
-    nominal_voltage: { type: String, required: true },
-    capacity: { type: String, required: true },
-    price_per_pc: { type: String, required: true },
+    model: { type: String },
+    nominal_voltage: { type: String },
+    capacity: { type: String },
+    price_per_pc: { type: String },
     min_voltage: { type: String },
     max_voltage: { type: String },
     supplier: { type: String },
