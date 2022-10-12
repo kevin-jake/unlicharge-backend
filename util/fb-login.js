@@ -3,8 +3,8 @@ const jwtGenerateToken = require("./jwt-generate-token");
 
 const facebookOptions = {
   //TODO: Change this later
-  clientID: "1185380252335778",
-  clientSecret: "3024916a79607ca62c0a6bb234e142ef",
+  clientID: "",
+  clientSecret: "",
   callbackURL: "http://localhost:5000/auth/facebook/callback",
   profileFields: ["id", "email", "first_name", "last_name"],
 };
