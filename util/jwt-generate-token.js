@@ -5,6 +5,7 @@ module.exports = function generateToken(user) {
     {
       id: user.id,
       email: user.email,
+      name: user.name,
       username: user.username,
       last_login: user.last_login,
     },

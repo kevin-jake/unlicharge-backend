@@ -13,7 +13,7 @@ module.exports = {
     async getBatteries(_, { userId }) {
       var filter = { publish_status: ["Request", "Approved", "Verified"] };
 
-      if (userId === "6329ad7d621d3b2c46426d3e") {
+      if (userId === "634684e1659d6cb340997577") {
         filter = {};
       } else {
         filter.$or = [
@@ -37,7 +37,7 @@ module.exports = {
       };
 
       // If admin condition
-      if (userId === "6329ad7d621d3b2c46426d3e") {
+      if (userId === "634684e1659d6cb340997577") {
         filter = {};
       } else {
         filter = { _id: battId };

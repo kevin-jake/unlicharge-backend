@@ -109,7 +109,7 @@ module.exports = {
       });
 
       const res = await newUser.save();
-      const token = generateToken(res);
+      const token = jwtGenerateToken(res);
       return {
         ...res._doc,
         id: res._id,

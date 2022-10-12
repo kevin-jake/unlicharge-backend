@@ -51,7 +51,7 @@ module.exports = gql`
     id: ID!
     name: String!
     type: String!
-    model: String!
+    model: String
     min_voltage: String
     max_voltage: String
     nominal_voltage: String!
@@ -84,7 +84,7 @@ module.exports = gql`
     id: ID!
     name: String!
     type: String!
-    model: String!
+    model: String
     min_voltage: String
     max_voltage: String
     nominal_voltage: String!
