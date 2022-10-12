@@ -14,6 +14,11 @@ const { useServer } = require("graphql-ws/lib/use/ws");
 const typeDefs = require("../graphql/typeDefs");
 const resolvers = require("../graphql/resolvers/index");
 const { graphqlUploadExpress } = require("graphql-upload");
+const passport = require("passport");
+var FacebookStrategy = require("passport-facebook");
+const { facebookOptions, facebookCallback } = require("../util/fb-login");
+const { uuid } = require("uuidv4");
+const session = require("express-session");
 
 // TODO: Add login or register via Facebook and Google
 // TODO: Add upload images
@@ -22,6 +27,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 async function startApolloServer(typeDefs, resolvers) {
   // Required logic for integrating with Express
   const app = express();
+
   // Our httpServer handles incoming requests to our Express app.
   // Below, we tell Apollo Server to "drain" this httpServer,
   // enabling our servers to shut down gracefully.

@@ -1,6 +1,5 @@
 const User = require("../../server/models/User");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const {
   UserInputError,
   AuthenticationError,
@@ -9,20 +8,8 @@ const {
   validateRegisterInput,
   validateLoginInput,
 } = require("../../util/validators");
+const jwtGenerateToken = require("../../util/jwt-generate-token");
 
-function generateToken(user) {
-  return jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      last_login: user.last_login,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-}
-// TODO: Add change password or forgot password
 module.exports = {
   Query: {
     async getUsers(_, { username }) {
@@ -51,7 +38,7 @@ module.exports = {
         errors.general = "Wrong credentials";
         throw new UserInputError("Wrong credentials", { errors });
       }
-      const token = generateToken(user);
+      const token = jwtGenerateToken(user);
 
       // add last login to check active users
       user.last_login = new Date().toISOString();

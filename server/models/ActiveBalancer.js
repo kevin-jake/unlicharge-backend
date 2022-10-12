@@ -74,17 +74,16 @@ const abSchema = new Schema({
 
   // Previous data
   previous_data: {
-    name: { type: String, required: true },
+    name: { type: String },
     brand: { type: String },
-    strings: { type: String, required: true },
+    strings: { type: String },
     balance_current: { type: String },
     balancing: {
       type: String,
       enum: ["Active", "Passive"],
-      required: true,
     },
-    price: { type: String, required: true },
-    supplier: { type: String, required: true },
+    price: { type: String },
+    supplier: { type: String },
 
     editor: { type: String },
   },
