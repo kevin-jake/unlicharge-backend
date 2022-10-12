@@ -20,17 +20,9 @@ const { facebookOptions, facebookCallback } = require("../util/fb-login");
 const { uuid } = require("uuidv4");
 const session = require("express-session");
 
+// TODO: Add login or register via Facebook and Google
 // TODO: Add upload images
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-//FIXME: Change this to more secure
-const SESSION_SECRECT = "this is server secret";
-passport.serializeUser(function (user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function (user, done) {
-  done(null, user);
-});
 
 async function startApolloServer(typeDefs, resolvers) {
   // Required logic for integrating with Express
