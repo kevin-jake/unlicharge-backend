@@ -55,6 +55,7 @@ module.exports = gql`
     min_voltage: String
     max_voltage: String
     nominal_voltage: String!
+    capacity: String!
     price_per_pc: String!
     supplier: String
     image_url: String
