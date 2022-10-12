@@ -13,6 +13,7 @@ function isNumber(str) {
 
 module.exports.validateRegisterInput = (
   username,
+  name,
   email,
   password,
   confirmPassword
@@ -20,6 +21,9 @@ module.exports.validateRegisterInput = (
   const errors = {};
   if (username.trim() === "") {
     errors.username = "Username must not be empty";
+  }
+  if (name.trim() === "") {
+    errors.name = "Name must not be empty";
   }
   if (email.trim() === "") {
     errors.email = "Email must not be empty";
