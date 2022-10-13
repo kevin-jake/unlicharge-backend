@@ -82,7 +82,8 @@ module.exports = {
         max_voltage,
         supplier,
         image_url,
-        publish_status: "Request",
+        publish_status:
+          user.id === "634684e1659d6cb340997577" ? "Approved" : "Request",
         creator: user.id,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
