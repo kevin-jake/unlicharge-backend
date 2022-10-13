@@ -67,6 +67,7 @@ module.exports = {
         voltage,
         price,
         supplier,
+        image_url,
       } = bmsInput;
       const user = checkAuth(context);
       cudValidate(bmsInput, validateBMSInput);
@@ -80,6 +81,7 @@ module.exports = {
         voltage,
         price,
         supplier,
+        image_url,
         publish_status: "Request",
         creator: user.id,
         createdAt: new Date().toISOString(),

@@ -67,6 +67,7 @@ module.exports = {
         min_voltage,
         max_voltage,
         supplier,
+        image_url,
       } = batteryInput;
       const user = checkAuth(context);
       cudValidate(batteryInput, validateBatteryInput);
@@ -80,6 +81,7 @@ module.exports = {
         min_voltage,
         max_voltage,
         supplier,
+        image_url,
         publish_status: "Request",
         creator: user.id,
         createdAt: new Date().toISOString(),

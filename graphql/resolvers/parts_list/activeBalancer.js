@@ -65,6 +65,7 @@ module.exports = {
         balancing,
         price,
         supplier,
+        image_url,
       } = abInput;
       const user = checkAuth(context);
       cudValidate(abInput, validateABInput);
@@ -76,6 +77,7 @@ module.exports = {
         balancing,
         price,
         supplier,
+        image_url,
         publish_status: "Request",
         creator: user.id,
         createdAt: new Date().toISOString(),
