@@ -7,6 +7,7 @@ const bmsResolvers = require("./parts_list/bms");
 const abResolvers = require("./parts_list/activeBalancer");
 const { handleFileUpload } = require("../../util/s3");
 const { GraphQLUpload } = require("graphql-upload");
+const checkAuth = require("../../util/check-auth");
 
 module.exports = {
   Upload: GraphQLUpload,
@@ -30,8 +31,9 @@ module.exports = {
     ...requestResolvers.Mutation,
     ...bmsResolvers.Mutation,
     ...abResolvers.Mutation,
-    uploadFile: async (parent, { file }) => {
-      const response = await handleFileUpload(file);
+    uploadFile: async (_, { file }, context) => {
+      const user = checkAuth(context);
+      const response = await handleFileUpload(file, user);
 
       return response;
     },
