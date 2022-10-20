@@ -68,6 +68,7 @@ module.exports = {
         max_voltage,
         supplier,
         image_url,
+        c_Rate,
       } = batteryInput;
       const user = checkAuth(context);
       cudValidate(batteryInput, validateBatteryInput);
@@ -75,12 +76,13 @@ module.exports = {
         name,
         type,
         model,
+        min_voltage,
+        max_voltage,
         nominal_voltage,
         capacity,
         price_per_pc,
-        min_voltage,
-        max_voltage,
         supplier,
+        c_Rate,
         image_url,
         publish_status:
           user.id === "634684e1659d6cb340997577" ? "Approved" : "Request",

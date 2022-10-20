@@ -35,6 +35,7 @@ async function editDeleteOperation(
           model: "User",
         },
       });
+    console.log(requestData);
     const new_dataId = requestData.new_data_from.toString();
     if (new_dataId) {
       previous_dataEditor = requestData.edit_request.filter((item) => {
