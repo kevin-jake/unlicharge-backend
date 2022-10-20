@@ -58,6 +58,7 @@ module.exports = gql`
     capacity: String!
     price_per_pc: String!
     supplier: String
+    c_Rate: String
     image_url: String
     publish_status: String!
     createdAt: String!
@@ -76,6 +77,7 @@ module.exports = gql`
     min_voltage: String
     max_voltage: String
     nominal_voltage: String!
+    c_Rate: String
     price_per_pc: String!
     supplier: String
     editor: String!
@@ -89,6 +91,7 @@ module.exports = gql`
     max_voltage: String
     nominal_voltage: String!
     price_per_pc: String!
+    c_Rate: String
     supplier: String
     requestor: User!
     status: String!
@@ -101,6 +104,7 @@ module.exports = gql`
     model: String!
     nominal_voltage: String!
     capacity: String!
+    c_Rate: String
     price_per_pc: String!
     min_voltage: String
     max_voltage: String
