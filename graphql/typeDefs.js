@@ -272,11 +272,7 @@ module.exports = gql`
     getBattEditRequests(partsListId: String, status: String): [BattEditRequest]
     getBMSEditRequests(partsListId: String, status: String): [BMSEditRequest]
     getABEditRequests(partsListId: String, status: String): [ABEditRequest]
-    getPartsDeleteRequests(
-      partsListId: String!
-      table: String!
-      status: String
-    ): [DeleteRequest]
+    getPartsDeleteRequests(table: String!, status: String): [DeleteRequest]
 
     # Parts queries
     # Battery get queries

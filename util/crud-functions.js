@@ -23,29 +23,47 @@ async function editDeleteOperation(
   var oper = operation;
   var previousDataObj;
 
-  try {
-    requestData = await mongoose
-      .model(table)
-      .findById(partsListId)
-      .populate("creator")
-      .populate({
-        path: "edit_request",
-        populate: {
-          path: "requestor",
-          model: "User",
-        },
-      });
-    console.log(requestData);
-    const new_dataId = requestData.new_data_from.toString();
-    if (new_dataId) {
-      previous_dataEditor = requestData.edit_request.filter((item) => {
-        return item.id === new_dataId;
-      })[0].requestor.username;
-      console.log(requestData.edit_request);
+  if (operation === "EDIT_") {
+    try {
+      requestData = await mongoose
+        .model(table)
+        .findById(partsListId)
+        .populate("creator")
+        .populate({
+          path: "edit_request",
+          populate: {
+            path: "requestor",
+            model: "User",
+          },
+        });
+      const new_dataId = requestData.new_data_from.toString();
+      if (new_dataId) {
+        previous_dataEditor = requestData.edit_request.filter((item) => {
+          return item.id === new_dataId;
+        })[0].requestor.username;
+        console.log(requestData.edit_request);
+      }
+    } catch (err) {
+      throw new Error(err);
     }
-  } catch (err) {
-    throw new Error(err);
+  } else if (operation === "DELETE_") {
+    try {
+      requestData = await mongoose
+        .model(table)
+        .findById(partsListId)
+        .populate("creator")
+        .populate({
+          path: "delete_request",
+          populate: {
+            path: "requestor",
+            model: "User",
+          },
+        });
+    } catch (err) {
+      throw new Error(err);
+    }
   }
+
   requestData.creator.username === user.username
     ? (oper += "OWNER")
     : (oper += "REQ");
@@ -63,18 +81,19 @@ async function editDeleteOperation(
         max_voltage,
         supplier,
       } = requestData;
-      previousDataObj = {
-        name,
-        type,
-        model,
-        nominal_voltage,
-        capacity,
-        price_per_pc,
-        min_voltage,
-        max_voltage,
-        supplier,
-        editor: previous_dataEditor,
-      };
+      if (oper === "EDIT_")
+        previousDataObj = {
+          name,
+          type,
+          model,
+          nominal_voltage,
+          capacity,
+          price_per_pc,
+          min_voltage,
+          max_voltage,
+          supplier,
+          editor: previous_dataEditor,
+        };
       break;
     }
     case "BMS": {
@@ -89,18 +108,19 @@ async function editDeleteOperation(
         price,
         supplier,
       } = requestData;
-      previousDataObj = {
-        name,
-        brand,
-        strings,
-        charge_current,
-        discharge_current,
-        port_type,
-        voltage,
-        price,
-        supplier,
-        editor: previous_dataEditor,
-      };
+      if (oper === "EDIT_")
+        previousDataObj = {
+          name,
+          brand,
+          strings,
+          charge_current,
+          discharge_current,
+          port_type,
+          voltage,
+          price,
+          supplier,
+          editor: previous_dataEditor,
+        };
       break;
     }
   }

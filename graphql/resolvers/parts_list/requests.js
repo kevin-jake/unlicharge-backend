@@ -78,15 +78,14 @@ module.exports = {
         throw new Error(err);
       }
     },
-    async getPartsDeleteRequests(_, { partsListId, table, status }, context) {
+    async getPartsDeleteRequests(_, { table, status }, context) {
       const user = checkAuth(context);
-      const statusFilter = status || "Request";
+      var arr = [];
+      var res = [];
       try {
         const parts = await mongoose
           .model(table)
-          .findOne({
-            _id: partsListId,
-          })
+          .find()
           .populate({
             path: "delete_request",
             populate: {
@@ -94,10 +93,13 @@ module.exports = {
               model: "User",
             },
           }); //.sort({ createdAt: -1 });
-        arr = parts.delete_request.filter(
-          (item) => item.status === statusFilter
-        );
-        // console.log(arr);
+        parts.map((list) => {
+          if (status)
+            res = list.delete_request.filter((item) => item.status === status);
+          else res = list.delete_request;
+          arr = [...arr, ...res];
+          console.log(arr);
+        });
         return arr;
       } catch (err) {
         throw new Error(err);
