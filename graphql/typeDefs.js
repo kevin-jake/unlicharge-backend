@@ -269,11 +269,9 @@ module.exports = gql`
     getUsers(username: String!): [User]
 
     # Requests get queries
-    getPartsEditRequests(
-      partsListId: String!
-      table: String!
-      status: String
-    ): [BattEditRequest]
+    getBattEditRequests(partsListId: String, status: String): [BattEditRequest]
+    getBMSEditRequests(partsListId: String, status: String): [BMSEditRequest]
+    getABEditRequests(partsListId: String, status: String): [ABEditRequest]
     getPartsDeleteRequests(
       partsListId: String!
       table: String!
@@ -329,7 +327,7 @@ module.exports = gql`
       partsListId: ID!
       requestId: ID
       table: String!
-    ): Battery
+    ): String
   }
 
   type Subscription {

@@ -1,29 +1,78 @@
 const checkAuth = require("../../../util/check-auth");
-const Battery = require("../../../server/models/Battery");
 const { mongoose } = require("mongoose");
+const Battery = require("../../../server/models/Battery");
+const BMS = require("../../../server/models/BMS");
+const AB = require("../../../server/models/ActiveBalancer");
 
 module.exports = {
   Query: {
-    async getPartsEditRequests(_, { partsListId, table, status }, context) {
+    async getBattEditRequests(_, { partsListId, status }, context) {
       const user = checkAuth(context);
-      const statusFilter = status || "Request";
+      var arr = [];
+      var res = [];
       try {
-        const battery = await mongoose
-          .model(table)
-          .findOne({
-            _id: partsListId,
-          })
-          .populate({
-            path: "edit_request",
-            populate: {
-              path: "requestor",
-              model: "User",
-            },
-          }); //.sort({ createdAt: -1 });
-        arr = battery.edit_request.filter(
-          (item) => item.status === statusFilter
-        );
-        // console.log(arr);
+        const battery = await Battery.find().populate({
+          path: "edit_request",
+          populate: {
+            path: "requestor",
+            model: "User",
+          },
+        }); //.sort({ createdAt: -1 });
+        battery.map((list) => {
+          if (status)
+            res = list.edit_request.filter((item) => item.status === status);
+          else res = list.edit_request;
+          arr = [...arr, ...res];
+          console.log(arr);
+        });
+        return arr;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async getBMSEditRequests(_, { partsListId, status }, context) {
+      const user = checkAuth(context);
+      var arr = [];
+      var res = [];
+      try {
+        const bms = await BMS.find().populate({
+          path: "edit_request",
+          populate: {
+            path: "requestor",
+            model: "User",
+          },
+        }); //.sort({ createdAt: -1 });
+        bms.map((list) => {
+          if (status)
+            res = list.edit_request.filter((item) => item.status === status);
+          else res = list.edit_request;
+          arr = [...arr, ...res];
+          console.log(arr);
+        });
+        return arr;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async getABEditRequests(_, { partsListId, status }, context) {
+      const user = checkAuth(context);
+      var arr = [];
+      var res = [];
+      try {
+        const ab = await AB.find().populate({
+          path: "edit_request",
+          populate: {
+            path: "requestor",
+            model: "User",
+          },
+        }); //.sort({ createdAt: -1 });
+        ab.map((list) => {
+          if (status)
+            res = list.edit_request.filter((item) => item.status === status);
+          else res = list.edit_request;
+          arr = [...arr, ...res];
+          console.log(arr);
+        });
         return arr;
       } catch (err) {
         throw new Error(err);
@@ -33,7 +82,7 @@ module.exports = {
       const user = checkAuth(context);
       const statusFilter = status || "Request";
       try {
-        const battery = await mongoose
+        const parts = await mongoose
           .model(table)
           .findOne({
             _id: partsListId,
@@ -45,7 +94,7 @@ module.exports = {
               model: "User",
             },
           }); //.sort({ createdAt: -1 });
-        arr = battery.delete_request.filter(
+        arr = parts.delete_request.filter(
           (item) => item.status === statusFilter
         );
         // console.log(arr);
@@ -78,7 +127,7 @@ module.exports = {
             updatedAt: new Date().toISOString(),
           };
           try {
-            const battery = await mongoose
+            const parts = await mongoose
               .model(table)
               .findByIdAndUpdate(filter, setData, {
                 new: true,
@@ -98,7 +147,7 @@ module.exports = {
                   model: "User",
                 },
               }); //.sort({ createdAt: -1 });
-            return battery;
+            return "Approved!";
           } catch (err) {
             throw new Error(err);
           }
@@ -113,7 +162,7 @@ module.exports = {
             updatedAt: new Date().toISOString(),
           };
           try {
-            const battery = await mongoose
+            const parts = await mongoose
               .model(table)
               .findByIdAndUpdate(filter, setData, {
                 new: true,
@@ -126,7 +175,7 @@ module.exports = {
                   model: "User",
                 },
               }); //.sort({ createdAt: -1 });
-            return battery;
+            return "Approved!";
           } catch (err) {
             throw new Error(err);
           }
@@ -182,7 +231,7 @@ module.exports = {
           } = resArray[0]._doc;
           // // console.log(previous_data);
           try {
-            await Battery.updateOne(
+            await mongoose.model(table).updateOne(
               { "edit_request._id": requestId },
               {
                 $set: {
@@ -196,7 +245,7 @@ module.exports = {
           }
 
           try {
-            const battery = await mongoose
+            const parts = await mongoose
               .model(table)
               .findByIdAndUpdate(
                 {
@@ -228,7 +277,7 @@ module.exports = {
                   model: "User",
                 },
               }); //.sort({ createdAt: -1 });
-            return battery;
+            return "Approved!";
           } catch (err) {
             throw new Error(err);
           }
