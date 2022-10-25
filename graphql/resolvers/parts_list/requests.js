@@ -95,10 +95,16 @@ module.exports = {
           }); //.sort({ createdAt: -1 });
         parts.map((list) => {
           if (status)
-            res = list.delete_request.filter((item) => item.status === status);
-          else res = list.delete_request;
+            list.delete_request.map((req) => {
+              req.name = list.name;
+              if (req.status === status) arr = [...arr, req];
+            });
+          else
+            list.delete_request.map((req) => {
+              req.name = list.name;
+              arr = [...arr, req];
+            });
           arr = [...arr, ...res];
-          console.log(arr);
         });
         return arr;
       } catch (err) {

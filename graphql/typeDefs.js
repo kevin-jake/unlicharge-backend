@@ -4,6 +4,7 @@ module.exports = gql`
   # Global Schema
   type DeleteRequest {
     id: ID!
+    name: String
     requestor: User!
     reason: String
     status: String!
