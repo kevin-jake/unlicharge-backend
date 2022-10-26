@@ -112,14 +112,7 @@ module.exports = {
     // Delete bms requests into the database
     async deleteBMS(_, { bmsId, reason }, context) {
       const user = checkAuth(context);
-      return editDeleteOperation(
-        bmsId,
-        bmsInput,
-        user,
-        reason,
-        "DELETE_",
-        "BMS"
-      );
+      return editDeleteOperation(bmsId, _, user, reason, "DELETE_", "BMS");
     },
   },
 };

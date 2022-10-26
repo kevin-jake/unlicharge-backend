@@ -109,7 +109,7 @@ module.exports = {
         user,
         _,
         "EDIT_",
-        "ActiveBalancer"
+        "Active_balancer"
       );
     },
     // Delete bms requests into the database
@@ -117,11 +117,11 @@ module.exports = {
       const user = checkAuth(context);
       return editDeleteOperation(
         abId,
-        abInput,
+        _,
         user,
         reason,
         "DELETE_",
-        "ActiveBalancer"
+        "Active_balancer"
       );
     },
   },
