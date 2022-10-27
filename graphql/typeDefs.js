@@ -277,15 +277,15 @@ module.exports = gql`
 
     # Parts queries
     # Battery get queries
-    getBatteries(userId: ID): [Battery]
+    getBatteries(userId: ID, requests: Boolean): [Battery]
     getBattery(battId: ID!): Battery
 
     # BMS get queries
-    getBMSes(userId: ID): [BMS]
+    getBMSes(userId: ID, requests: Boolean): [BMS]
     getBMS(bmsId: ID!): BMS
 
     # AB get queries
-    getActiveBalancers(userId: ID): [ActiveBalancer]
+    getActiveBalancers(userId: ID, requests: Boolean): [ActiveBalancer]
     getAB(abId: ID!): ActiveBalancer
   }
   type Mutation {

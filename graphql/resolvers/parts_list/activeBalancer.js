@@ -10,7 +10,7 @@ module.exports = {
   Query: {
     //   Get all bms list in the database.
     // This only gets Approved and Verified publish_statuses for user that is not the owner.
-    async getActiveBalancers(_, { userId }) {
+    async getActiveBalancers(_, { userId, requests = false }) {
       var filter = { publish_status: ["Request", "Approved", "Verified"] };
 
       if (userId === "634684e1659d6cb340997577") {
@@ -23,6 +23,12 @@ module.exports = {
       }
       try {
         const activeBalancers = await AB.find(filter).populate("creator"); //.sort({ createdAt: -1 });
+        if (requests) {
+          var res = activeBalancers.filter(
+            (item) => item.creator.id === userId
+          );
+          return res;
+        }
         return activeBalancers;
       } catch (err) {
         throw new Error(err);

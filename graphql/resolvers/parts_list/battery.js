@@ -10,7 +10,7 @@ module.exports = {
   Query: {
     //   Get all battery list in the database
     // This only gets Approved and Verified publish_statuses for user that is not the owner.
-    async getBatteries(_, { userId }) {
+    async getBatteries(_, { userId, requests = false }) {
       var filter = { publish_status: ["Request", "Approved", "Verified"] };
 
       if (userId === "634684e1659d6cb340997577") {
@@ -23,6 +23,10 @@ module.exports = {
       }
       try {
         const batteries = await Battery.find(filter).populate("creator"); //.sort({ createdAt: -1 });
+        if (requests) {
+          var res = batteries.filter((item) => item.creator.id === userId);
+          return res;
+        }
         return batteries;
       } catch (err) {
         throw new Error(err);

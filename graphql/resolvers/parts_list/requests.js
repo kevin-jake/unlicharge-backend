@@ -20,8 +20,13 @@ module.exports = {
         }); //.sort({ createdAt: -1 });
         battery.map((list) => {
           if (status)
-            res = list.edit_request.filter((item) => item.status === status);
-          else res = list.edit_request;
+            res = list.edit_request.filter(
+              (item) => item.status === status && item.requestor.id === user.id
+            );
+          else
+            res = list.edit_request.filter(
+              (item) => item.requestor.id === user.id
+            );
           arr = [...arr, ...res];
           console.log(arr);
         });
@@ -44,8 +49,13 @@ module.exports = {
         }); //.sort({ createdAt: -1 });
         bms.map((list) => {
           if (status)
-            res = list.edit_request.filter((item) => item.status === status);
-          else res = list.edit_request;
+            res = list.edit_request.filter(
+              (item) => item.status === status && item.requestor.id === user.id
+            );
+          else
+            res = list.edit_request.filter(
+              (item) => item.requestor.id === user.id
+            );
           arr = [...arr, ...res];
           console.log(arr);
         });
@@ -68,8 +78,13 @@ module.exports = {
         }); //.sort({ createdAt: -1 });
         ab.map((list) => {
           if (status)
-            res = list.edit_request.filter((item) => item.status === status);
-          else res = list.edit_request;
+            res = list.edit_request.filter(
+              (item) => item.status === status && item.requestor.id === user.id
+            );
+          else
+            res = list.edit_request.filter(
+              (item) => item.requestor.id === user.id
+            );
           arr = [...arr, ...res];
           console.log(arr);
         });
@@ -97,12 +112,13 @@ module.exports = {
           if (status)
             list.delete_request.map((req) => {
               req.name = list.name;
-              if (req.status === status) arr = [...arr, req];
+              if (req.status === status && req.requestor.id === user.id)
+                arr = [...arr, req];
             });
           else
             list.delete_request.map((req) => {
               req.name = list.name;
-              arr = [...arr, req];
+              if (req.requestor.id === user.id) arr = [...arr, req];
             });
           arr = [...arr, ...res];
         });
