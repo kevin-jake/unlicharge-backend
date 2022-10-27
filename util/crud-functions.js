@@ -63,11 +63,6 @@ async function editDeleteOperation(
       throw new Error(err);
     }
   }
-
-  requestData.creator.username === user.username
-    ? (oper += "OWNER")
-    : (oper += "REQ");
-  console.log(oper);
   switch (table) {
     case "Battery": {
       const {
@@ -124,6 +119,10 @@ async function editDeleteOperation(
       break;
     }
   }
+  requestData.creator.username === user.username
+    ? (oper += "OWNER")
+    : (oper += "REQ");
+  // console.log(oper);
 
   switch (oper) {
     case "EDIT_OWNER": {
@@ -134,9 +133,7 @@ async function editDeleteOperation(
           updatedAt: new Date().toISOString(),
           new_data_from: editId,
           approved_by: user.id,
-          previous_data: {
-            ...previousDataObj,
-          },
+          previous_data: previousDataObj,
           edit_request: [
             ...requestData.edit_request,
             {
