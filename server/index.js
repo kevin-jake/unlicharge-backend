@@ -21,7 +21,6 @@ const { uuid } = require("uuidv4");
 const session = require("express-session");
 
 // TODO: Add login or register via Facebook and Google
-// TODO: Add upload images
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 async function startApolloServer(typeDefs, resolvers) {

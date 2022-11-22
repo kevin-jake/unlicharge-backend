@@ -2,7 +2,7 @@ const User = require("../server/models/User");
 const jwtGenerateToken = require("./jwt-generate-token");
 
 const facebookOptions = {
-  //TODO: Change this later
+  //FIXME: Change this later
   clientID: "",
   clientSecret: "",
   callbackURL: "http://localhost:5000/auth/facebook/callback",
