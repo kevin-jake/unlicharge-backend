@@ -1,9 +1,8 @@
+import { validationResult } from "express-validator";
 import Product from "../models/Product.js";
 import Battery from "../models/specsModel/Battery.js";
-import { validationResult } from "express-validator";
 import BMS from "../models/specsModel/BMS.js";
 import ActiveBalancer from "../models/specsModel/ActiveBalancer.js";
-import mongoose from "mongoose";
 
 /* CREATE */
 export const createProduct = async (req, res, next) => {

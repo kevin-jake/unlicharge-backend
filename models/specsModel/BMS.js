@@ -9,25 +9,17 @@ const BMSSchema = new mongoose.Schema(
     strings: {
       type: Number,
       required: true,
-      min: 2,
-      max: 4,
     },
     chargeCurrent: {
       type: Number,
       required: true,
-      min: 2,
-      max: 4,
     },
     dischargeCurrent: {
       type: Number,
       required: true,
-      min: 2,
-      max: 4,
     },
     voltage: {
       type: Number,
-      min: 2,
-      max: 4,
     },
     portType: {
       type: String,
@@ -36,8 +28,6 @@ const BMSSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
-      min: 2,
-      max: 10,
     },
     specCreator: {
       type: Schema.Types.ObjectId,
@@ -50,7 +40,6 @@ const BMSSchema = new mongoose.Schema(
     },
     productId: {
       type: Schema.Types.ObjectId,
-      required: true,
       ref: "Product",
     },
   },

@@ -5,14 +5,10 @@ const ActiveBalancerSchema = new mongoose.Schema(
     strings: {
       type: Number,
       required: true,
-      min: 2,
-      max: 4,
     },
     balanceCurrent: {
       type: Number,
       required: true,
-      min: 2,
-      max: 10,
     },
     balancingType: {
       type: String,
@@ -22,8 +18,6 @@ const ActiveBalancerSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
-      min: 2,
-      max: 10,
     },
     specCreator: {
       type: Schema.Types.ObjectId,
@@ -36,7 +30,6 @@ const ActiveBalancerSchema = new mongoose.Schema(
     },
     productId: {
       type: Schema.Types.ObjectId,
-      required: true,
       ref: "Product",
     },
   },
