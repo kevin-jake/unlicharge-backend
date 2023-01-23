@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
 
-const HttpError = require("../models/http-error");
-
 module.exports = (req, res, next) => {
   if (req.method === "OPTIONS") {
     return next();
@@ -15,12 +13,14 @@ module.exports = (req, res, next) => {
     req.userData = {
       userId: decodedToken.userId,
       email: decodedToken.email,
-      userName: decodedToken.userName,
+      username: decodedToken.username,
       role: decodedToken.role,
     };
     next();
   } catch (err) {
-    const error = new HttpError("Authentication failed!", 403);
+    const error = new Error("Authentication failed!");
+    error.status = 403;
+    console.log(err);
     return next(error);
   }
 };

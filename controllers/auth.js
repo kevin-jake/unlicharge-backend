@@ -1,12 +1,14 @@
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
+
 import User from "../models/User.js";
+import moment from "moment-timezone";
 
 /* REGISTER USER */
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
   const {
-    userName,
+    username,
     firstName,
     lastName,
     email,
@@ -17,30 +19,35 @@ export const register = async (req, res) => {
     occupation,
   } = req.body;
 
-  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return next(
-      new HttpError("Invalid inputs passed, please check your data.", 422)
-    );
+    const error = new Error("Invalid inputs passed, please check your data.");
+    error.status = 422;
+    console.log(err);
+    return next(error);
   }
 
   let existingUser;
   try {
-    existingUser = await User.findOne({ email: email, userName: userName });
+    existingUser = await User.findOne({
+      $or: [
+        { email: email },
+        { username: username },
+        { mobileNumber: mobileNumber },
+      ],
+    });
   } catch (err) {
-    const error = new HttpError(
-      "Signing up failed, please try again later.",
-      500
-    );
+    const error = new Error("Signing up failed, please try again later.");
+    error.status = 500;
+    console.log(err);
     return next(error);
   }
 
   if (existingUser) {
-    const error = new HttpError(
-      "User or Email exists already, please login instead.",
-      422
+    const error = new Error(
+      "User, Email or Mobile Number exists already, please login instead."
     );
+    error.status = 422;
     return next(error);
   }
 
@@ -48,21 +55,20 @@ export const register = async (req, res) => {
   try {
     hashedPassword = await bcrypt.hash(password, 12);
   } catch (err) {
-    const error = new HttpError(
-      "Could not create user, please try again.",
-      500
-    );
+    const error = new Error("Could not create user, please try again.");
+    error.status = 500;
+    console.log(err);
     return next(error);
   }
 
   const datePh = moment.tz(Date.now(), "Asia/Manila").format();
 
   const newUser = new User({
-    userName,
+    username,
     firstName,
     lastName,
     email,
-    password: passwordHash,
+    password: hashedPassword,
     imagePath,
     mobileNumber,
     location,
@@ -73,64 +79,67 @@ export const register = async (req, res) => {
   try {
     await newUser.save();
   } catch (err) {
-    const error = new HttpError(
-      "Signing up failed, please try again later.",
-      500
-    );
+    const error = new Error("Signing up failed, please try again later.");
+    error.status = 500;
+    console.log(err);
     return next(error);
   }
 
+  let token;
   try {
     token = jwt.sign(
       {
         userId: newUser.id,
         email: newUser.email,
-        userName: newUser.userName,
+        username: newUser.username,
         role: newUser.role,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
   } catch (err) {
-    const error = new HttpError(
-      "Signing up failed, please try again later.",
-      500
-    );
+    const error = new Error("Signing up failed, please try again later.");
+    error.status = 500;
+    console.log(err);
     return next(error);
   }
 
-  console.log("Signup Success");
+  console.log("[" + datePh + `] New User ${username} (${email}) Registered!`);
 
   res.status(201).json({
     userId: newUser.id,
     email: newUser.email,
     role: newUser.role,
-    userName: newUser.userName,
-    token: token,
+    username: newUser.username,
+    token,
   });
 };
 
 /* LOGGING IN */
-const login = async (req, res, next) => {
-  const { email, userName, password } = req.body;
+export const login = async (req, res, next) => {
+  const { email, username, mobileNumber, password } = req.body;
 
   let existingUser;
 
   try {
-    existingUser = await User.findOne({ email: email, userName: userName });
+    existingUser = await User.findOne({
+      $or: [
+        { email: email },
+        { username: username },
+        { mobileNumber: mobileNumber },
+      ],
+    });
   } catch (err) {
-    const error = new HttpError(
-      "Logging in failed, please try again later.",
-      500
-    );
+    const error = new Error("Logging in failed, please try again later.");
+    error.status = 500;
+    console.log(err);
     return next(error);
   }
 
   if (!existingUser) {
-    const error = new HttpError(
-      "Invalid credentials, could not log you in.",
-      403
-    );
+    const error = new Error("Invalid credentials, could not log you in.");
+    error.status = 403;
+    console.log(err);
     return next(error);
   }
 
@@ -138,18 +147,18 @@ const login = async (req, res, next) => {
   try {
     isValidPassword = await bcrypt.compare(password, existingUser.password);
   } catch (err) {
-    const error = new HttpError(
-      "Could not log you in, please check your credentials and try again.",
-      500
+    const error = new Error(
+      "Could not log you in, please check your credentials and try again."
     );
+    error.status = 500;
+    console.log(err);
     return next(error);
   }
 
   if (!isValidPassword) {
-    const error = new HttpError(
-      "Invalid credentials, could not log you in.",
-      403
-    );
+    const error = new Error("Invalid credentials, could not log you in.");
+    error.status = 403;
+    console.log(err);
     return next(error);
   }
 
@@ -158,29 +167,49 @@ const login = async (req, res, next) => {
     token = jwt.sign(
       {
         userId: existingUser.id,
-        userName: existingUser.userName,
+        username: existingUser.username,
         email: existingUser.email,
         role: existingUser.role,
       },
-      process.env.JWT_KEY,
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
   } catch (err) {
-    const error = new HttpError(
-      "Logging in failed, please try again later.",
-      500
-    );
+    const error = new Error("Logging in failed, please try again later.");
+    error.status = 500;
+    console.log(err);
     return next(error);
   }
-  console.log("Login Success");
-  console.log(existingUser);
+  const datePh = moment.tz(Date.now(), "Asia/Manila").format();
+
+  console.log(
+    "[" +
+      datePh +
+      `] ${existingUser.username} (${existingUser.email}) Logged In.`
+  );
+  existingUser.lastLogin = datePh;
+
+  try {
+    await existingUser.save();
+  } catch (err) {
+    const error = new Error("Saving failed, please try again later.");
+    error.status = 500;
+    console.log(err);
+    return next(error);
+  }
+
   const response = {
     userId: existingUser.id,
+    firstName: existingUser.firstName,
+    lastName: existingUser.lastName,
     email: existingUser.email,
-    userName: existingUser.userName,
+    username: existingUser.username,
+    imagePath: existingUser.imagePath,
+    mobileNumber: existingUser.mobileNumber,
+    location: existingUser.location,
     role: existingUser.role,
-    token: token,
+    occupation: existingUser.occupation,
+    token,
   };
-  console.log(response);
   res.json(response);
 };
