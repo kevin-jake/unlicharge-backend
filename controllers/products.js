@@ -12,6 +12,7 @@ export const createProduct = async (req, res, next) => {
       new Error("Invalid inputs passed, please check your data.", 422)
     );
   }
+
   let publishStatus;
   if (req.userData.role != "Admin") {
     publishStatus = "Request";
@@ -115,4 +116,48 @@ export const createProduct = async (req, res, next) => {
   }
 
   res.status(201).json({ product: createdProduct });
+};
+
+/* READ */
+export const getProducts = async (req, res, next) => {
+  let products, specs;
+  const category = req.params.category;
+  if (category === "Battery") {
+    specs = {
+      type,
+      nominalVoltage,
+      capacity,
+      pricePerPc,
+      maxVoltage,
+      minVoltage,
+    };
+  } else if (category === "BMS") {
+    specs = {
+      battType,
+      strings,
+      chargeCurrent,
+      dischargeCurrent,
+      voltage,
+      portType,
+      price,
+    };
+  } else if (category === "ActiveBalancer") {
+    specs = { strings, balanceCurrent, balancingType, price };
+  }
+
+  try {
+    products = await Product.find()
+      .populate("specs")
+      .populate({ path: "creator", select: "username imagePath" });
+  } catch (err) {
+    const error = new Error(
+      `Something went wrong, could not find the Product - ${category}`
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  res.json({
+    products: products.map((product) => product.toObject({ getters: true })),
+  });
 };
