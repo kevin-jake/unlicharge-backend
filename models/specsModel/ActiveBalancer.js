@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const ActiveBalancerSpecsSchema = new mongoose.Schema(
+const ActiveBalancerSchema = new mongoose.Schema(
   {
     strings: {
       type: Number,
@@ -43,8 +43,5 @@ const ActiveBalancerSpecsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const ActiveBalancerSpecs = mongoose.model(
-  "ActiveBalancerSpecs",
-  ActiveBalancerSpecsSchema
-);
-export default ActiveBalancerSpecs;
+const ActiveBalancer = mongoose.model("ActiveBalancer", ActiveBalancerSchema);
+export default ActiveBalancer;

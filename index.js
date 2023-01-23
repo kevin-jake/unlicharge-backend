@@ -10,6 +10,8 @@ import path from "path";
 
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
+import productRoutes from "./routes/products.js";
+
 import { register } from "./controllers/auth.js";
 
 /* CONFIGURATIONS */
@@ -58,7 +60,7 @@ app.post("/auth/register", register);
 /* ROUTES */
 app.use("/auth", authRoutes);
 // app.use("/users", userRoutes);
-// app.use("/products", postRoutes);
+app.use("/products", productRoutes);
 // app.use("/requests", postRoutes);
 
 /* MONGOOSE SETUP */

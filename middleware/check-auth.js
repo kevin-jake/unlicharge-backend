@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-module.exports = (req, res, next) => {
+export const checkAuth = (req, res, next) => {
   if (req.method === "OPTIONS") {
     return next();
   }
@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
     if (!token) {
       throw new Error("Authentication failed!");
     }
-    const decodedToken = jwt.verify(token, process.env.JWT_KEY);
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     req.userData = {
       userId: decodedToken.userId,
       email: decodedToken.email,
@@ -20,7 +20,6 @@ module.exports = (req, res, next) => {
   } catch (err) {
     const error = new Error("Authentication failed!");
     error.status = 403;
-    console.log(err);
     return next(error);
   }
 };

@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const BMSSpecsSchema = new mongoose.Schema(
+const BMSSchema = new mongoose.Schema(
   {
     battType: {
       type: String,
@@ -57,5 +57,5 @@ const BMSSpecsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const BMSSpecs = mongoose.model("BMSSpecs", BMSSpecsSchema);
-export default BMSSpecs;
+const BMS = mongoose.model("BMS", BMSSchema);
+export default BMS;

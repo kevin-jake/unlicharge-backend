@@ -139,7 +139,6 @@ export const login = async (req, res, next) => {
   if (!existingUser) {
     const error = new Error("Invalid credentials, could not log you in.");
     error.status = 403;
-    console.log(err);
     return next(error);
   }
 

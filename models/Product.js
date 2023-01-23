@@ -1,7 +1,9 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import uuid4 from "uuid4";
 
 const productSchema = mongoose.Schema(
   {
+    _id: { type: String, default: uuid4() },
     name: {
       type: String,
       required: true,
@@ -14,7 +16,7 @@ const productSchema = mongoose.Schema(
     specs: {
       type: Schema.Types.ObjectId,
       required: true,
-      refPath: category + "Specs",
+      refPath: "category",
     },
     imagePath: {
       type: String,
@@ -51,7 +53,7 @@ const productSchema = mongoose.Schema(
     previousData: {
       type: Schema.Types.ObjectId,
       default: "",
-      refPath: category + "Specs",
+      refPath: "category",
     },
     editRequests: {
       type: Array,

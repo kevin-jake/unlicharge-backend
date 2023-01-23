@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const BatterySpecsSchema = new mongoose.Schema(
+const BatterySchema = new mongoose.Schema(
   {
     type: {
       type: String,
@@ -9,36 +9,26 @@ const BatterySpecsSchema = new mongoose.Schema(
     nominalVoltage: {
       type: Number,
       required: true,
-      min: 2,
-      max: 10,
     },
     capacity: {
       type: Number,
       required: true,
-      min: 2,
-      max: 10,
     },
     pricePerPc: {
       type: Number,
       required: true,
-      min: 2,
-      max: 10,
     },
     maxVoltage: {
       type: Number,
       required: true,
-      min: 2,
-      max: 10,
     },
     minVoltage: {
       type: Number,
       required: true,
-      min: 2,
-      max: 10,
     },
     productId: {
       type: Schema.Types.ObjectId,
-      required: true,
+      // required: true,
       ref: "Product",
     },
     specCreator: {
@@ -54,5 +44,5 @@ const BatterySpecsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const BatterySpecs = mongoose.model("BatterySpecs", BatterySpecsSchema);
-export default BatterySpecs;
+const Battery = mongoose.model("Battery", BatterySchema);
+export default Battery;
