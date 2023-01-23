@@ -3,7 +3,6 @@ import uuid4 from "uuid4";
 
 const productSchema = mongoose.Schema(
   {
-    _id: { type: String, default: uuid4() },
     name: {
       type: String,
       required: true,
@@ -52,7 +51,7 @@ const productSchema = mongoose.Schema(
     },
     previousData: {
       type: Schema.Types.ObjectId,
-      default: "",
+      default: null,
       refPath: "category",
     },
     editRequests: {

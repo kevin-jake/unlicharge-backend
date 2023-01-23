@@ -3,6 +3,7 @@ import Battery from "../models/specsModel/Battery.js";
 import { validationResult } from "express-validator";
 import BMS from "../models/specsModel/BMS.js";
 import ActiveBalancer from "../models/specsModel/ActiveBalancer.js";
+import mongoose from "mongoose";
 
 /* CREATE */
 export const createProduct = async (req, res, next) => {
@@ -85,7 +86,7 @@ export const createProduct = async (req, res, next) => {
   const createdProduct = new Product({
     name,
     category,
-    specs: newSpec._id,
+    specs: newSpec.id,
     imagePath,
     brand,
     supplierLink,
@@ -94,7 +95,7 @@ export const createProduct = async (req, res, next) => {
     creator: req.userData.userId,
   });
 
-  newSpec.productId = createdProduct._id;
+  newSpec.productId = createdProduct.id;
   try {
     await newSpec.save();
   } catch (err) {
@@ -110,6 +111,7 @@ export const createProduct = async (req, res, next) => {
     await createdProduct.save();
   } catch (err) {
     const error = new Error("Creating Product failed, please try again.", 500);
+    console.log(err);
     return next(error);
   }
 
