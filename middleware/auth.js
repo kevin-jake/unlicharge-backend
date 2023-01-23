@@ -1,21 +1,26 @@
 import jwt from "jsonwebtoken";
 
-export const verifyToken = async (req, res, next) => {
+const HttpError = require("../models/http-error");
+
+module.exports = (req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return next();
+  }
   try {
-    let token = req.header("Authorization");
-
+    const token = req.headers.authorization.split(" ")[1]; // Authorization: 'Bearer TOKEN'
     if (!token) {
-      return res.status(403).send("Access Denied");
+      throw new Error("Authentication failed!");
     }
-
-    if (token.startsWith("Bearer ")) {
-      token = token.slice(7, token.length).trimLeft();
-    }
-
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified;
+    const decodedToken = jwt.verify(token, process.env.JWT_KEY);
+    req.userData = {
+      userId: decodedToken.userId,
+      email: decodedToken.email,
+      userName: decodedToken.userName,
+      role: decodedToken.role,
+    };
     next();
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    const error = new HttpError("Authentication failed!", 403);
+    return next(error);
   }
 };
