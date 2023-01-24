@@ -14,6 +14,13 @@ export const createProduct = async (req, res, next) => {
     );
   }
 
+  let publishStatus;
+  if (req.userData.role != "Admin") {
+    publishStatus = "Request";
+  } else {
+    publishStatus = "Approved";
+  }
+
   let newSpec;
   const { name, category, specs, imagePath, brand, supplierLink, supplier } =
     req.body;

@@ -110,16 +110,13 @@ export const createEditRequest = async (req, res, next) => {
   }
 
   // Check if there are already existing request for the spec
-  let duplicateRequest;
+  let duplicateRequest, duplicateRequestProduct;
   try {
-    duplicateRequest = await mongoose
-      .model(category)
-      .find({
-        ...specs,
-        status: ["Request", "Active"],
-        productId: req.params.id,
-      })
-      .populate({ path: "specCreator", select: "username" });
+    duplicateRequest = await mongoose.model(category).find({
+      ...specs,
+      status: ["Request", "Active"],
+      productId: req.params.id,
+    });
   } catch (err) {
     const error = new Error(
       "Finding duplicate request failed. Please try again.",
@@ -128,13 +125,26 @@ export const createEditRequest = async (req, res, next) => {
     console.log(err);
     return next(error);
   }
-  if (duplicateRequest) {
-    console.log(
-      "🚀 ~ file: requests.js:125 ~ createEditRequest ~ duplicateRequest",
-      duplicateRequest
-    );
+
+  try {
+    duplicateRequestProduct = await EditRequest.find({
+      name: name,
+      imagePath: imagePath,
+      brand: brand,
+      supplierLink: supplierLink,
+      supplier: supplier,
+    }).populate({ path: "requestor", select: "username" });
+  } catch (err) {
     const error = new Error(
-      `This is a duplicate request already by ${duplicateRequest[0].specCreator.username}, no need to request.`,
+      "Finding duplicate request failed. Please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+  if (duplicateRequest.length != 0 && duplicateRequestProduct.length != 0) {
+    const error = new Error(
+      `There is a duplicate request by ${duplicateRequestProduct[0].requestor.username}, no need to request. Please wait for the request to be approved.`,
       400
     );
     return next(error);
@@ -168,10 +178,6 @@ export const createEditRequest = async (req, res, next) => {
 
   // Save Edit Request ID on the Product editRequests field
   existingProduct.editRequests.push(createdEditReq.id);
-  console.log(
-    "🚀 ~ file: requests.js:137 ~ createEditRequest ~ existingProduct.editRequests",
-    existingProduct.editRequests
-  );
   try {
     await existingProduct.save();
   } catch (err) {
