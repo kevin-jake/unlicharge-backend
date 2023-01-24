@@ -3,6 +3,7 @@ import Product from "../models/Product.js";
 import Battery from "../models/specsModel/Battery.js";
 import BMS from "../models/specsModel/BMS.js";
 import ActiveBalancer from "../models/specsModel/ActiveBalancer.js";
+import { categoryFormat } from "../util/categoryFormat.js";
 
 /* CREATE */
 export const createProduct = async (req, res, next) => {
@@ -121,13 +122,10 @@ export const createProduct = async (req, res, next) => {
 /* READ */
 export const getProducts = async (req, res, next) => {
   let products;
-  const category = req.params.category;
+  const category = categoryFormat(req.params.category);
   try {
     products = await Product.find({
-      category:
-        category === "ab"
-          ? "ActiveBalancer"
-          : category.charAt(0).toUpperCase() + category.slice(1),
+      category: category,
       // TODO: Add publishStatus filter
     })
       .populate({
@@ -153,14 +151,11 @@ export const getProducts = async (req, res, next) => {
 
 export const getProductById = async (req, res, next) => {
   let product;
-  const category = req.params.category;
+  const category = categoryFormat(req.params.category);
   try {
     product = await Product.findOne({
       _id: req.params.id,
-      category:
-        category === "ab"
-          ? "ActiveBalancer"
-          : category.charAt(0).toUpperCase() + category.slice(1),
+      category: category,
       // TODO: Add publishStatus filter
     })
       .populate({

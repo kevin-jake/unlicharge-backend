@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import uuid4 from "uuid4";
 
 const productSchema = mongoose.Schema(
   {
@@ -55,11 +54,13 @@ const productSchema = mongoose.Schema(
       refPath: "category",
     },
     editRequests: {
-      type: Array,
+      type: [Schema.Types.ObjectId],
+      ref: "EditRequests",
       default: [],
     },
     deleteRequests: {
-      type: Array,
+      type: [Schema.Types.ObjectId],
+      ref: "DeleteRequests",
       default: [],
     },
   },

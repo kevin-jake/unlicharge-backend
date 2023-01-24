@@ -4,19 +4,25 @@ import Battery from "../models/specsModel/Battery.js";
 import BMS from "../models/specsModel/BMS.js";
 import ActiveBalancer from "../models/specsModel/ActiveBalancer.js";
 import EditRequest from "../models/EditRequests.js";
+import { categoryFormat } from "../util/categoryFormat.js";
 
 /* CREATE */
 export const createEditRequest = async (req, res, next) => {
   const errors = validationResult(req);
+  const category = categoryFormat(req.params.category);
   if (!errors.isEmpty()) {
     return next(
       new Error("Invalid inputs passed, please check your data.", 422)
     );
   }
 
+  // Check for product ID and category if product is existing in the correct category
   let existingProduct;
   try {
-    existingProduct = await Product.findOne({ _id: req.params.id });
+    existingProduct = await Product.findOne({
+      _id: req.params.id,
+      category: category,
+    });
   } catch (err) {
     const error = new Error(
       "Finding product failed, please try again later.",
@@ -25,20 +31,15 @@ export const createEditRequest = async (req, res, next) => {
     console.log(err);
     return next(error);
   }
-
   if (!existingProduct) {
     const error = new Error(
-      "Product ID not found. Please enter a valid product ID.",
+      `Product ID not found on category: ${category}. Please enter a valid product ID.`,
       404
     );
     return next(error);
   }
 
-  const category =
-    req.params.category === "ab"
-      ? "ActiveBalancer"
-      : req.params.category.charAt(0).toUpperCase() +
-        req.params.category.slice(1);
+  //TODO: Status changer
   let status;
   if (req.userData.role != "Admin") {
     status = "Request";
@@ -46,9 +47,9 @@ export const createEditRequest = async (req, res, next) => {
     status = "Approved";
   }
 
+  // Initialize Specs creation
   let newSpec;
   const { name, imagePath, specs, brand, supplierLink, supplier } = req.body;
-
   if (category === "Battery") {
     const {
       type,
@@ -103,6 +104,10 @@ export const createEditRequest = async (req, res, next) => {
       editRequest: true,
     });
   }
+
+  // Check if there are already existing request for the spec
+
+  // Saving of new specs on the table
   try {
     await newSpec.save();
   } catch (err) {
@@ -114,6 +119,7 @@ export const createEditRequest = async (req, res, next) => {
     return next(error);
   }
 
+  // Create Edit Request if specs creation is successful
   const createdEditReq = new EditRequest({
     requestedProduct: req.params.id,
     name,
@@ -127,25 +133,29 @@ export const createEditRequest = async (req, res, next) => {
     requestor: req.userData.userId,
   });
 
-  try {
-    await createdEditReq.save();
-  } catch (err) {
-    const error = new Error(
-      "Creating Edit Request failed, please try again.",
-      500
-    );
-    console.log(err);
-    return next(error);
-  }
-
-  existingProduct.editRequests = existingProduct.editRequests.push(
-    createdEditReq.id
+  // Save Edit Request ID on the Product editRequests field
+  existingProduct.editRequests.push(createdEditReq.id);
+  console.log(
+    "🚀 ~ file: requests.js:137 ~ createEditRequest ~ existingProduct.editRequests",
+    existingProduct.editRequests
   );
   try {
     await existingProduct.save();
   } catch (err) {
     const error = new Error(
       "Saving Product edit request failed, please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  // Saving of Edit Request on the EditRequests table
+  try {
+    await createdEditReq.save();
+  } catch (err) {
+    const error = new Error(
+      "Creating Edit Request failed, please try again.",
       500
     );
     console.log(err);
