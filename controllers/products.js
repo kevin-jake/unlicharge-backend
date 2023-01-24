@@ -120,34 +120,23 @@ export const createProduct = async (req, res, next) => {
 
 /* READ */
 export const getProducts = async (req, res, next) => {
-  let products, specs;
+  let products;
   const category = req.params.category;
-  if (category === "Battery") {
-    specs = {
-      type,
-      nominalVoltage,
-      capacity,
-      pricePerPc,
-      maxVoltage,
-      minVoltage,
-    };
-  } else if (category === "BMS") {
-    specs = {
-      battType,
-      strings,
-      chargeCurrent,
-      dischargeCurrent,
-      voltage,
-      portType,
-      price,
-    };
-  } else if (category === "ActiveBalancer") {
-    specs = { strings, balanceCurrent, balancingType, price };
-  }
-
   try {
-    products = await Product.find()
-      .populate("specs")
+    products = await Product.find({
+      category:
+        category === "ab"
+          ? "ActiveBalancer"
+          : category.charAt(0).toUpperCase() + category.slice(1),
+      // TODO: Add publishStatus filter
+    })
+      .populate({
+        path: "specs",
+        populate: {
+          path: "specCreator",
+          select: "username",
+        },
+      })
       .populate({ path: "creator", select: "username imagePath" });
   } catch (err) {
     const error = new Error(
@@ -159,5 +148,38 @@ export const getProducts = async (req, res, next) => {
 
   res.json({
     products: products.map((product) => product.toObject({ getters: true })),
+  });
+};
+
+export const getProductById = async (req, res, next) => {
+  let product;
+  const category = req.params.category;
+  try {
+    product = await Product.findOne({
+      _id: req.params.id,
+      category:
+        category === "ab"
+          ? "ActiveBalancer"
+          : category.charAt(0).toUpperCase() + category.slice(1),
+      // TODO: Add publishStatus filter
+    })
+      .populate({
+        path: "specs",
+        populate: {
+          path: "specCreator",
+          select: "username",
+        },
+      })
+      .populate({ path: "creator", select: "username imagePath" });
+  } catch (err) {
+    const error = new Error(
+      `Something went wrong, could not find the Product - ${category}`
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  res.json({
+    product,
   });
 };
