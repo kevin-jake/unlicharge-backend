@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const EditRequestSchema = new mongoose.Schema(
   {
@@ -19,7 +19,7 @@ const EditRequestSchema = new mongoose.Schema(
     newSpecs: {
       type: Schema.Types.ObjectId,
       required: true,
-      refPath: category + "Specs",
+      refPath: "category",
     },
     status: {
       type: String,
@@ -49,14 +49,12 @@ const EditRequestSchema = new mongoose.Schema(
     comment: {
       userId: {
         type: Schema.Types.ObjectId,
-        required: true,
         ref: "User",
       },
       body: {
         type: String,
         min: 2,
         max: 240,
-        required: true,
       },
     },
   },

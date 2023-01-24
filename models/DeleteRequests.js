@@ -25,14 +25,12 @@ const DeleteRequestSchema = new mongoose.Schema(
     comment: {
       userId: {
         type: Schema.Types.ObjectId,
-        required: true,
         ref: "User",
       },
       body: {
         type: String,
         min: 2,
         max: 240,
-        required: true,
       },
     },
   },

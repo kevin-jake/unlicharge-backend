@@ -10,6 +10,7 @@ import path from "path";
 
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
+import requestRoutes from "./routes/requests.js";
 import productRoutes from "./routes/products.js";
 
 import { register } from "./controllers/auth.js";
@@ -59,7 +60,7 @@ app.post("/auth/register", register);
 
 /* ROUTES */
 app.use("/auth", authRoutes);
-// app.use("/users", userRoutes);
+app.use("/requests", requestRoutes);
 app.use("/products", productRoutes);
 // app.use("/requests", postRoutes);
 
