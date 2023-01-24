@@ -42,6 +42,10 @@ const BMSSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "Product",
     },
+    status: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

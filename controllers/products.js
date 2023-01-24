@@ -14,13 +14,6 @@ export const createProduct = async (req, res, next) => {
     );
   }
 
-  let publishStatus;
-  if (req.userData.role != "Admin") {
-    publishStatus = "Request";
-  } else {
-    publishStatus = "Approved";
-  }
-
   let newSpec;
   const { name, category, specs, imagePath, brand, supplierLink, supplier } =
     req.body;
@@ -42,6 +35,7 @@ export const createProduct = async (req, res, next) => {
       maxVoltage: +maxVoltage || 0,
       minVoltage: +minVoltage || 0,
       specCreator: req.userData.userId,
+      status: "Active",
     });
   } else if (category === "BMS") {
     const {
@@ -62,6 +56,7 @@ export const createProduct = async (req, res, next) => {
       price: +price || 0,
       portType,
       specCreator: req.userData.userId,
+      status: "Active",
     });
   } else if (category === "ActiveBalancer") {
     const { strings, balanceCurrent, balancingType, price } = specs;
@@ -71,6 +66,7 @@ export const createProduct = async (req, res, next) => {
       price: +price || 0,
       balancingType,
       specCreator: req.userData.userId,
+      status: "Active",
     });
   }
   try {

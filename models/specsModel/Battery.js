@@ -39,6 +39,10 @@ const BatterySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

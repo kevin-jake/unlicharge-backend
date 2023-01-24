@@ -5,6 +5,7 @@ import BMS from "../models/specsModel/BMS.js";
 import ActiveBalancer from "../models/specsModel/ActiveBalancer.js";
 import EditRequest from "../models/EditRequests.js";
 import { categoryFormat } from "../util/categoryFormat.js";
+import mongoose from "mongoose";
 
 /* CREATE */
 export const createEditRequest = async (req, res, next) => {
@@ -69,6 +70,7 @@ export const createEditRequest = async (req, res, next) => {
       specCreator: req.userData.userId,
       productId: req.params.id,
       editRequest: true,
+      status,
     });
   } else if (category === "BMS") {
     const {
@@ -91,6 +93,7 @@ export const createEditRequest = async (req, res, next) => {
       specCreator: req.userData.userId,
       productId: req.params.id,
       editRequest: true,
+      status,
     });
   } else if (category === "ActiveBalancer") {
     const { strings, balanceCurrent, balancingType, price } = specs;
@@ -102,10 +105,40 @@ export const createEditRequest = async (req, res, next) => {
       specCreator: req.userData.userId,
       productId: req.params.id,
       editRequest: true,
+      status,
     });
   }
 
   // Check if there are already existing request for the spec
+  let duplicateRequest;
+  try {
+    duplicateRequest = await mongoose
+      .model(category)
+      .find({
+        ...specs,
+        status: ["Request", "Active"],
+        productId: req.params.id,
+      })
+      .populate({ path: "specCreator", select: "username" });
+  } catch (err) {
+    const error = new Error(
+      "Finding duplicate request failed. Please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+  if (duplicateRequest) {
+    console.log(
+      "🚀 ~ file: requests.js:125 ~ createEditRequest ~ duplicateRequest",
+      duplicateRequest
+    );
+    const error = new Error(
+      `This is a duplicate request already by ${duplicateRequest[0].specCreator.username}, no need to request.`,
+      400
+    );
+    return next(error);
+  }
 
   // Saving of new specs on the table
   try {
