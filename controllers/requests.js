@@ -40,12 +40,17 @@ export const createEditRequest = async (req, res, next) => {
     return next(error);
   }
 
-  //TODO: Status changer
-  let status;
-  if (req.userData.role != "Admin") {
+  //TODO: Improve status changing
+  let status, editReqStatus;
+  if (
+    req.userData.role != "Admin" ||
+    req.userData.id != existingProduct.creator
+  ) {
     status = "Request";
+    editReqStatus = "Request";
   } else {
-    status = "Approved";
+    status = "Active";
+    editReqStatus = "Approved";
   }
 
   // Initialize Specs creation
@@ -168,7 +173,7 @@ export const createEditRequest = async (req, res, next) => {
     name,
     category: category,
     newSpecs: newSpec.id,
-    status,
+    status: editReqStatus,
     imagePath,
     brand,
     supplierLink,
@@ -203,60 +208,62 @@ export const createEditRequest = async (req, res, next) => {
 
   res.status(201).json({ editRequest: createdEditReq });
 };
+// TODO: Add actionEditRequest
 
 /* READ */
-export const getProducts = async (req, res, next) => {
-  let products;
-  const category = req.params.category;
+export const getEditRequests = async (req, res, next) => {
+  let editRequests;
+  const category = categoryFormat(req.params.category);
+
+  // Only show your own edit requests if not the admin
+  let filter;
+  if (req.userData.role != "Admin") {
+    filter = { category };
+  } else {
+    filter = { category, requestor: req.userData.userId };
+  }
+
   try {
-    products = await Product.find({
-      category:
-        category === "ab"
-          ? "ActiveBalancer"
-          : category.charAt(0).toUpperCase() + category.slice(1),
-      // TODO: Add publishStatus filter
-    })
+    editRequests = await EditRequest.find({ filter })
       .populate({
-        path: "specs",
+        path: "newSpecs",
         populate: {
           path: "specCreator",
           select: "username",
         },
       })
-      .populate({ path: "creator", select: "username imagePath" });
+      .populate({ path: "requestor", select: "username imagePath" });
   } catch (err) {
     const error = new Error(
-      `Something went wrong, could not find the Product - ${category}`
+      `Something went wrong, could not find the Edit Request - ${category}`
     );
     console.log(err);
     return next(error);
   }
 
   res.json({
-    products: products.map((product) => product.toObject({ getters: true })),
+    editRequests: editRequests.map((editRequest) =>
+      editRequest.toObject({ getters: true })
+    ),
   });
 };
 
-export const getProductById = async (req, res, next) => {
-  let product;
-  const category = req.params.category;
+export const getEditRequestByProduct = async (req, res, next) => {
+  let editRequests;
+  const category = categoryFormat(req.params.category);
+  const productId = req.params.id;
+
+  // TODO: Filter more efficiently
   try {
-    product = await Product.findOne({
-      _id: req.params.id,
-      category:
-        category === "ab"
-          ? "ActiveBalancer"
-          : category.charAt(0).toUpperCase() + category.slice(1),
-      // TODO: Add publishStatus filter
-    })
-      .populate({
-        path: "specs",
-        populate: {
-          path: "specCreator",
-          select: "username",
-        },
-      })
-      .populate({ path: "creator", select: "username imagePath" });
+    editRequests = await Product.find({
+      category: category,
+      _id: productId,
+    }).populate({
+      path: "editRequests",
+      populate: {
+        path: "newSpecs",
+      },
+    });
   } catch (err) {
     const error = new Error(
       `Something went wrong, could not find the Product - ${category}`
@@ -266,6 +273,8 @@ export const getProductById = async (req, res, next) => {
   }
 
   res.json({
-    product,
+    editRequests: editRequests.map((editRequest) =>
+      editRequest.toObject({ getters: true })
+    ),
   });
 };

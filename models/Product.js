@@ -55,12 +55,12 @@ const productSchema = mongoose.Schema(
     },
     editRequests: {
       type: [Schema.Types.ObjectId],
-      ref: "EditRequests",
+      ref: "EditRequest",
       default: [],
     },
     deleteRequests: {
       type: [Schema.Types.ObjectId],
-      ref: "DeleteRequests",
+      ref: "DeleteRequest",
       default: [],
     },
   },

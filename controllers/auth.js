@@ -95,7 +95,8 @@ export const register = async (req, res, next) => {
         role: newUser.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      // FIXME: Change this if going to prod
+      { expiresIn: "999h" }
     );
   } catch (err) {
     const error = new Error("Signing up failed, please try again later.");
