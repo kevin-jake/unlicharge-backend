@@ -8,11 +8,13 @@ import { checkAuth } from "../middleware/check-auth.js";
 
 const router = express.Router();
 
+// GET / READ Products
 router.get("/:category", getProducts);
 router.get("/:category/:id", getProductById);
 
 router.use(checkAuth);
 
-router.post("/", createProduct);
+// CREATE /POST Products
+router.post("/:category", createProduct);
 
 export default router;

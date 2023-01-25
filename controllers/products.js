@@ -8,12 +8,15 @@ import { categoryFormat } from "../util/categoryFormat.js";
 /* CREATE */
 export const createProduct = async (req, res, next) => {
   const errors = validationResult(req);
+  const category = categoryFormat(req.params.category);
+  const status = "Active";
   if (!errors.isEmpty()) {
     return next(
       new Error("Invalid inputs passed, please check your data.", 422)
     );
   }
 
+  // Status selector for users. If Admin Approve the createProduct else if user have it as request
   let publishStatus;
   if (req.userData.role != "Admin") {
     publishStatus = "Request";
@@ -21,21 +24,21 @@ export const createProduct = async (req, res, next) => {
     publishStatus = "Approved";
   }
 
+  // Initialize Specs creation
   let newSpec;
-  const { category, specs } = req.body;
-
   if (category === "Battery") {
     const { nominalVoltage, capacity, pricePerPc, maxVoltage, minVoltage } =
-      specs;
+      req.body;
     newSpec = new Battery({
-      ...specs,
+      ...req.body,
       nominalVoltage: +nominalVoltage || 0,
       capacity: +capacity || 0,
       pricePerPc: +pricePerPc || 0,
       maxVoltage: +maxVoltage || 0,
       minVoltage: +minVoltage || 0,
       specCreator: req.userData.userId,
-      status: "Active",
+      productId: req.params.id,
+      status,
     });
   } else if (category === "BMS") {
     const {
@@ -45,9 +48,9 @@ export const createProduct = async (req, res, next) => {
       voltage,
       portType,
       price,
-    } = specs;
+    } = req.body;
     newSpec = new BMS({
-      ...specs,
+      ...req.body,
       strings: +strings || 0,
       chargeCurrent: +chargeCurrent || 0,
       dischargeCurrent: +dischargeCurrent || 0,
@@ -55,18 +58,20 @@ export const createProduct = async (req, res, next) => {
       price: +price || 0,
       portType,
       specCreator: req.userData.userId,
-      status: "Active",
+      productId: req.params.id,
+      status,
     });
   } else if (category === "ActiveBalancer") {
-    const { strings, balanceCurrent, balancingType, price } = specs;
+    const { strings, balanceCurrent, balancingType, price } = req.body;
     newSpec = new ActiveBalancer({
-      ...specs,
+      ...req.body,
       strings: +strings || 0,
       balanceCurrent: +balanceCurrent || 0,
       price: +price || 0,
       balancingType,
       specCreator: req.userData.userId,
-      status: "Active",
+      productId: req.params.id,
+      status,
     });
   }
   try {
@@ -80,13 +85,15 @@ export const createProduct = async (req, res, next) => {
     return next(error);
   }
 
+  // Creating variable for of new Product
   const createdProduct = new Product({
-    category,
+    category: category,
     specs: newSpec.id,
     publishStatus,
     creator: req.userData.userId,
   });
 
+  // Update Spec table with the new created Product Id.
   newSpec.productId = createdProduct.id;
   try {
     await newSpec.save();
@@ -99,6 +106,7 @@ export const createProduct = async (req, res, next) => {
     return next(error);
   }
 
+  // Saving of new Product
   try {
     await createdProduct.save();
   } catch (err) {
@@ -115,10 +123,13 @@ export const getProducts = async (req, res, next) => {
   let products;
   const category = categoryFormat(req.params.category);
   try {
-    products = await Product.find({
-      category: category,
-      // TODO: Add publishStatus filter
-    })
+    products = await Product.find(
+      {
+        category: category,
+        // TODO: Add publishStatus filter
+      },
+      "-previousData"
+    )
       .populate({
         path: "specs",
         populate: {
@@ -156,7 +167,8 @@ export const getProductById = async (req, res, next) => {
           select: "username",
         },
       })
-      .populate({ path: "creator", select: "username imagePath" });
+      .populate({ path: "creator", select: "username imagePath" })
+      .populate("previousData");
   } catch (err) {
     const error = new Error(
       `Something went wrong, could not find the Product - ${category}`

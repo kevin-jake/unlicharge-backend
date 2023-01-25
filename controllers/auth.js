@@ -94,9 +94,8 @@ export const register = async (req, res, next) => {
         username: newUser.username,
         role: newUser.role,
       },
-      process.env.JWT_SECRET
-      // FIXME: Change this if going to prod
-      // { expiresIn: "1h" }
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
     );
   } catch (err) {
     const error = new Error("Signing up failed, please try again later.");
@@ -158,7 +157,6 @@ export const login = async (req, res, next) => {
   if (!isValidPassword) {
     const error = new Error("Invalid credentials, could not log you in.");
     error.status = 403;
-    console.log(err);
     return next(error);
   }
 
@@ -171,8 +169,9 @@ export const login = async (req, res, next) => {
         email: existingUser.email,
         role: existingUser.role,
       },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      process.env.JWT_SECRET
+      // FIXME: Change this if going to prod
+      // { expiresIn: "1h" }
     );
   } catch (err) {
     const error = new Error("Logging in failed, please try again later.");

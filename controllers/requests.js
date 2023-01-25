@@ -126,7 +126,6 @@ export const createEditRequest = async (req, res, next) => {
     console.log(err);
     return next(error);
   }
-
   if (duplicateRequest.length != 0) {
     const error = new Error(
       `There is a duplicate request by ${duplicateRequest[0].specCreator.username}, no need to request. Please wait for the request to be approved.`,
@@ -232,13 +231,17 @@ export const actionEditRequest = async (req, res, next) => {
   try {
     product = await Product.findById(req.params.id);
   } catch (err) {
-    const error = new Error(
-      "Finding product failed, please try again later.",
-      500
-    );
+    const error = new Error("Finding product failed, please try again later.");
     console.log(err);
     return next(error);
   }
+
+  if (!product) {
+    const error = new Error(`Product ID - (${req.params.id}) not found`);
+    error.status = 404;
+    return next(error);
+  }
+
   // Updating Edit Request
   editRequest.status = "Approved";
   req.body.commentBody
