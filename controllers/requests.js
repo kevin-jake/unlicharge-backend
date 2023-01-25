@@ -241,12 +241,12 @@ export const actionEditRequest = async (req, res, next) => {
   }
   // Updating Edit Request
   editRequest.status = "Approved";
-  editRequest.comment = req.body.commentBody
+  req.body.commentBody
     ? editRequest.comment.push({
         body: req.body.commentBody,
         userId: req.userData.userId,
       })
-    : editRequest.comment;
+    : {};
   try {
     await editRequest.save();
   } catch (err) {
@@ -283,14 +283,23 @@ export const actionEditRequest = async (req, res, next) => {
   }
 
   // Updating the Product
-  const newProduct = {
+  let newProduct = {
     specs: editRequest.newSpecs.id,
     editor: editRequest.requestor,
     approvedBy: req.userData.userId,
     previousData: product.specs,
   };
-
-  res.status(201).json({ editRequest: createdEditReq });
+  try {
+    newProduct = await Product.findByIdAndUpdate(req.params.id, newProduct);
+  } catch (err) {
+    const error = new Error(
+      "Approving Product edit request failed, please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+  res.status(201).json({ newProduct: newProduct });
 };
 
 /* READ */
