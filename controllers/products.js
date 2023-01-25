@@ -22,20 +22,13 @@ export const createProduct = async (req, res, next) => {
   }
 
   let newSpec;
-  const { name, category, specs, imagePath, brand, supplierLink, supplier } =
-    req.body;
+  const { category, specs } = req.body;
 
   if (category === "Battery") {
-    const {
-      type,
-      nominalVoltage,
-      capacity,
-      pricePerPc,
-      maxVoltage,
-      minVoltage,
-    } = specs;
+    const { nominalVoltage, capacity, pricePerPc, maxVoltage, minVoltage } =
+      specs;
     newSpec = new Battery({
-      type,
+      ...specs,
       nominalVoltage: +nominalVoltage || 0,
       capacity: +capacity || 0,
       pricePerPc: +pricePerPc || 0,
@@ -46,7 +39,6 @@ export const createProduct = async (req, res, next) => {
     });
   } else if (category === "BMS") {
     const {
-      battType,
       strings,
       chargeCurrent,
       dischargeCurrent,
@@ -55,7 +47,7 @@ export const createProduct = async (req, res, next) => {
       price,
     } = specs;
     newSpec = new BMS({
-      battType,
+      ...specs,
       strings: +strings || 0,
       chargeCurrent: +chargeCurrent || 0,
       dischargeCurrent: +dischargeCurrent || 0,
@@ -68,6 +60,7 @@ export const createProduct = async (req, res, next) => {
   } else if (category === "ActiveBalancer") {
     const { strings, balanceCurrent, balancingType, price } = specs;
     newSpec = new ActiveBalancer({
+      ...specs,
       strings: +strings || 0,
       balanceCurrent: +balanceCurrent || 0,
       price: +price || 0,
@@ -88,13 +81,8 @@ export const createProduct = async (req, res, next) => {
   }
 
   const createdProduct = new Product({
-    name,
     category,
     specs: newSpec.id,
-    imagePath,
-    brand,
-    supplierLink,
-    supplier,
     publishStatus,
     creator: req.userData.userId,
   });

@@ -2,6 +2,26 @@ import mongoose, { Schema } from "mongoose";
 
 const ActiveBalancerSchema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: true,
+    },
+    imagePath: {
+      type: String,
+      default: "",
+    },
+    brand: {
+      type: String,
+      default: "",
+    },
+    supplierLink: {
+      type: String,
+      default: "",
+    },
+    supplier: {
+      type: String,
+      default: "",
+    },
     strings: {
       type: Number,
       required: true,

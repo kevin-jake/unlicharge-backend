@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  actionEditRequest,
   createEditRequest,
   getEditRequestByProduct,
   getEditRequests,
@@ -16,5 +17,6 @@ router.get("/:category/:id/edits", getEditRequestByProduct);
 
 // POST
 router.post("/:category/:id", createEditRequest);
+router.post("/:category/:id/edits", actionEditRequest);
 
 export default router;

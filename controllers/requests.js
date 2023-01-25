@@ -55,18 +55,11 @@ export const createEditRequest = async (req, res, next) => {
 
   // Initialize Specs creation
   let newSpec;
-  const { name, imagePath, specs, brand, supplierLink, supplier } = req.body;
   if (category === "Battery") {
-    const {
-      type,
-      nominalVoltage,
-      capacity,
-      pricePerPc,
-      maxVoltage,
-      minVoltage,
-    } = specs;
+    const { nominalVoltage, capacity, pricePerPc, maxVoltage, minVoltage } =
+      req.body;
     newSpec = new Battery({
-      type,
+      ...req.body,
       nominalVoltage: +nominalVoltage || 0,
       capacity: +capacity || 0,
       pricePerPc: +pricePerPc || 0,
@@ -79,16 +72,15 @@ export const createEditRequest = async (req, res, next) => {
     });
   } else if (category === "BMS") {
     const {
-      battType,
       strings,
       chargeCurrent,
       dischargeCurrent,
       voltage,
       portType,
       price,
-    } = specs;
+    } = req.body;
     newSpec = new BMS({
-      battType,
+      ...req.body,
       strings: +strings || 0,
       chargeCurrent: +chargeCurrent || 0,
       dischargeCurrent: +dischargeCurrent || 0,
@@ -101,8 +93,9 @@ export const createEditRequest = async (req, res, next) => {
       status,
     });
   } else if (category === "ActiveBalancer") {
-    const { strings, balanceCurrent, balancingType, price } = specs;
+    const { strings, balanceCurrent, balancingType, price } = req.body;
     newSpec = new ActiveBalancer({
+      ...req.body,
       strings: +strings || 0,
       balanceCurrent: +balanceCurrent || 0,
       price: +price || 0,
@@ -115,13 +108,16 @@ export const createEditRequest = async (req, res, next) => {
   }
 
   // Check if there are already existing request for the spec
-  let duplicateRequest, duplicateRequestProduct;
+  let duplicateRequest;
   try {
-    duplicateRequest = await mongoose.model(category).find({
-      ...specs,
-      status: ["Request", "Active"],
-      productId: req.params.id,
-    });
+    duplicateRequest = await mongoose
+      .model(category)
+      .find({
+        ...req.body,
+        status: ["Request", "Active"],
+        productId: req.params.id,
+      })
+      .populate("specCreator", "username");
   } catch (err) {
     const error = new Error(
       "Finding duplicate request failed. Please try again.",
@@ -131,25 +127,9 @@ export const createEditRequest = async (req, res, next) => {
     return next(error);
   }
 
-  try {
-    duplicateRequestProduct = await EditRequest.find({
-      name: name,
-      imagePath: imagePath,
-      brand: brand,
-      supplierLink: supplierLink,
-      supplier: supplier,
-    }).populate({ path: "requestor", select: "username" });
-  } catch (err) {
+  if (duplicateRequest.length != 0) {
     const error = new Error(
-      "Finding duplicate request failed. Please try again.",
-      500
-    );
-    console.log(err);
-    return next(error);
-  }
-  if (duplicateRequest.length != 0 && duplicateRequestProduct.length != 0) {
-    const error = new Error(
-      `There is a duplicate request by ${duplicateRequestProduct[0].requestor.username}, no need to request. Please wait for the request to be approved.`,
+      `There is a duplicate request by ${duplicateRequest[0].specCreator.username}, no need to request. Please wait for the request to be approved.`,
       400
     );
     return next(error);
@@ -170,14 +150,9 @@ export const createEditRequest = async (req, res, next) => {
   // Create Edit Request if specs creation is successful
   const createdEditReq = new EditRequest({
     requestedProduct: req.params.id,
-    name,
     category: category,
     newSpecs: newSpec.id,
     status: editReqStatus,
-    imagePath,
-    brand,
-    supplierLink,
-    supplier,
     requestor: req.userData.userId,
   });
 
@@ -208,7 +183,88 @@ export const createEditRequest = async (req, res, next) => {
 
   res.status(201).json({ editRequest: createdEditReq });
 };
-// TODO: Add actionEditRequest
+
+export const actionEditRequest = async (req, res, next) => {
+  // body: {
+  //   reqId: "",
+  //   comment: ""
+  // }
+
+  // Approving a request:
+  // It will change EditRequest status to "Approved" and Specs table status to "Active".
+  // Add comments to comment field.
+  // Update old Spec to Product previousData as id reference.
+  // Add editor and approver on Product editor and approvedBy fields.
+
+  const errors = validationResult(req);
+  const category = categoryFormat(req.params.category);
+  if (!errors.isEmpty()) {
+    return next(
+      new Error("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  // Get EditRequest details
+  let editRequest;
+  try {
+    editRequest = await EditRequest.findById(req.body.reqId);
+  } catch (err) {
+    const error = new Error(
+      "Finding edit requests failed, please try again later.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  // Get Product details
+  let product;
+  try {
+    product = await Product.findById(req.params.id);
+  } catch (err) {
+    const error = new Error(
+      "Finding product failed, please try again later.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+  // Updating Edit Request
+  editRequest.status = "Approved";
+  try {
+    await editRequest.save();
+  } catch (err) {
+    const error = new Error(`Updating edit request failed, please try again.`);
+    error.status = 500;
+    console.log(err);
+    return next(error);
+  }
+  // Updating spec table
+  let duplicateRequest;
+  try {
+    duplicateRequest = await mongoose.model(category).find({
+      ...specs,
+      status: ["Request", "Active"],
+      productId: req.params.id,
+    });
+  } catch (err) {
+    const error = new Error(
+      "Finding duplicate request failed. Please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  // Updating the Product
+  const newProduct = {
+    editor: editRequest.requestor,
+    approvedBy: req.userData.userId,
+    previousData: product.specs,
+  };
+
+  res.status(201).json({ editRequest: createdEditReq });
+};
 
 /* READ */
 export const getEditRequests = async (req, res, next) => {

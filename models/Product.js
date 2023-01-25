@@ -2,10 +2,6 @@ import mongoose, { Schema } from "mongoose";
 
 const productSchema = mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
     category: {
       type: String,
       enum: ["Battery", "BMS", "ActiveBalancer"],
@@ -15,22 +11,6 @@ const productSchema = mongoose.Schema(
       type: Schema.Types.ObjectId,
       required: true,
       refPath: "category",
-    },
-    imagePath: {
-      type: String,
-      default: "",
-    },
-    brand: {
-      type: String,
-      default: "",
-    },
-    supplierLink: {
-      type: String,
-      default: "",
-    },
-    supplier: {
-      type: String,
-      default: "",
     },
     creator: {
       type: Schema.Types.ObjectId,

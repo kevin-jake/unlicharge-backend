@@ -7,10 +7,6 @@ const EditRequestSchema = new mongoose.Schema(
       required: true,
       ref: "Product",
     },
-    name: {
-      type: String,
-      required: true,
-    },
     category: {
       type: String,
       enum: ["Battery", "BMS", "ActiveBalancer"],
@@ -24,22 +20,6 @@ const EditRequestSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-    },
-    imagePath: {
-      type: String,
-      default: "",
-    },
-    brand: {
-      type: String,
-      default: "",
-    },
-    supplierLink: {
-      type: String,
-      default: "",
-    },
-    supplier: {
-      type: String,
-      default: "",
     },
     requestor: {
       type: Schema.Types.ObjectId,
