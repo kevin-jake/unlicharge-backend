@@ -154,6 +154,14 @@ export const createEditRequest = async (req, res, next) => {
     newSpecs: newSpec.id,
     status: editReqStatus,
     requestor: req.userData.userId,
+    comment: req.body.commentBody
+      ? [
+          {
+            userId: req.userData.userId,
+            body: req.body.commentBody,
+          },
+        ]
+      : [],
   });
 
   // Save Edit Request ID on the Product editRequests field
@@ -187,7 +195,7 @@ export const createEditRequest = async (req, res, next) => {
 export const actionEditRequest = async (req, res, next) => {
   // body: {
   //   reqId: "",
-  //   comment: ""
+  //   commentBody: ""
   // }
 
   // Approving a request:
@@ -207,7 +215,9 @@ export const actionEditRequest = async (req, res, next) => {
   // Get EditRequest details
   let editRequest;
   try {
-    editRequest = await EditRequest.findById(req.body.reqId);
+    editRequest = await EditRequest.findById(req.body.reqId).populate(
+      "newSpecs"
+    );
   } catch (err) {
     const error = new Error(
       "Finding edit requests failed, please try again later.",
@@ -231,6 +241,12 @@ export const actionEditRequest = async (req, res, next) => {
   }
   // Updating Edit Request
   editRequest.status = "Approved";
+  editRequest.comment = req.body.commentBody
+    ? editRequest.comment.push({
+        body: req.body.commentBody,
+        userId: req.userData.userId,
+      })
+    : editRequest.comment;
   try {
     await editRequest.save();
   } catch (err) {
@@ -239,25 +255,36 @@ export const actionEditRequest = async (req, res, next) => {
     console.log(err);
     return next(error);
   }
-  // Updating spec table
-  let duplicateRequest;
+
+  // Updating (Battery, BMS, Active Balancer) spec table
   try {
-    duplicateRequest = await mongoose.model(category).find({
-      ...specs,
-      status: ["Request", "Active"],
-      productId: req.params.id,
-    });
+    await mongoose
+      .model(category)
+      .findByIdAndUpdate(editRequest.newSpecs.id, { status: "Active" });
   } catch (err) {
     const error = new Error(
-      "Finding duplicate request failed. Please try again.",
-      500
+      `Finding specs for edit request failed, please try again.`
     );
+    error.status = 500;
+    console.log(err);
+    return next(error);
+  }
+  try {
+    await mongoose
+      .model(category)
+      .findByIdAndUpdate(product.specs, { status: "Replaced" });
+  } catch (err) {
+    const error = new Error(
+      `Finding specs for edit request failed, please try again.`
+    );
+    error.status = 500;
     console.log(err);
     return next(error);
   }
 
   // Updating the Product
   const newProduct = {
+    specs: editRequest.newSpecs.id,
     editor: editRequest.requestor,
     approvedBy: req.userData.userId,
     previousData: product.specs,

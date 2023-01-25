@@ -26,17 +26,19 @@ const EditRequestSchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
-    comment: {
-      userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+    comment: [
+      {
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+        body: {
+          type: String,
+          min: 2,
+          max: 240,
+        },
       },
-      body: {
-        type: String,
-        min: 2,
-        max: 240,
-      },
-    },
+    ],
   },
   { timestamps: true }
 );
