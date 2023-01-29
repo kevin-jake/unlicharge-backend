@@ -191,7 +191,7 @@ export const createEditRequest = async (req, res, next) => {
   res.status(201).json({ editRequest: createdEditReq });
 };
 
-export const actionEditRequest = async (req, res, next) => {
+export const approveEditRequest = async (req, res, next) => {
   // body: {
   //   reqId: "",
   //   commentBody: ""
@@ -303,6 +303,67 @@ export const actionEditRequest = async (req, res, next) => {
     return next(error);
   }
   res.status(201).json({ newProduct: newProduct });
+};
+
+export const rejectEditRequest = async (req, res, next) => {
+  // body: {
+  //   reqId: "",
+  //   commentBody: ""
+  // }
+
+  // Rejecting a request:
+  // It will change EditRequest status to "Reject" and Specs table status to "Rejected".
+  // Add comments to comment field reject comment is required.
+  // Add userid on comment.
+
+  const errors = validationResult(req);
+  const category = categoryFormat(req.params.category);
+  if (!errors.isEmpty()) {
+    return next(
+      new Error("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  // Get EditRequest details
+  let editRequest;
+  try {
+    editRequest = await EditRequest.findById(req.body.reqId).populate(
+      "newSpecs"
+    );
+  } catch (err) {
+    const error = new Error(
+      "Finding edit requests failed, please try again later.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  // Updating Edit Request
+  editRequest.status = "Rejected";
+  if (req.body.commentBody) {
+    editRequest.comment.push({
+      body: req.body.commentBody,
+      userId: req.userData.userId,
+    });
+  } else {
+    const error = new Error(
+      "Comment is required please input a comment before rejecting",
+      500
+    );
+    return next(error);
+  }
+
+  try {
+    await editRequest.save();
+  } catch (err) {
+    const error = new Error(`Updating edit request failed, please try again.`);
+    error.status = 500;
+    console.log(err);
+    return next(error);
+  }
+
+  res.status(201).json({ editRequest: editRequest });
 };
 
 /* READ */

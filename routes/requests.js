@@ -1,9 +1,10 @@
 import express from "express";
 import {
-  actionEditRequest,
+  approveEditRequest,
   createEditRequest,
   getEditRequestByProduct,
   getEditRequests,
+  rejectEditRequest,
 } from "../controllers/requests.js";
 import { checkAuth } from "../middleware/check-auth.js";
 
@@ -17,6 +18,7 @@ router.get("/:category/:id/edits", getEditRequestByProduct);
 
 // POST
 router.post("/:category/:id", createEditRequest);
-router.post("/:category/:id/edits", actionEditRequest);
+router.post("/:category/:id/edits/approve", approveEditRequest);
+router.post("/:category/:id/edits/reject", rejectEditRequest);
 
 export default router;
