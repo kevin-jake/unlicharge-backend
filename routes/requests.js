@@ -2,7 +2,7 @@ import express from "express";
 import {
   approveEditRequest,
   createEditRequest,
-  getEditRequestById,
+  getEditRequestByProductId,
   getEditRequests,
   rejectEditRequest,
 } from "../controllers/requests.js";
@@ -14,11 +14,11 @@ router.use(checkAuth);
 
 // GET
 router.get("/:category/edits", getEditRequests);
-router.get("/:category/:id/edits", getEditRequestById);
+router.get("/:category/:productId/edits", getEditRequestByProductId);
 
 // POST
-router.post("/:category/:id", createEditRequest);
-router.post("/:category/:id/edits/approve", approveEditRequest);
-router.post("/:category/:id/edits/reject", rejectEditRequest);
+router.post("/:category/:productId", createEditRequest);
+router.post("/:category/:productId/edits/approve", approveEditRequest);
+router.post("/:category/:productId/edits/reject", rejectEditRequest);
 
 export default router;

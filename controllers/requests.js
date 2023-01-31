@@ -6,6 +6,7 @@ import ActiveBalancer from "../models/specsModel/ActiveBalancer.js";
 import EditRequest from "../models/EditRequests.js";
 import { categoryFormat } from "../util/categoryFormat.js";
 import mongoose from "mongoose";
+import DeleteRequest from "../models/DeleteRequests.js";
 
 /* CREATE */
 export const createEditRequest = async (req, res, next) => {
@@ -21,7 +22,7 @@ export const createEditRequest = async (req, res, next) => {
   let existingProduct;
   try {
     existingProduct = await Product.findOne({
-      _id: req.params.id,
+      _id: req.params.productId,
       category: category,
     });
   } catch (err) {
@@ -66,7 +67,7 @@ export const createEditRequest = async (req, res, next) => {
       maxVoltage: +maxVoltage || 0,
       minVoltage: +minVoltage || 0,
       specCreator: req.userData.userId,
-      productId: req.params.id,
+      productId: req.params.productId,
       editRequest: true,
       status,
     });
@@ -88,7 +89,7 @@ export const createEditRequest = async (req, res, next) => {
       price: +price || 0,
       portType,
       specCreator: req.userData.userId,
-      productId: req.params.id,
+      productId: req.params.productId,
       editRequest: true,
       status,
     });
@@ -101,7 +102,7 @@ export const createEditRequest = async (req, res, next) => {
       price: +price || 0,
       balancingType,
       specCreator: req.userData.userId,
-      productId: req.params.id,
+      productId: req.params.productId,
       editRequest: true,
       status,
     });
@@ -115,7 +116,7 @@ export const createEditRequest = async (req, res, next) => {
       .find({
         ...req.body,
         status: ["Request", "Active"],
-        productId: req.params.id,
+        productId: req.params.productId,
       })
       .populate("specCreator", "username");
   } catch (err) {
@@ -148,7 +149,7 @@ export const createEditRequest = async (req, res, next) => {
 
   // Create Edit Request if specs creation is successful
   const createdEditReq = new EditRequest({
-    requestedProduct: req.params.id,
+    requestedProduct: req.params.productId,
     category: category,
     newSpecs: newSpec.id,
     status: editReqStatus,
@@ -229,7 +230,7 @@ export const approveEditRequest = async (req, res, next) => {
   // Get Product details
   let product;
   try {
-    product = await Product.findById(req.params.id);
+    product = await Product.findById(req.params.productId);
   } catch (err) {
     const error = new Error("Finding product failed, please try again later.");
     console.log(err);
@@ -237,7 +238,7 @@ export const approveEditRequest = async (req, res, next) => {
   }
 
   if (!product) {
-    const error = new Error(`Product ID - (${req.params.id}) not found`);
+    const error = new Error(`Product ID - (${req.params.productId}) not found`);
     error.status = 404;
     return next(error);
   }
@@ -294,7 +295,7 @@ export const approveEditRequest = async (req, res, next) => {
   };
   try {
     newProduct = await Product.findByIdAndUpdate(
-      req.params.id,
+      req.params.productId,
       newProduct
     ).populate({
       path: "editRequests",
@@ -372,6 +373,296 @@ export const rejectEditRequest = async (req, res, next) => {
   res.status(201).json({ editRequest: editRequest });
 };
 
+export const createDeleteRequest = async (req, res, next) => {
+  const errors = validationResult(req);
+  const category = categoryFormat(req.params.category);
+  if (!errors.isEmpty()) {
+    return next(
+      new Error("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  // Check for product ID and category if product is existing in the correct category
+  let existingProduct;
+  try {
+    existingProduct = await Product.findOne({
+      _id: req.params.productId,
+      category: category,
+    });
+  } catch (err) {
+    const error = new Error(
+      "Finding product failed, please try again later.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+  if (!existingProduct) {
+    const error = new Error(
+      `Product ID not found on category: ${category}. Please enter a valid product ID.`,
+      404
+    );
+    return next(error);
+  }
+
+  //TODO: Improve status changing
+  let status, deleteReqStatus;
+  if (
+    req.userData.role != "Admin" ||
+    req.userData.id != existingProduct.creator
+  ) {
+    status = "Request-Remove";
+    deleteReqStatus = "Request";
+  } else {
+    status = "Deleted";
+    deleteReqStatus = "Approved";
+  }
+
+  // Initialize Specs delete update status
+  const newSpec = new mongoose.model(category)({
+    status,
+  });
+
+  // Check if there are already existing request for the spec
+  let duplicateRequest;
+  try {
+    duplicateRequest = await DeleteRequest.find({
+      status: ["Request", "Approved"],
+      requestedProduct: req.params.productId,
+    }).populate("requestor", "username");
+  } catch (err) {
+    const error = new Error(
+      "Finding duplicate request failed. Please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+  if (duplicateRequest.length != 0) {
+    const error = new Error(
+      `There is a duplicate request by ${duplicateRequest[0].specCreator.username}, no need to request. Please wait for the request to be approved.`,
+      400
+    );
+    return next(error);
+  }
+
+  // Saving of new specs on the table
+  try {
+    await newSpec.save();
+  } catch (err) {
+    const error = new Error(
+      `Creating ${category} failed, please try again.`,
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  // Create Edit Request if specs creation is successful
+  const createdEditReq = new DeleteRequest({
+    requestedProduct: req.params.productId,
+    category: category,
+    status: deleteReqStatus,
+    requestor: req.userData.userId,
+    deleteReason: req.body.deleteReason,
+    comment: req.body.commentBody
+      ? [
+          {
+            userId: req.userData.userId,
+            body: req.body.commentBody,
+          },
+        ]
+      : [],
+  });
+
+  // Save new Product status
+  existingProduct.publishStatus = status;
+  try {
+    await existingProduct.save();
+  } catch (err) {
+    const error = new Error(
+      "Saving Product edit request failed, please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  // Saving of Edit Request on the EditRequests table
+  try {
+    await createdEditReq.save();
+  } catch (err) {
+    const error = new Error(
+      "Creating Edit Request failed, please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  res.status(201).json({ editRequest: createdEditReq });
+};
+
+export const approveDeleteRequest = async (req, res, next) => {
+  // body: {
+  //   reqId: "",
+  //   commentBody: ""
+  // }
+
+  // Approving a request:
+  // It will change DeleteRequst status to "Approved" and Specs table and Product table status to "Deleted".
+  // Add comments to comment field.
+  // Add editor and approver on Product editor and approvedBy fields.
+
+  const errors = validationResult(req);
+  const category = categoryFormat(req.params.category);
+  if (!errors.isEmpty()) {
+    return next(
+      new Error("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  // Get DeleteRequest details
+  let deleteRequest;
+  try {
+    deleteRequest = await DeleteRequest.findById(req.body.reqId);
+  } catch (err) {
+    const error = new Error(
+      "Finding delete requests failed, please try again later.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  // Get Product details
+  let product;
+  try {
+    product = await Product.findById(req.params.productId);
+  } catch (err) {
+    const error = new Error("Finding product failed, please try again later.");
+    console.log(err);
+    return next(error);
+  }
+
+  if (!product) {
+    const error = new Error(`Product ID - (${req.params.productId}) not found`);
+    error.status = 404;
+    return next(error);
+  }
+
+  // Updating Edit Request
+  deleteRequest.status = "Approved";
+  req.body.commentBody
+    ? deleteRequest.comment.push({
+        body: req.body.commentBody,
+        userId: req.userData.userId,
+      })
+    : {};
+  try {
+    await deleteRequest.save();
+  } catch (err) {
+    const error = new Error(
+      `Updating delete request failed, please try again.`
+    );
+    error.status = 500;
+    console.log(err);
+    return next(error);
+  }
+
+  // Updating (Battery, BMS, Active Balancer) spec table status to Deleted
+  try {
+    await mongoose
+      .model(category)
+      .findByIdAndUpdate(product.specs, { status: "Deleted" });
+  } catch (err) {
+    const error = new Error(
+      `Finding specs for delete request failed, please try again.`
+    );
+    error.status = 500;
+    console.log(err);
+    return next(error);
+  }
+
+  // Updating the Product publishStatus to Deleted
+  let deletedProduct;
+  try {
+    deletedProduct = await Product.findByIdAndUpdate(req.params.productId, {
+      publishStatus: "Deleted",
+    }).populate({
+      path: "deleteRequests",
+      select: "status requestor createdAt updatedAt",
+      match: { _id: deleteRequest.id },
+    });
+  } catch (err) {
+    const error = new Error(
+      "Approving Product delete request failed, please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+  res.status(201).json({ deletedProduct: deletedProduct });
+};
+
+export const rejectDeleteRequest = async (req, res, next) => {
+  // body: {
+  //   reqId: "",
+  //   commentBody: ""
+  // }
+
+  // Rejecting a request:
+  // It will change DeleteRequest status to "Rejected".
+  // Add comments to comment field reject comment is required.
+  // Add userid on comment.
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new Error("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  // Get EditRequest details
+  let deleteRequest;
+  try {
+    deleteRequest = await DeleteRequest.findById(req.body.reqId);
+  } catch (err) {
+    const error = new Error(
+      "Finding delete requests failed, please try again later."
+    );
+    error.status = 404;
+    console.log(err);
+    return next(error);
+  }
+
+  // Updating Edit Request
+  deleteRequest.status = "Rejected";
+  if (req.body.commentBody) {
+    deleteRequest.comment.push({
+      body: req.body.commentBody,
+      userId: req.userData.userId,
+    });
+  } else {
+    const error = new Error(
+      "Comment is required please input a comment before rejecting",
+      500
+    );
+    return next(error);
+  }
+
+  try {
+    await deleteRequest.save();
+  } catch (err) {
+    const error = new Error(`Updating edit request failed, please try again.`);
+    error.status = 500;
+    console.log(err);
+    return next(error);
+  }
+
+  res.status(201).json({ deleteRequest: deleteRequest });
+};
+
 /* READ */
 export const getEditRequests = async (req, res, next) => {
   let editRequests;
@@ -416,12 +707,12 @@ export const getEditRequests = async (req, res, next) => {
   });
 };
 
-export const getEditRequestById = async (req, res, next) => {
+export const getEditRequestByProductId = async (req, res, next) => {
   let editRequests;
   const category = categoryFormat(req.params.category);
 
   // Only show your own edit requests if not the admin
-  let filter = { requestedProduct: req.params.id };
+  let filter = { requestedProduct: req.params.productId };
   if (req.userData.role != "Admin") {
     filter = { ...filter, category };
   } else {
@@ -455,6 +746,78 @@ export const getEditRequestById = async (req, res, next) => {
   res.json({
     editRequests: editRequests.map((editRequest) =>
       editRequest.toObject({ getters: true })
+    ),
+  });
+};
+
+export const getDeleteRequests = async (req, res, next) => {
+  let deleteRequests;
+  const category = categoryFormat(req.params.category);
+
+  // Only show your own edit requests if not the admin
+  let filter;
+  if (req.userData.role != "Admin") {
+    filter = { category };
+  } else {
+    filter = { category, requestor: req.userData.userId };
+  }
+  try {
+    deleteRequests = await DeleteRequest.find(filter)
+      .populate({ path: "requestor", select: "username imagePath" })
+      .populate({
+        path: "comment",
+        populate: {
+          path: "userId",
+          select: "username imagePath",
+        },
+      });
+  } catch (err) {
+    const error = new Error(
+      `Something went wrong, could not find the Delete Request - ${category}`
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  res.json({
+    deleteRequests: deleteRequest.map((deleteRequest) =>
+      deleteRequest.toObject({ getters: true })
+    ),
+  });
+};
+
+export const getDeleteRequestByProductId = async (req, res, next) => {
+  let deleteRequests;
+  const category = categoryFormat(req.params.category);
+
+  // Only show your own edit requests if not the admin
+  let filter = { requestedProduct: req.params.productId };
+  if (req.userData.role != "Admin") {
+    filter = { ...filter, category };
+  } else {
+    filter = { ...filter, category, requestor: req.userData.userId };
+  }
+  try {
+    deleteRequests = await EditRequest.find(filter)
+      .populate({ path: "requestor", select: "username imagePath" })
+      .populate({
+        path: "comment",
+        populate: {
+          path: "userId",
+          select: "username imagePath",
+        },
+      });
+  } catch (err) {
+    const error = new Error(
+      `Something went wrong, could not find the Delete Request - ${category}`
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  res.json({
+    deleteRequests: deleteRequest.map((deleteRequest) =>
+      deleteRequest.toObject({ getters: true })
     ),
   });
 };

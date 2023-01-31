@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const DeleteRequestSchema = new mongoose.Schema(
   {
@@ -6,6 +6,11 @@ const DeleteRequestSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       required: true,
       ref: "Product",
+    },
+    category: {
+      type: String,
+      enum: ["Battery", "BMS", "ActiveBalancer"],
+      required: true,
     },
     requestor: {
       type: Schema.Types.ObjectId,
