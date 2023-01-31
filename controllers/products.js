@@ -122,14 +122,23 @@ export const createProduct = async (req, res, next) => {
 export const getProducts = async (req, res, next) => {
   let products;
   const category = categoryFormat(req.params.category);
+  let filter = {
+    category,
+  };
+  if (!req.userData) {
+    filter = { ...filter, publishStatus: "Approved" };
+  } else if (req.userData.role == "User") {
+    filter = {
+      $or: [
+        { ...filter, publishStatus: "Approved" },
+        { ...filter, publishStatus: "Request", creator: req.userData.userId },
+        { ...filter, publishStatus: "Deleted", creator: req.userData.userId },
+      ],
+    };
+  }
+
   try {
-    products = await Product.find(
-      {
-        category: category,
-        // TODO: Add publishStatus filter
-      },
-      "-previousData"
-    )
+    products = await Product.find(filter, "-previousData")
       .populate({
         path: "specs",
         populate: {
@@ -154,12 +163,24 @@ export const getProducts = async (req, res, next) => {
 export const getProductById = async (req, res, next) => {
   let product;
   const category = categoryFormat(req.params.category);
+  let filter = {
+    _id: req.params.id,
+    category,
+  };
+  if (!req.userData) {
+    filter = { ...filter, publishStatus: "Approved" };
+  } else if (req.userData.role == "User") {
+    filter = {
+      $or: [
+        { ...filter, publishStatus: "Approved" },
+        { ...filter, publishStatus: "Request", creator: req.userData.userId },
+        { ...filter, publishStatus: "Deleted", creator: req.userData.userId },
+      ],
+    };
+  }
+
   try {
-    product = await Product.findOne({
-      _id: req.params.id,
-      category: category,
-      // TODO: Add publishStatus filter
-    })
+    product = await Product.findOne(filter)
       .populate({
         path: "specs",
         populate: {

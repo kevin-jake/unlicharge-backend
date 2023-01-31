@@ -45,7 +45,7 @@ export const createEditRequest = async (req, res, next) => {
   let status, editReqStatus;
   if (
     req.userData.role == "Admin" ||
-    req.userData.id == existingProduct.creator
+    req.userData.userId == existingProduct.creator
   ) {
     status = "Active";
     editReqStatus = "Approved";
@@ -507,7 +507,7 @@ export const createDeleteRequest = async (req, res, next) => {
   let status, deleteReqStatus;
   if (
     req.userData.role == "Admin" ||
-    req.userData.id == existingProduct.creator
+    req.userData.userId == existingProduct.creator
   ) {
     status = "Deleted";
     deleteReqStatus = "Approved";
