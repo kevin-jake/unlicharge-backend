@@ -293,7 +293,14 @@ export const approveEditRequest = async (req, res, next) => {
     previousData: product.specs,
   };
   try {
-    newProduct = await Product.findByIdAndUpdate(req.params.id, newProduct);
+    newProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      newProduct
+    ).populate({
+      path: "editRequests",
+      select: "newSpecs status requestor createdAt updatedAt",
+      match: { _id: editRequest.id },
+    });
   } catch (err) {
     const error = new Error(
       "Approving Product edit request failed, please try again.",
@@ -312,12 +319,11 @@ export const rejectEditRequest = async (req, res, next) => {
   // }
 
   // Rejecting a request:
-  // It will change EditRequest status to "Reject" and Specs table status to "Rejected".
+  // It will change EditRequest status to "Rejected".
   // Add comments to comment field reject comment is required.
   // Add userid on comment.
 
   const errors = validationResult(req);
-  const category = categoryFormat(req.params.category);
   if (!errors.isEmpty()) {
     return next(
       new Error("Invalid inputs passed, please check your data.", 422)
@@ -378,9 +384,8 @@ export const getEditRequests = async (req, res, next) => {
   } else {
     filter = { category, requestor: req.userData.userId };
   }
-
   try {
-    editRequests = await EditRequest.find({ filter })
+    editRequests = await EditRequest.find(filter)
       .populate({
         path: "newSpecs",
         populate: {
@@ -388,7 +393,14 @@ export const getEditRequests = async (req, res, next) => {
           select: "username",
         },
       })
-      .populate({ path: "requestor", select: "username imagePath" });
+      .populate({ path: "requestor", select: "username imagePath" })
+      .populate({
+        path: "comment",
+        populate: {
+          path: "userId",
+          select: "username imagePath",
+        },
+      });
   } catch (err) {
     const error = new Error(
       `Something went wrong, could not find the Edit Request - ${category}`
@@ -404,25 +416,37 @@ export const getEditRequests = async (req, res, next) => {
   });
 };
 
-export const getEditRequestByProduct = async (req, res, next) => {
+export const getEditRequestById = async (req, res, next) => {
   let editRequests;
   const category = categoryFormat(req.params.category);
-  const productId = req.params.id;
 
-  // TODO: Filter more efficiently
+  // Only show your own edit requests if not the admin
+  let filter = { requestedProduct: req.params.id };
+  if (req.userData.role != "Admin") {
+    filter = { ...filter, category };
+  } else {
+    filter = { ...filter, category, requestor: req.userData.userId };
+  }
   try {
-    editRequests = await Product.find({
-      category: category,
-      _id: productId,
-    }).populate({
-      path: "editRequests",
-      populate: {
+    editRequests = await EditRequest.find(filter)
+      .populate({
         path: "newSpecs",
-      },
-    });
+        populate: {
+          path: "specCreator",
+          select: "username",
+        },
+      })
+      .populate({ path: "requestor", select: "username imagePath" })
+      .populate({
+        path: "comment",
+        populate: {
+          path: "userId",
+          select: "username imagePath",
+        },
+      });
   } catch (err) {
     const error = new Error(
-      `Something went wrong, could not find the Product - ${category}`
+      `Something went wrong, could not find the Edit Request - ${category}`
     );
     console.log(err);
     return next(error);

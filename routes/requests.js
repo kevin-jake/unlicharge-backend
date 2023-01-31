@@ -2,7 +2,7 @@ import express from "express";
 import {
   approveEditRequest,
   createEditRequest,
-  getEditRequestByProduct,
+  getEditRequestById,
   getEditRequests,
   rejectEditRequest,
 } from "../controllers/requests.js";
@@ -14,7 +14,7 @@ router.use(checkAuth);
 
 // GET
 router.get("/:category/edits", getEditRequests);
-router.get("/:category/:id/edits", getEditRequestByProduct);
+router.get("/:category/:id/edits", getEditRequestById);
 
 // POST
 router.post("/:category/:id", createEditRequest);
