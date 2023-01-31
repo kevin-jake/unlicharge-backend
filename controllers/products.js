@@ -181,3 +181,5 @@ export const getProductById = async (req, res, next) => {
     product,
   });
 };
+
+// TODO: get products sorted or filtered from frontend

@@ -373,6 +373,104 @@ export const rejectEditRequest = async (req, res, next) => {
   res.status(201).json({ editRequest: editRequest });
 };
 
+export const updateEditRequest = async (req, res, next) => {
+  // body: {
+  //   reqId: "",
+  //   ...specs
+  // }
+  const errors = validationResult(req);
+  const category = categoryFormat(req.params.category);
+  if (!errors.isEmpty()) {
+    return next(
+      new Error("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  if (!req.body.reqId) {
+    return next(new Error("Need to input request Id on the request body", 422));
+  }
+
+  // Get EditRequest details
+  let editRequest;
+  try {
+    editRequest = await EditRequest.findById(req.body.reqId).populate(
+      "newSpecs"
+    );
+  } catch (err) {
+    const error = new Error(
+      "Finding edit requests failed, please try again later.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  // Initialize Specs creation
+  let updatedSpec;
+  if (category === "Battery") {
+    const { nominalVoltage, capacity, pricePerPc, maxVoltage, minVoltage } =
+      req.body;
+    updatedSpec = {
+      ...req.body,
+      nominalVoltage: +nominalVoltage || 0,
+      capacity: +capacity || 0,
+      pricePerPc: +pricePerPc || 0,
+      maxVoltage: +maxVoltage || 0,
+      minVoltage: +minVoltage || 0,
+      specCreator: req.userData.userId,
+      productId: req.params.productId,
+    };
+  } else if (category === "BMS") {
+    const {
+      strings,
+      chargeCurrent,
+      dischargeCurrent,
+      voltage,
+      portType,
+      price,
+    } = req.body;
+    updatedSpec = {
+      ...req.body,
+      strings: +strings || 0,
+      chargeCurrent: +chargeCurrent || 0,
+      dischargeCurrent: +dischargeCurrent || 0,
+      voltage: +voltage || 0,
+      price: +price || 0,
+      portType,
+      specCreator: req.userData.userId,
+      productId: req.params.productId,
+    };
+  } else if (category === "ActiveBalancer") {
+    const { strings, balanceCurrent, balancingType, price } = req.body;
+    updatedSpec = {
+      ...req.body,
+      strings: +strings || 0,
+      balanceCurrent: +balanceCurrent || 0,
+      price: +price || 0,
+      balancingType,
+      specCreator: req.userData.userId,
+      productId: req.params.productId,
+    };
+  }
+
+  // Saving of updated specs on the table
+  let updatedSpecs;
+  try {
+    updatedSpecs = await mongoose
+      .model(category)
+      .findByIdAndUpdate(editRequest.newSpecs.id, updatedSpec, { new: true });
+  } catch (err) {
+    const error = new Error(
+      `Creating ${category} failed, please try again.`,
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
+  res.status(201).json(updatedSpecs);
+};
+
 export const createDeleteRequest = async (req, res, next) => {
   const errors = validationResult(req);
   const category = categoryFormat(req.params.category);

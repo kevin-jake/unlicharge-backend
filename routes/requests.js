@@ -10,6 +10,7 @@ import {
   getEditRequests,
   rejectDeleteRequest,
   rejectEditRequest,
+  updateEditRequest,
 } from "../controllers/requests.js";
 import { checkAuth } from "../middleware/check-auth.js";
 
@@ -25,6 +26,8 @@ router.get("/:category/:productId/delete", getDeleteRequestByProductId);
 
 // POST
 router.post("/:category/:productId/edit", createEditRequest);
+router.post("/:category/:productId/edit/update", updateEditRequest);
+
 // NOTE: request ID is in the request body not in the url
 router.post("/:category/:productId/edit/approve", approveEditRequest);
 router.post("/:category/:productId/edit/reject", rejectEditRequest);
