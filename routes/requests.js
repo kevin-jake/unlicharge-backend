@@ -4,6 +4,8 @@ import {
   approveEditRequest,
   createDeleteRequest,
   createEditRequest,
+  getDeleteRequestByProductId,
+  getDeleteRequests,
   getEditRequestByProductId,
   getEditRequests,
   rejectDeleteRequest,
@@ -16,8 +18,10 @@ const router = express.Router();
 router.use(checkAuth);
 
 // GET
-router.get("/:category/edits", getEditRequests);
+router.get("/:category/edit", getEditRequests);
 router.get("/:category/:productId/edit", getEditRequestByProductId);
+router.get("/:category/delete", getDeleteRequests);
+router.get("/:category/:productId/delete", getDeleteRequestByProductId);
 
 // POST
 router.post("/:category/:productId/edit", createEditRequest);

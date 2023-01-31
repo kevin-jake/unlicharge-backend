@@ -762,7 +762,7 @@ export const getDeleteRequestByProductId = async (req, res, next) => {
   let deleteRequests;
   const category = categoryFormat(req.params.category);
 
-  // Only show your own edit requests if not the admin
+  // Only show your own delete requests if not the admin
   let filter = { requestedProduct: req.params.productId };
   if (req.userData.role != "Admin") {
     filter = { ...filter, category };
@@ -770,7 +770,7 @@ export const getDeleteRequestByProductId = async (req, res, next) => {
     filter = { ...filter, category, requestor: req.userData.userId };
   }
   try {
-    deleteRequests = await EditRequest.find(filter)
+    deleteRequests = await DeleteRequest.find(filter)
       .populate({ path: "requestor", select: "username imagePath" })
       .populate({
         path: "comment",
