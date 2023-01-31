@@ -44,14 +44,14 @@ export const createEditRequest = async (req, res, next) => {
   //TODO: Improve status changing
   let status, editReqStatus;
   if (
-    req.userData.role != "Admin" ||
-    req.userData.id != existingProduct.creator
+    req.userData.role == "Admin" ||
+    req.userData.id == existingProduct.creator
   ) {
-    status = "Request";
-    editReqStatus = "Request";
-  } else {
     status = "Active";
     editReqStatus = "Approved";
+  } else {
+    status = "Request";
+    editReqStatus = "Request";
   }
 
   // Initialize Specs creation
@@ -408,20 +408,14 @@ export const createDeleteRequest = async (req, res, next) => {
   //TODO: Improve status changing
   let status, deleteReqStatus;
   if (
-    req.userData.role != "Admin" ||
-    req.userData.id != existingProduct.creator
+    req.userData.role == "Admin" ||
+    req.userData.id == existingProduct.creator
   ) {
-    status = "Request-Remove";
-    deleteReqStatus = "Request";
-  } else {
     status = "Deleted";
     deleteReqStatus = "Approved";
+  } else {
+    deleteReqStatus = "Request";
   }
-
-  // Initialize Specs delete update status
-  const newSpec = new mongoose.model(category)({
-    status,
-  });
 
   // Check if there are already existing request for the spec
   let duplicateRequest;
@@ -440,26 +434,14 @@ export const createDeleteRequest = async (req, res, next) => {
   }
   if (duplicateRequest.length != 0) {
     const error = new Error(
-      `There is a duplicate request by ${duplicateRequest[0].specCreator.username}, no need to request. Please wait for the request to be approved.`,
+      `There is a duplicate request by ${duplicateRequest[0].requestor.username}, no need to request. Please wait for the request to be approved.`,
       400
     );
     return next(error);
   }
 
-  // Saving of new specs on the table
-  try {
-    await newSpec.save();
-  } catch (err) {
-    const error = new Error(
-      `Creating ${category} failed, please try again.`,
-      500
-    );
-    console.log(err);
-    return next(error);
-  }
-
-  // Create Edit Request if specs creation is successful
-  const createdEditReq = new DeleteRequest({
+  // Create Delete Request if specs creation is successful
+  const createdDelReq = new DeleteRequest({
     requestedProduct: req.params.productId,
     category: category,
     status: deleteReqStatus,
@@ -475,32 +457,36 @@ export const createDeleteRequest = async (req, res, next) => {
       : [],
   });
 
+  // Saving of Delete Request on the DeleteRequests table
+  let delReq;
+  try {
+    delReq = await createdDelReq.save();
+  } catch (err) {
+    const error = new Error(
+      "Creating Delete Request failed, please try again.",
+      500
+    );
+    console.log(err);
+    return next(error);
+  }
+
   // Save new Product status
-  existingProduct.publishStatus = status;
+  existingProduct.deleteRequests.push(delReq.id);
+  if (status === "Deleted") {
+    existingProduct.status = status;
+  }
   try {
     await existingProduct.save();
   } catch (err) {
     const error = new Error(
-      "Saving Product edit request failed, please try again.",
+      "Saving Product delete request failed, please try again.",
       500
     );
     console.log(err);
     return next(error);
   }
 
-  // Saving of Edit Request on the EditRequests table
-  try {
-    await createdEditReq.save();
-  } catch (err) {
-    const error = new Error(
-      "Creating Edit Request failed, please try again.",
-      500
-    );
-    console.log(err);
-    return next(error);
-  }
-
-  res.status(201).json({ editRequest: createdEditReq });
+  res.status(201).json({ deleteRequest: createdDelReq });
 };
 
 export const approveDeleteRequest = async (req, res, next) => {
@@ -510,7 +496,7 @@ export const approveDeleteRequest = async (req, res, next) => {
   // }
 
   // Approving a request:
-  // It will change DeleteRequst status to "Approved" and Specs table and Product table status to "Deleted".
+  // It will change DeleteRequst status to "Approved" and Product table status to "Deleted".
   // Add comments to comment field.
   // Add editor and approver on Product editor and approvedBy fields.
 
@@ -551,7 +537,7 @@ export const approveDeleteRequest = async (req, res, next) => {
     return next(error);
   }
 
-  // Updating Edit Request
+  // Updating Delete Request
   deleteRequest.status = "Approved";
   req.body.commentBody
     ? deleteRequest.comment.push({
@@ -564,20 +550,6 @@ export const approveDeleteRequest = async (req, res, next) => {
   } catch (err) {
     const error = new Error(
       `Updating delete request failed, please try again.`
-    );
-    error.status = 500;
-    console.log(err);
-    return next(error);
-  }
-
-  // Updating (Battery, BMS, Active Balancer) spec table status to Deleted
-  try {
-    await mongoose
-      .model(category)
-      .findByIdAndUpdate(product.specs, { status: "Deleted" });
-  } catch (err) {
-    const error = new Error(
-      `Finding specs for delete request failed, please try again.`
     );
     error.status = 500;
     console.log(err);
@@ -623,7 +595,7 @@ export const rejectDeleteRequest = async (req, res, next) => {
     );
   }
 
-  // Get EditRequest details
+  // Get DeleteRequest details
   let deleteRequest;
   try {
     deleteRequest = await DeleteRequest.findById(req.body.reqId);
@@ -636,7 +608,7 @@ export const rejectDeleteRequest = async (req, res, next) => {
     return next(error);
   }
 
-  // Updating Edit Request
+  // Updating Delete Request
   deleteRequest.status = "Rejected";
   if (req.body.commentBody) {
     deleteRequest.comment.push({
@@ -780,7 +752,7 @@ export const getDeleteRequests = async (req, res, next) => {
   }
 
   res.json({
-    deleteRequests: deleteRequest.map((deleteRequest) =>
+    deleteRequests: deleteRequests.map((deleteRequest) =>
       deleteRequest.toObject({ getters: true })
     ),
   });
@@ -816,7 +788,7 @@ export const getDeleteRequestByProductId = async (req, res, next) => {
   }
 
   res.json({
-    deleteRequests: deleteRequest.map((deleteRequest) =>
+    deleteRequests: deleteRequests.map((deleteRequest) =>
       deleteRequest.toObject({ getters: true })
     ),
   });
