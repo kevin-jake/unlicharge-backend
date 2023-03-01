@@ -318,7 +318,6 @@ export const approveCreateRequest = async (req, res, next) => {
   // It will change publishStatus to "Approved" on the Product table
 
   const errors = validationResult(req);
-  const category = categoryFormat(req.params.category);
   if (!errors.isEmpty()) {
     return next(
       new Error("Invalid inputs passed, please check your data.", 422)
