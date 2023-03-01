@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema(
       min: 5,
       unique: true,
     },
-    lastLogin: String,
+    lastLogin: Date,
     location: String,
     role: {
       type: String,
