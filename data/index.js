@@ -419,6 +419,7 @@ export const bmsSpecs = [
 export const activeBalancerSpecsId = [
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
 ];
 
 export const activeBalancerSpecs = [
@@ -568,7 +569,7 @@ export const products = [
   },
   {
     _id: productId[10],
-    category: "Active Balancer",
+    category: "ActiveBalancer",
     specs: activeBalancerSpecsId[2],
     creator: userIds[2],
     publishStatus: "Approved",
