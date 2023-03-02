@@ -104,14 +104,14 @@ mongoose
     console.log(`🚀 Server ready at ${process.env.APP_URL}:${PORT}`);
 
     // Uncomment the following lines to delete the tables
-    clearCollections();
+    // clearCollections();
 
     // Adding the dummy data
-    User.insertMany(users);
-    Product.insertMany(products);
-    Battery.insertMany(batterySpecs);
-    BMS.insertMany(bmsSpecs);
-    ActiveBalancer.insertMany(activeBalancerSpecs);
+    // User.insertMany(users);
+    // Battery.insertMany(batterySpecs);
+    // BMS.insertMany(bmsSpecs);
+    // ActiveBalancer.insertMany(activeBalancerSpecs);
+    // Product.insertMany(products);
     // EditRequest.deleteMany({});
     // DeleteRequest.deleteMany({});
   })
