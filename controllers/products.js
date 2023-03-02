@@ -155,6 +155,7 @@ export const getProducts = async (req, res, next) => {
     return next(error);
   }
 
+  // console.log("🚀 ~ file: products.js:150 ~ getProducts ~ products:", products);
   res.json({
     products: products.map((product) => product.toObject({ getters: true })),
   });

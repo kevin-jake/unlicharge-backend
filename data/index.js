@@ -20,6 +20,9 @@ const productId = [
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
 ];
 
 export const users = [
@@ -330,6 +333,8 @@ export const batterySpecs = [
 const bmsSpecsId = [
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
 ];
 
 export const bmsSpecs = [
@@ -370,6 +375,44 @@ export const bmsSpecs = [
     editRequest: false,
     status: "Active",
     productId: productId[4],
+  },
+  {
+    _id: bmsSpecsId[2],
+    name: "16S 3.2V  LFP 100A Same Port With Bluetooth Module",
+    imagePath: "public/assets/info2.jpeg",
+    brand: "JBD",
+    supplierLink:
+      "https://shopee.ph/JBD-BMS-Lifepo4-12V-24V-48V-4S-8S-16S-100A-Same-Port-With-Passive-Balance-Included-Bluetooth-Module-BMS-for-Lifepo4-Battery-for-Lithium-Battery-Applied-in-Electic-vehicles-Storage-Inverter-and-Caravan-Cars-i.564409672.15818548812?sp_atk=b86ca57e-fa13-46fb-ae1e-4a0552f90844&xptdk=b86ca57e-fa13-46fb-ae1e-4a0552f90844",
+    supplier: "Shopee",
+    strings: 16,
+    chargeCurrent: 100,
+    dischargeCurrent: 25,
+    portType: "Common",
+    voltage: 52,
+    price: 4424,
+    specCreator: userIds[3],
+    editRequest: false,
+    status: "Active",
+    productId: productId[8],
+  },
+  {
+    _id: bmsSpecsId[3],
+    name: "8S 3.2V  LFP 100A Same Port With Bluetooth Module",
+    imagePath: "public/assets/info2.jpeg",
+    brand: "JBD",
+    supplierLink:
+      "https://shopee.ph/JBD-BMS-Lifepo4-12V-24V-48V-4S-8S-16S-100A-Same-Port-With-Passive-Balance-Included-Bluetooth-Module-BMS-for-Lifepo4-Battery-for-Lithium-Battery-Applied-in-Electic-vehicles-Storage-Inverter-and-Caravan-Cars-i.564409672.15818548812?sp_atk=b86ca57e-fa13-46fb-ae1e-4a0552f90844&xptdk=b86ca57e-fa13-46fb-ae1e-4a0552f90844",
+    supplier: "Shopee",
+    strings: 16,
+    chargeCurrent: 100,
+    dischargeCurrent: 25,
+    portType: "Common",
+    voltage: 24,
+    price: 2903,
+    specCreator: userIds[3],
+    editRequest: false,
+    status: "Active",
+    productId: productId[9],
   },
 ];
 
@@ -412,6 +455,23 @@ export const activeBalancerSpecs = [
     editRequest: false,
     status: "Active",
     productId: productId[7],
+  },
+  {
+    _id: activeBalancerSpecsId[2],
+    name: "Daly 3S 1A",
+    imagePath: "public/assets/info2.jpeg",
+    brand: "Daly",
+    supplierLink:
+      "https://shopee.ph/3S-4S-8S-Balance-Li-ion-Lifepo4-LTO-Lithium-Battery-Active-Equalizer-Balancer-Board-CapacitorBMS-i.18252381.18643600287?sp_atk=374b8628-a572-4e54-95c3-eadc27430c2d&xptdk=374b8628-a572-4e54-95c3-eadc27430c2d",
+    supplier: "Shopee",
+    strings: 3,
+    balanceCurrent: 1,
+    balancingType: "Active",
+    price: 799,
+    specCreator: userIds[2],
+    editRequest: false,
+    status: "Active",
+    productId: productId[10],
   },
 ];
 
@@ -483,6 +543,33 @@ export const products = [
     _id: productId[7],
     category: "ActiveBalancer",
     specs: activeBalancerSpecsId[1],
+    creator: userIds[2],
+    publishStatus: "Approved",
+    editRequests: [],
+    deleteRequests: [],
+  },
+  {
+    _id: productId[8],
+    category: "BMS",
+    specs: bmsSpecsId[2],
+    creator: userIds[3],
+    publishStatus: "Approved",
+    editRequests: [],
+    deleteRequests: [],
+  },
+  {
+    _id: productId[9],
+    category: "BMS",
+    specs: bmsSpecsId[3],
+    creator: userIds[3],
+    publishStatus: "Approved",
+    editRequests: [],
+    deleteRequests: [],
+  },
+  {
+    _id: productId[10],
+    category: "Active Balancer",
+    specs: activeBalancerSpecsId[2],
     creator: userIds[2],
     publishStatus: "Approved",
     editRequests: [],
