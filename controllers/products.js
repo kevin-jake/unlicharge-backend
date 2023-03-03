@@ -127,7 +127,7 @@ export const getProducts = async (req, res, next) => {
   };
   if (!req.userData) {
     filter = { ...filter, publishStatus: "Approved" };
-  } else if (req.userData.role == "User") {
+  } else if (req.userData.role === "User") {
     filter = {
       $or: [
         { ...filter, publishStatus: "Approved" },

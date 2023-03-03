@@ -5,7 +5,8 @@ export const checkAuth = (req, res, next) => {
     return next();
   }
   try {
-    const token = req.headers.authorization.split(" ")[1]; // Authorization: 'Bearer TOKEN'
+    const token = req.headers.authorization?.split(" ")[1]; // Authorization: 'Bearer TOKEN'
+
     if (req.baseUrl != "/products") {
       if (!token) {
         throw new Error("Authentication failed!");
@@ -29,6 +30,7 @@ export const checkAuth = (req, res, next) => {
     }
     next();
   } catch (err) {
+    console.log(err);
     const error = new Error("Authentication failed!");
     error.status = 403;
     return next(error);
