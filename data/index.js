@@ -257,7 +257,7 @@ export const batterySpecs = [
     brand: "Bitek",
     supplierLink: "https://www.facebook.com/LionDecour",
     supplier: "Lion Decour",
-    type: "Lithium Ion",
+    battType: "Lithium Ion",
     nominalVoltage: 3.6,
     maxVoltage: 0,
     minVoltage: 0,
@@ -276,7 +276,7 @@ export const batterySpecs = [
     supplierLink:
       "https://shopee.ph/2021-LiitoKala-32700-LiFePO4-3.2V-6500mah-35A-continuous-discharge-55A-High-power-For-screwdriver-ba-i.499396114.10745042915?sp_atk=c305f8cd-5fb4-43a2-ad21-17c7afeacdfc",
     supplier: "LiitoKala",
-    type: "LiFePo4",
+    battType: "LiFePo4",
     nominalVoltage: 3.2,
     maxVoltage: 0,
     minVoltage: 0,
@@ -295,7 +295,7 @@ export const batterySpecs = [
     supplierLink:
       "https://shopee.ph/12V-150AH-SOLAR-GEL-Deep-Cycle-Battery-LVTOPSUN.-Solar-battery-i.500921351.10153599204?sp_atk=ce68e4e5-88a4-4a52-acad-947d6a1a3747",
     supplier: "Lvtopsun",
-    type: "Lead Acid",
+    battType: "Lead Acid",
     nominalVoltage: 12,
     maxVoltage: 0,
     minVoltage: 0,
@@ -314,7 +314,7 @@ export const batterySpecs = [
     supplierLink:
       "https://shopee.ph/32650-lifepo4-battery-6000mAh-3.2V-(PLS-READ-DESCRIPTION)-per-piece-i.45615974.2716937427",
     supplier: "Dagupan Solar",
-    type: "LiFePo4",
+    battType: "LiFePo4",
     nominalVoltage: 3.2,
     maxVoltage: 0,
     minVoltage: 0,

@@ -22,7 +22,7 @@ const BatterySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    type: {
+    battType: {
       type: String,
       required: true,
     },
