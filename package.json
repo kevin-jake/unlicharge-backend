@@ -10,6 +10,8 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.287.0",
+    "@aws-sdk/s3-request-presigner": "^3.287.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
@@ -23,6 +25,7 @@
     "moment-timezone": "^0.5.40",
     "mongoose": "^6.7.0",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "uuid4": "^2.0.3"
   },
   "keywords": [],
