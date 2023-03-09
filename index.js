@@ -12,9 +12,8 @@ import authRoutes from "./routes/auth.js";
 import requestRoutes from "./routes/requests.js";
 import productRoutes from "./routes/products.js";
 
-import { uploadPhoto } from "./controllers/imageHandling.js";
-import { register } from "./controllers/auth.js";
-import { verifyToken } from "./middleware/check-auth.js";
+import { getImage } from "./middleware/s3.js";
+import { uploadImage } from "./controllers/imageHandling.js";
 
 import User from "./models/User.js";
 import Product from "./models/Product.js";
@@ -61,9 +60,9 @@ app.use(cors());
 const storage = memoryStorage();
 const upload = multer({ storage });
 
-/* ROUTES WITH FILES */
-app.post("/auth/register", register);
-app.post("/upload", upload.single("imagePath"), uploadPhoto);
+// Images handling
+app.post("/image", upload.single("imagePath"), uploadImage);
+app.get("/image/:key(*)", getImage);
 
 /* ROUTES */
 app.use("/auth", authRoutes);

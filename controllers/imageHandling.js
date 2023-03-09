@@ -1,6 +1,6 @@
 import { uploadToS3 } from "../middleware/s3.js";
 
-export const uploadPhoto = async (req, res, next) => {
+export const uploadImage = async (req, res, next) => {
   const { file, user } = req;
   if (!file) return res.status(400).json({ message: "Bad request" });
   if (!user && !req.body.username)

@@ -1,4 +1,5 @@
 import {
+  GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -74,5 +75,26 @@ export const uploadToS3 = async ({ file, user }) => {
   } catch (error) {
     console.log(error);
     return { error };
+  }
+};
+
+export const getImage = async (req, res) => {
+  const { key } = req.params;
+  const decodedKey = decodeURIComponent(key);
+  const getObjectCommand = new GetObjectCommand({
+    Bucket: BUCKET,
+    Key: decodedKey,
+  });
+
+  try {
+    const object = await s3.send(getObjectCommand);
+    const stream = object.Body;
+    res.setHeader("Content-Type", object.ContentType);
+    res.setHeader("Content-Length", object.ContentLength);
+    res.setHeader("Content-Disposition", `inline; filename="${key}"`);
+    stream.pipe(res);
+  } catch (error) {
+    console.log(error);
+    res.status(404).send(`Object not found for key ${key}`);
   }
 };
