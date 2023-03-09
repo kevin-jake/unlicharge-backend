@@ -9,6 +9,8 @@ dotenv.config();
 
 const BUCKET = process.env.BUCKET;
 const REGION = process.env.AWS_REGION;
+const API_URL = `${process.env.APP_URL}:${process.env.PORT}`;
+
 const config = {
   region: REGION,
   credentials: {
@@ -20,9 +22,6 @@ const s3 = new S3Client(config);
 
 export const uploadToS3 = async ({ file, user }) => {
   let key = `${user?.username}/${file.originalname}`;
-  // const key = "test";
-
-  let suffix = "";
   let objectExists = false;
 
   try {
@@ -36,7 +35,6 @@ export const uploadToS3 = async ({ file, user }) => {
   } catch (error) {}
 
   if (objectExists) {
-    // If the object already exists in the bucket, add a numbered suffix to the filename
     let count = 1;
     const originalKey = key;
     while (objectExists) {
@@ -70,7 +68,7 @@ export const uploadToS3 = async ({ file, user }) => {
 
   try {
     await s3.send(uploadCommand);
-    const url = `https://${BUCKET}.s3.${REGION}.amazonaws.com/${key}`;
+    const url = `${API_URL}/image/${key}`;
     return url;
   } catch (error) {
     console.log(error);
