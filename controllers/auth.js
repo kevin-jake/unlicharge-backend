@@ -108,9 +108,15 @@ export const register = async (req, res, next) => {
 
   res.status(201).json({
     userId: newUser.id,
+    firstName: newUser.firstName,
+    lastName: newUser.lastName,
     email: newUser.email,
-    role: newUser.role,
     username: newUser.username,
+    imagePath: newUser.imagePath,
+    mobileNumber: newUser.mobileNumber,
+    location: newUser.location,
+    role: newUser.role,
+    occupation: newUser.occupation,
     token,
   });
 };
