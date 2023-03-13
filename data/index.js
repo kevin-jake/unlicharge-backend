@@ -256,7 +256,7 @@ export const batterySpecs = [
   {
     _id: batterySpecsId[0],
     name: "18650 EVE",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "Bitek",
     supplierLink: "https://www.facebook.com/LionDecour",
     supplier: "Lion Decour",
@@ -274,7 +274,7 @@ export const batterySpecs = [
   {
     _id: batterySpecsId[1],
     name: "2021 LiitoKala 32700 LiFePO4 3.2V 6500mah 35A",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "LiitoKala",
     supplierLink:
       "https://shopee.ph/2021-LiitoKala-32700-LiFePO4-3.2V-6500mah-35A-continuous-discharge-55A-High-power-For-screwdriver-ba-i.499396114.10745042915?sp_atk=c305f8cd-5fb4-43a2-ad21-17c7afeacdfc",
@@ -293,7 +293,7 @@ export const batterySpecs = [
   {
     _id: batterySpecsId[2],
     name: "12V 150AH SOLAR GEL Deep Cycle Battery LVTOPSUN",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "Lvtopsun",
     supplierLink:
       "https://shopee.ph/12V-150AH-SOLAR-GEL-Deep-Cycle-Battery-LVTOPSUN.-Solar-battery-i.500921351.10153599204?sp_atk=ce68e4e5-88a4-4a52-acad-947d6a1a3747",
@@ -312,7 +312,7 @@ export const batterySpecs = [
   {
     _id: batterySpecsId[3],
     name: "32650 6ah",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "32650 Generic",
     supplierLink:
       "https://shopee.ph/32650-lifepo4-battery-6000mAh-3.2V-(PLS-READ-DESCRIPTION)-per-piece-i.45615974.2716937427",
@@ -341,7 +341,7 @@ export const bmsSpecs = [
   {
     _id: bmsSpecsId[0],
     name: "Daly bms discharge/ charge current BMS for Lifepo4",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "Daly",
     supplierLink:
       "https://shopee.ph/Daly-bms-discharge-charge-current-BMS-for-Lifepo4-i.298508939.4449568123?sp_atk=e0bb3f3e-e9ab-4d60-a321-50da5bd04755&xptdk=e0bb3f3e-e9ab-4d60-a321-50da5bd04755",
@@ -360,7 +360,7 @@ export const bmsSpecs = [
   {
     _id: bmsSpecsId[1],
     name: "JK SMART BMS 12v 24v 48v Active Balance 7S to 24S 40A to 200A Lifepo4 Lithium ion 32700 21700 18650",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "JK",
     supplierLink:
       "https://shopee.ph/JK-SMART-BMS-12v-24v-48v-Active-Balance-7S-to-24S-40A-to-200A-Lifepo4-Lithium-ion-32700-21700-18650-i.16612090.18814255632?sp_atk=8d352451-2e1b-48f0-b08a-8a991c5fcf7d&xptdk=8d352451-2e1b-48f0-b08a-8a991c5fcf7d",
@@ -379,7 +379,7 @@ export const bmsSpecs = [
   {
     _id: bmsSpecsId[2],
     name: "16S 3.2V  LFP 100A Same Port With Bluetooth Module",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "JBD",
     supplierLink:
       "https://shopee.ph/JBD-BMS-Lifepo4-12V-24V-48V-4S-8S-16S-100A-Same-Port-With-Passive-Balance-Included-Bluetooth-Module-BMS-for-Lifepo4-Battery-for-Lithium-Battery-Applied-in-Electic-vehicles-Storage-Inverter-and-Caravan-Cars-i.564409672.15818548812?sp_atk=b86ca57e-fa13-46fb-ae1e-4a0552f90844&xptdk=b86ca57e-fa13-46fb-ae1e-4a0552f90844",
@@ -398,7 +398,7 @@ export const bmsSpecs = [
   {
     _id: bmsSpecsId[3],
     name: "8S 3.2V  LFP 100A Same Port With Bluetooth Module",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "JBD",
     supplierLink:
       "https://shopee.ph/JBD-BMS-Lifepo4-12V-24V-48V-4S-8S-16S-100A-Same-Port-With-Passive-Balance-Included-Bluetooth-Module-BMS-for-Lifepo4-Battery-for-Lithium-Battery-Applied-in-Electic-vehicles-Storage-Inverter-and-Caravan-Cars-i.564409672.15818548812?sp_atk=b86ca57e-fa13-46fb-ae1e-4a0552f90844&xptdk=b86ca57e-fa13-46fb-ae1e-4a0552f90844",
@@ -426,7 +426,7 @@ export const activeBalancerSpecs = [
   {
     _id: activeBalancerSpecsId[0],
     name: "Active balancer 3S 4S 8S 12S Li-ion Lifepo4 lithium battery active equalizer",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "Generic",
     supplierLink:
       "https://shopee.ph/Active-balancer-3S-4S-8S-12S-Li-ion-Lifepo4-lithium-battery-active-equalizer-i.498737510.21956687321?sp_atk=df0d4826-3a1e-42d4-b08a-b40dea965f99&xptdk=df0d4826-3a1e-42d4-b08a-b40dea965f99",
@@ -443,7 +443,7 @@ export const activeBalancerSpecs = [
   {
     _id: activeBalancerSpecsId[1],
     name: "6S 7S 8S 5A 6A Active Equalizer Balancer/8s equalizer Lifepo4 Lithium Lipo LTO Energy transfer",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "Generic",
     supplierLink:
       "https://shopee.ph/6S-7S-8S-5A-6A-Active-Equalizer-Balancer-8s-equalizer-Lifepo4-Lithium-Lipo-LTO-Energy-transfe-i.306592453.11771884792?sp_atk=021c4de0-7df3-43ef-b9e3-6f4ea7c9129a&xptdk=021c4de0-7df3-43ef-b9e3-6f4ea7c9129a",
@@ -460,7 +460,7 @@ export const activeBalancerSpecs = [
   {
     _id: activeBalancerSpecsId[2],
     name: "Daly 3S 1A",
-    imagePath: "public/assets/info2.jpeg",
+    imagePath: "/test.jpg",
     brand: "Daly",
     supplierLink:
       "https://shopee.ph/3S-4S-8S-Balance-Li-ion-Lifepo4-LTO-Lithium-Battery-Active-Equalizer-Balancer-Board-CapacitorBMS-i.18252381.18643600287?sp_atk=374b8628-a572-4e54-95c3-eadc27430c2d&xptdk=374b8628-a572-4e54-95c3-eadc27430c2d",
