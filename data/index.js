@@ -35,6 +35,7 @@ export const users = [
     lastLogin: 1595589072,
     createdAt: 1595589072,
     updatedAt: 1595589072,
+    occupation: "Administrator",
     location: "Lipa",
     role: "Admin",
   },
@@ -50,6 +51,7 @@ export const users = [
     lastLogin: 1595589072,
     createdAt: 1595589072,
     updatedAt: 1595589072,
+    occupation: "Electrician",
     location: "Asgard",
     role: "User",
   },
@@ -65,6 +67,7 @@ export const users = [
     lastLogin: 1219214568,
     createdAt: 1219214568,
     updatedAt: 1219214568,
+    occupation: "Solar Installer",
     location: "Miami",
     role: "User",
   },
@@ -80,6 +83,7 @@ export const users = [
     lastLogin: 1219214568,
     createdAt: 1219214568,
     updatedAt: 1219214568,
+    occupation: "Hobbyist",
     location: "Germany",
     role: "User",
   },
@@ -95,12 +99,11 @@ export const users = [
     lastLogin: 1381326073,
     createdAt: 1381326073,
     updatedAt: 1381326073,
+    occupation: "Hobbyist",
     location: "New York",
     role: "User",
   },
 ];
-
-// export const posts = [
 //   {
 //     _id: new mongoose.Types.ObjectId(),
 //     userId: userIds[1],

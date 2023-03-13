@@ -166,6 +166,10 @@ export const createEditRequest = async (req, res, next) => {
 
   // Save Edit Request ID on the Product editRequests field
   existingProduct.editRequests.push(createdEditReq.id);
+  if (existingProduct.publishStatus === "Approved") {
+    existingProduct.specs = newSpec.id;
+    existingProduct.previousData = existingProduct.specs;
+  }
   try {
     await existingProduct.save();
   } catch (err) {
