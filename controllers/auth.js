@@ -144,8 +144,9 @@ export const login = async (req, res, next) => {
 
   if (!existingUser) {
     const error = new Error("Invalid credentials, could not log you in.");
-    error.status = 403;
-    return next(error);
+    console.log(error);
+    // TODO: Change all error messages to this format
+    return res.status(403).json({ message: error.message });
   }
 
   let isValidPassword = false;
