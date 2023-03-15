@@ -166,7 +166,7 @@ export const createEditRequest = async (req, res, next) => {
 
   // Save Edit Request ID on the Product editRequests field
   existingProduct.editRequests.push(createdEditReq.id);
-  if (existingProduct.publishStatus === "Approved") {
+  if (editReqStatus === "Approved") {
     existingProduct.specs = newSpec.id;
     existingProduct.previousData = existingProduct.specs;
   }
@@ -792,7 +792,7 @@ export const getEditRequests = async (req, res, next) => {
 
   // Only show your own edit requests if not the admin
   let filter;
-  if (req.userData.role != "Admin") {
+  if (req.userData.role === "Admin") {
     filter = { category };
   } else {
     filter = { category, requestor: req.userData.userId };
