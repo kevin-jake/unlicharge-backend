@@ -77,12 +77,9 @@ export const createProduct = async (req, res, next) => {
   try {
     await newSpec.save();
   } catch (err) {
-    const error = new Error(
-      `Creating ${category} failed, please try again.`,
-      500
-    );
+    const error = new Error(`Creating ${category} failed, please try again.`);
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Creating variable for of new Product
@@ -99,20 +96,19 @@ export const createProduct = async (req, res, next) => {
     await newSpec.save();
   } catch (err) {
     const error = new Error(
-      `Updating ${category} productId failed, please try again.`,
-      500
+      `Updating ${category} productId failed, please try again.`
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Saving of new Product
   try {
     await createdProduct.save();
   } catch (err) {
-    const error = new Error("Creating Product failed, please try again.", 500);
+    const error = new Error("Creating Product failed, please try again.");
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   res.status(201).json({ product: createdProduct });
@@ -152,7 +148,7 @@ export const getProducts = async (req, res, next) => {
       `Something went wrong, could not find the Product - ${category}`
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // console.log("🚀 ~ file: products.js:150 ~ getProducts ~ products:", products);
@@ -196,7 +192,7 @@ export const getProductById = async (req, res, next) => {
       `Something went wrong, could not find the Product - ${category}`
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   res.json({

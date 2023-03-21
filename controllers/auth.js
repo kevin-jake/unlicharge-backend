@@ -22,9 +22,8 @@ export const register = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Invalid inputs passed, please check your data.");
-    error.status = 422;
     console.log(err);
-    return next(error);
+    return res.status(422).json({ message: error.message });
   }
 
   let existingUser;
@@ -38,9 +37,8 @@ export const register = async (req, res, next) => {
     });
   } catch (err) {
     const error = new Error("Signing up failed, please try again later.");
-    error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   if (existingUser) {
@@ -48,7 +46,7 @@ export const register = async (req, res, next) => {
       "User, Email or Mobile Number exists already, please login instead."
     );
     error.status = 422;
-    return next(error);
+    return res.status(422).json({ message: error.message });
   }
 
   let hashedPassword;
@@ -58,7 +56,7 @@ export const register = async (req, res, next) => {
     const error = new Error("Could not create user, please try again.");
     error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   const datePh = moment.tz(Date.now(), "Asia/Manila").format();
@@ -82,7 +80,7 @@ export const register = async (req, res, next) => {
     const error = new Error("Signing up failed, please try again later.");
     error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   let token;
@@ -101,7 +99,7 @@ export const register = async (req, res, next) => {
     const error = new Error("Signing up failed, please try again later.");
     error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   console.log("[" + datePh + `] New User ${username} (${email}) Registered!`);
@@ -139,7 +137,7 @@ export const login = async (req, res, next) => {
     const error = new Error("Logging in failed, please try again later.");
     error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   if (!existingUser) {
@@ -158,13 +156,13 @@ export const login = async (req, res, next) => {
     );
     error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   if (!isValidPassword) {
     const error = new Error("Invalid credentials, could not log you in.");
     error.status = 403;
-    return next(error);
+    return res.status(403).json({ message: error.message });
   }
 
   let token;
@@ -184,7 +182,7 @@ export const login = async (req, res, next) => {
     const error = new Error("Logging in failed, please try again later.");
     error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   const datePh = moment.tz(Date.now(), "Asia/Manila").format();
 
@@ -201,7 +199,7 @@ export const login = async (req, res, next) => {
     const error = new Error("Saving failed, please try again later.");
     error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   const response = {

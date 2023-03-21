@@ -8,9 +8,8 @@ export const getUsers = async (req, res, next) => {
     users = await User.find({}, "-password");
   } catch (err) {
     const error = new Error("Fetching users failed, please try again later.");
-    error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
@@ -24,16 +23,14 @@ export const getUsersById = async (req, res, next) => {
     user = await User.findById(userId);
   } catch (err) {
     const error = new Error("Something went wrong, could not find the User.");
-    error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   if (!user) {
     const error = new Error("Could not find User for the provided uid.");
-    error.status = 404;
     console.log(err);
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
 
   res.json({ user: user.toObject({ getters: true }) });

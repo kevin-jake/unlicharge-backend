@@ -32,7 +32,6 @@ export const checkAuth = (req, res, next) => {
   } catch (err) {
     console.log(err);
     const error = new Error("Authentication failed!");
-    error.status = 403;
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
 };

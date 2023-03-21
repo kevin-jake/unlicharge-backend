@@ -26,19 +26,15 @@ export const createEditRequest = async (req, res, next) => {
       category: category,
     });
   } catch (err) {
-    const error = new Error(
-      "Finding product failed, please try again later.",
-      500
-    );
+    const error = new Error("Finding product failed, please try again later.");
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   if (!existingProduct) {
     const error = new Error(
-      `Product ID not found on category: ${category}. Please enter a valid product ID.`,
-      404
+      `Product ID not found on category: ${category}. Please enter a valid product ID.`
     );
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
 
   //TODO: Improve status changing
@@ -121,30 +117,25 @@ export const createEditRequest = async (req, res, next) => {
       .populate("specCreator", "username");
   } catch (err) {
     const error = new Error(
-      "Finding duplicate request failed. Please try again.",
-      500
+      "Finding duplicate request failed. Please try again."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   if (duplicateRequest.length != 0) {
     const error = new Error(
-      `There is a duplicate request by ${duplicateRequest[0].specCreator.username}, no need to request. Please wait for the request to be approved.`,
-      400
+      `There is a duplicate request by ${duplicateRequest[0].specCreator.username}, no need to request. Please wait for the request to be approved.`
     );
-    return next(error);
+    return res.status(400).json({ message: error.message });
   }
 
   // Saving of new specs on the table
   try {
     await newSpec.save();
   } catch (err) {
-    const error = new Error(
-      `Creating ${category} failed, please try again.`,
-      500
-    );
+    const error = new Error(`Creating ${category} failed, please try again.`);
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Create Edit Request if specs creation is successful
@@ -174,23 +165,19 @@ export const createEditRequest = async (req, res, next) => {
     await existingProduct.save();
   } catch (err) {
     const error = new Error(
-      "Saving Product edit request failed, please try again.",
-      500
+      "Saving Product edit request failed, please try again."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Saving of Edit Request on the EditRequests table
   try {
     await createdEditReq.save();
   } catch (err) {
-    const error = new Error(
-      "Creating Edit Request failed, please try again.",
-      500
-    );
+    const error = new Error("Creating Edit Request failed, please try again.");
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   res.status(201).json({ editRequest: createdEditReq });
@@ -224,11 +211,10 @@ export const approveEditRequest = async (req, res, next) => {
     );
   } catch (err) {
     const error = new Error(
-      "Finding edit requests failed, please try again later.",
-      500
+      "Finding edit requests failed, please try again later."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Get Product details
@@ -238,13 +224,12 @@ export const approveEditRequest = async (req, res, next) => {
   } catch (err) {
     const error = new Error("Finding product failed, please try again later.");
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   if (!product) {
     const error = new Error(`Product ID - (${req.params.productId}) not found`);
-    error.status = 404;
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
 
   // Updating Edit Request
@@ -259,9 +244,8 @@ export const approveEditRequest = async (req, res, next) => {
     await editRequest.save();
   } catch (err) {
     const error = new Error(`Updating edit request failed, please try again.`);
-    error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Updating (Battery, BMS, Active Balancer) spec table
@@ -273,9 +257,8 @@ export const approveEditRequest = async (req, res, next) => {
     const error = new Error(
       `Finding specs for edit request failed, please try again.`
     );
-    error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   try {
     await mongoose
@@ -285,9 +268,8 @@ export const approveEditRequest = async (req, res, next) => {
     const error = new Error(
       `Finding specs for edit request failed, please try again.`
     );
-    error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Updating the Product
@@ -308,11 +290,10 @@ export const approveEditRequest = async (req, res, next) => {
     });
   } catch (err) {
     const error = new Error(
-      "Approving Product edit request failed, please try again.",
-      500
+      "Approving Product edit request failed, please try again."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   res.status(201).json({ newProduct: newProduct });
 };
@@ -335,13 +316,12 @@ export const approveCreateRequest = async (req, res, next) => {
   } catch (err) {
     const error = new Error("Finding product failed, please try again later.");
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   if (!product) {
     const error = new Error(`Product ID - (${req.params.productId}) not found`);
-    error.status = 404;
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
   // Updating the Product
   let approvedProduct = {
@@ -356,11 +336,10 @@ export const approveCreateRequest = async (req, res, next) => {
     );
   } catch (err) {
     const error = new Error(
-      "Approving Product create request failed, please try again.",
-      500
+      "Approving Product create request failed, please try again."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   res.status(201).json({ approvedProduct: approvedProduct });
 };
@@ -391,11 +370,10 @@ export const rejectEditRequest = async (req, res, next) => {
     );
   } catch (err) {
     const error = new Error(
-      "Finding edit requests failed, please try again later.",
-      500
+      "Finding edit requests failed, please try again later."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Updating Edit Request
@@ -407,19 +385,17 @@ export const rejectEditRequest = async (req, res, next) => {
     });
   } else {
     const error = new Error(
-      "Comment is required please input a comment before rejecting",
-      500
+      "Comment is required please input a comment before rejecting"
     );
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   try {
     await editRequest.save();
   } catch (err) {
     const error = new Error(`Updating edit request failed, please try again.`);
-    error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   res.status(201).json({ editRequest: editRequest });
@@ -450,11 +426,10 @@ export const updateEditRequest = async (req, res, next) => {
     );
   } catch (err) {
     const error = new Error(
-      "Finding edit requests failed, please try again later.",
-      500
+      "Finding edit requests failed, please try again later."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Initialize Specs creation
@@ -512,12 +487,9 @@ export const updateEditRequest = async (req, res, next) => {
       .model(category)
       .findByIdAndUpdate(editRequest.newSpecs.id, updatedSpec, { new: true });
   } catch (err) {
-    const error = new Error(
-      `Creating ${category} failed, please try again.`,
-      500
-    );
+    const error = new Error(`Creating ${category} failed, please try again.`);
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   res.status(201).json(updatedSpecs);
@@ -540,19 +512,15 @@ export const createDeleteRequest = async (req, res, next) => {
       category: category,
     });
   } catch (err) {
-    const error = new Error(
-      "Finding product failed, please try again later.",
-      500
-    );
+    const error = new Error("Finding product failed, please try again later.");
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   if (!existingProduct) {
     const error = new Error(
-      `Product ID not found on category: ${category}. Please enter a valid product ID.`,
-      404
+      `Product ID not found on category: ${category}. Please enter a valid product ID.`
     );
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
 
   //TODO: Improve status changing
@@ -576,18 +544,16 @@ export const createDeleteRequest = async (req, res, next) => {
     }).populate("requestor", "username");
   } catch (err) {
     const error = new Error(
-      "Finding duplicate request failed. Please try again.",
-      500
+      "Finding duplicate request failed. Please try again."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   if (duplicateRequest.length != 0) {
     const error = new Error(
-      `There is a duplicate request by ${duplicateRequest[0].requestor.username}, no need to request. Please wait for the request to be approved.`,
-      400
+      `There is a duplicate request by ${duplicateRequest[0].requestor.username}, no need to request. Please wait for the request to be approved.`
     );
-    return next(error);
+    return res.status(400).json({ message: error.message });
   }
 
   // Create Delete Request if specs creation is successful
@@ -613,11 +579,10 @@ export const createDeleteRequest = async (req, res, next) => {
     delReq = await createdDelReq.save();
   } catch (err) {
     const error = new Error(
-      "Creating Delete Request failed, please try again.",
-      500
+      "Creating Delete Request failed, please try again."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Save new Product status
@@ -629,11 +594,10 @@ export const createDeleteRequest = async (req, res, next) => {
     await existingProduct.save();
   } catch (err) {
     const error = new Error(
-      "Saving Product delete request failed, please try again.",
-      500
+      "Saving Product delete request failed, please try again."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   res.status(201).json({ deleteRequest: createdDelReq });
@@ -664,11 +628,10 @@ export const approveDeleteRequest = async (req, res, next) => {
     deleteRequest = await DeleteRequest.findById(req.body.reqId);
   } catch (err) {
     const error = new Error(
-      "Finding delete requests failed, please try again later.",
-      500
+      "Finding delete requests failed, please try again later."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Get Product details
@@ -678,13 +641,12 @@ export const approveDeleteRequest = async (req, res, next) => {
   } catch (err) {
     const error = new Error("Finding product failed, please try again later.");
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   if (!product) {
     const error = new Error(`Product ID - (${req.params.productId}) not found`);
-    error.status = 404;
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
 
   // Updating Delete Request
@@ -701,9 +663,8 @@ export const approveDeleteRequest = async (req, res, next) => {
     const error = new Error(
       `Updating delete request failed, please try again.`
     );
-    error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Updating the Product publishStatus to Deleted
@@ -718,11 +679,10 @@ export const approveDeleteRequest = async (req, res, next) => {
     });
   } catch (err) {
     const error = new Error(
-      "Approving Product delete request failed, please try again.",
-      500
+      "Approving Product delete request failed, please try again."
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
   res.status(201).json({ deletedProduct: deletedProduct });
 };
@@ -753,9 +713,8 @@ export const rejectDeleteRequest = async (req, res, next) => {
     const error = new Error(
       "Finding delete requests failed, please try again later."
     );
-    error.status = 404;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   // Updating Delete Request
@@ -767,19 +726,17 @@ export const rejectDeleteRequest = async (req, res, next) => {
     });
   } else {
     const error = new Error(
-      "Comment is required please input a comment before rejecting",
-      500
+      "Comment is required please input a comment before rejecting"
     );
-    return next(error);
+    return res.status(400).json({ message: error.message });
   }
 
   try {
     await deleteRequest.save();
   } catch (err) {
     const error = new Error(`Updating edit request failed, please try again.`);
-    error.status = 500;
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   res.status(201).json({ deleteRequest: deleteRequest });
@@ -819,7 +776,7 @@ export const getEditRequests = async (req, res, next) => {
       `Something went wrong, could not find the Edit Request - ${category}`
     );
     console.log(err);
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 
   res.json({
@@ -862,7 +819,7 @@ export const getEditRequestByProductId = async (req, res, next) => {
       `Something went wrong, could not find the Edit Request - ${category}`
     );
     console.log(err);
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
 
   res.json({
@@ -898,7 +855,7 @@ export const getDeleteRequests = async (req, res, next) => {
       `Something went wrong, could not find the Delete Request - ${category}`
     );
     console.log(err);
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
 
   res.json({
@@ -934,7 +891,7 @@ export const getDeleteRequestByProductId = async (req, res, next) => {
       `Something went wrong, could not find the Delete Request - ${category}`
     );
     console.log(err);
-    return next(error);
+    return res.status(404).json({ message: error.message });
   }
 
   res.json({
