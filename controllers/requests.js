@@ -743,6 +743,46 @@ export const rejectDeleteRequest = async (req, res, next) => {
 };
 
 /* READ */
+export const getCreateRequests = async (req, res, next) => {
+  let createRequests;
+  const category = categoryFormat(req.params.category);
+
+  // Only show your own edit requests if not the admin
+  let filter;
+  if (req.userData.role === "Admin") {
+    filter = { category, publishStatus: "Request" };
+  } else {
+    filter = {
+      category,
+      publishStatus: "Request",
+      creator: req.userData.userId,
+    };
+  }
+  try {
+    createRequests = await Product.find(filter, "-previousData")
+      .populate({
+        path: "specs",
+        populate: {
+          path: "specCreator",
+          select: "username",
+        },
+      })
+      .populate({ path: "creator", select: "username imagePath" });
+  } catch (err) {
+    const error = new Error(
+      `Something went wrong, could not find the Create Request - ${category}`
+    );
+    console.log(err);
+    return res.status(500).json({ message: error.message });
+  }
+
+  res.json({
+    createRequests: createRequests.map((createRequest) =>
+      createRequest.toObject({ getters: true })
+    ),
+  });
+};
+
 export const getEditRequests = async (req, res, next) => {
   let editRequests;
   const category = categoryFormat(req.params.category);
@@ -761,6 +801,12 @@ export const getEditRequests = async (req, res, next) => {
         populate: {
           path: "specCreator",
           select: "username",
+        },
+      })
+      .populate({
+        path: "requestedProduct",
+        populate: {
+          path: "specs",
         },
       })
       .populate({ path: "requestor", select: "username imagePath" })
@@ -843,6 +889,13 @@ export const getDeleteRequests = async (req, res, next) => {
   try {
     deleteRequests = await DeleteRequest.find(filter)
       .populate({ path: "requestor", select: "username imagePath" })
+      .populate({
+        path: "requestedProduct",
+        populate: {
+          path: "specs",
+          select: "name",
+        },
+      })
       .populate({
         path: "comment",
         populate: {

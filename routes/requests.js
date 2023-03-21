@@ -5,6 +5,7 @@ import {
   approveEditRequest,
   createDeleteRequest,
   createEditRequest,
+  getCreateRequests,
   getDeleteRequestByProductId,
   getDeleteRequests,
   getEditRequestByProductId,
@@ -20,6 +21,7 @@ const router = express.Router();
 router.use(checkAuth);
 
 // GET
+router.get("/:category/create", getCreateRequests);
 router.get("/:category/edit", getEditRequests);
 router.get("/:category/:productId/edit", getEditRequestByProductId);
 router.get("/:category/delete", getDeleteRequests);
