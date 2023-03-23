@@ -814,7 +814,7 @@ export const deleteRequests = [
   {
     _id: deleteRequestsId[2],
     requestedProduct: productABActIronWithReq,
-    category: "BMS",
+    category: "ActiveBalancer",
     status: "Rejected",
     requestor: thor,
     deleteReason: "Just want to delete it",
