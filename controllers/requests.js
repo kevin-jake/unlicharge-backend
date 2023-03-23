@@ -794,7 +794,7 @@ export const getEditRequests = async (req, res, next) => {
   } else {
     filter = { category, requestor: req.userData.userId };
   }
-  console.log("🚀 ~ file: requests.js:796 ~ getEditRequests ~ filter:", filter);
+
   try {
     editRequests = await EditRequest.find(filter)
       .populate({
@@ -824,6 +824,17 @@ export const getEditRequests = async (req, res, next) => {
     );
     console.log(err);
     return res.status(500).json({ message: error.message });
+  }
+
+  if (req.query.isMyRequestOnly === "false") {
+    editRequests = editRequests.filter((editRequest) => {
+      const requestedProduct = editRequest.requestedProduct;
+      return (
+        !requestedProduct ||
+        requestedProduct.creator.toString() === req.userData.userId ||
+        editRequest.requestor._id.toString() === req.userData.userId
+      );
+    });
   }
 
   res.json({
@@ -882,7 +893,7 @@ export const getDeleteRequests = async (req, res, next) => {
 
   // Only show your own edit requests if not the admin
   let filter;
-  if (req.userData.role === "Admin") {
+  if (req.userData.role === "Admin" || req.query.isMyRequestOnly === "false") {
     filter = { category };
   } else {
     filter = { category, requestor: req.userData.userId };
@@ -910,6 +921,17 @@ export const getDeleteRequests = async (req, res, next) => {
     );
     console.log(err);
     return res.status(404).json({ message: error.message });
+  }
+
+  if (req.query.isMyRequestOnly === "false") {
+    deleteRequests = deleteRequests.filter((deleteRequest) => {
+      const requestedProduct = deleteRequest.requestedProduct;
+      return (
+        !requestedProduct ||
+        requestedProduct.creator.toString() === req.userData.userId ||
+        deleteRequest.requestor._id.toString() === req.userData.userId
+      );
+    });
   }
 
   res.json({
