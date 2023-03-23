@@ -794,6 +794,7 @@ export const getEditRequests = async (req, res, next) => {
   } else {
     filter = { category, requestor: req.userData.userId };
   }
+  console.log("🚀 ~ file: requests.js:796 ~ getEditRequests ~ filter:", filter);
   try {
     editRequests = await EditRequest.find(filter)
       .populate({
@@ -881,11 +882,12 @@ export const getDeleteRequests = async (req, res, next) => {
 
   // Only show your own edit requests if not the admin
   let filter;
-  if (req.userData.role != "Admin") {
+  if (req.userData.role === "Admin") {
     filter = { category };
   } else {
     filter = { category, requestor: req.userData.userId };
   }
+
   try {
     deleteRequests = await DeleteRequest.find(filter)
       .populate({ path: "requestor", select: "username imagePath" })
