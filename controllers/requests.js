@@ -614,6 +614,7 @@ export const approveDeleteRequest = async (req, res, next) => {
   // Add comments to comment field.
   // Add editor and approver on Product editor and approvedBy fields.
 
+  // TODO: Add error handling for deleted products
   const errors = validationResult(req);
   const category = categoryFormat(req.params.category);
   if (!errors.isEmpty()) {
@@ -698,6 +699,7 @@ export const rejectDeleteRequest = async (req, res, next) => {
   // Add comments to comment field reject comment is required.
   // Add userid on comment.
 
+  // TODO: Add error handling for deleted products
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -788,13 +790,13 @@ export const getEditRequests = async (req, res, next) => {
   const category = categoryFormat(req.params.category);
 
   // Only show your own edit requests if not the admin
+  // TODO: Add status filters for "Deleted" products
   let filter;
-  if (req.userData.role === "Admin") {
+  if (req.userData.role === "Admin" || req.query.isMyRequestOnly === "false") {
     filter = { category };
   } else {
     filter = { category, requestor: req.userData.userId };
   }
-
   try {
     editRequests = await EditRequest.find(filter)
       .populate({
@@ -807,7 +809,7 @@ export const getEditRequests = async (req, res, next) => {
       .populate({
         path: "requestedProduct",
         populate: {
-          path: "specs",
+          path: "specs creator",
         },
       })
       .populate({ path: "requestor", select: "username imagePath" })
@@ -831,7 +833,7 @@ export const getEditRequests = async (req, res, next) => {
       const requestedProduct = editRequest.requestedProduct;
       return (
         !requestedProduct ||
-        requestedProduct.creator.toString() === req.userData.userId ||
+        requestedProduct.creator._id.toString() === req.userData.userId ||
         editRequest.requestor._id.toString() === req.userData.userId
       );
     });
@@ -905,7 +907,7 @@ export const getDeleteRequests = async (req, res, next) => {
       .populate({
         path: "requestedProduct",
         populate: {
-          path: "specs",
+          path: "specs creator",
         },
       })
       .populate({
@@ -928,7 +930,7 @@ export const getDeleteRequests = async (req, res, next) => {
       const requestedProduct = deleteRequest.requestedProduct;
       return (
         !requestedProduct ||
-        requestedProduct.creator.toString() === req.userData.userId ||
+        requestedProduct.creator._id.toString() === req.userData.userId ||
         deleteRequest.requestor._id.toString() === req.userData.userId
       );
     });
