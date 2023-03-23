@@ -26,6 +26,8 @@ import {
   activeBalancerSpecs,
   batterySpecs,
   bmsSpecs,
+  deleteRequests,
+  editRequests,
   products,
   users,
 } from "./data/index.js";
@@ -101,8 +103,8 @@ mongoose
     // BMS.insertMany(bmsSpecs);
     // ActiveBalancer.insertMany(activeBalancerSpecs);
     // Product.insertMany(products);
-    // EditRequest.deleteMany({});
-    // DeleteRequest.deleteMany({});
+    // EditRequest.insertMany(editRequests);
+    // DeleteRequest.insertMany(deleteRequests);
   })
   .catch((err) => {
     console.log(err);

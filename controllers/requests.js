@@ -124,7 +124,7 @@ export const createEditRequest = async (req, res, next) => {
   }
   if (duplicateRequest.length != 0) {
     const error = new Error(
-      `There is a duplicate request by ${duplicateRequest[0].specCreator.username}, no need to request. Please wait for the request to be approved.`
+      `There is a duplicate request by ${duplicateRequest[0].specCreator?.username}, no need to request. Please wait for the request to be approved.`
     );
     return res.status(400).json({ message: error.message });
   }
@@ -764,7 +764,7 @@ export const getCreateRequests = async (req, res, next) => {
         path: "specs",
         populate: {
           path: "specCreator",
-          select: "username",
+          select: "username imagePath",
         },
       })
       .populate({ path: "creator", select: "username imagePath" });
@@ -800,7 +800,7 @@ export const getEditRequests = async (req, res, next) => {
         path: "newSpecs",
         populate: {
           path: "specCreator",
-          select: "username",
+          select: "username imagePath",
         },
       })
       .populate({
@@ -849,7 +849,7 @@ export const getEditRequestByProductId = async (req, res, next) => {
         path: "newSpecs",
         populate: {
           path: "specCreator",
-          select: "username",
+          select: "username imagePath",
         },
       })
       .populate({ path: "requestor", select: "username imagePath" })
@@ -893,7 +893,6 @@ export const getDeleteRequests = async (req, res, next) => {
         path: "requestedProduct",
         populate: {
           path: "specs",
-          select: "name",
         },
       })
       .populate({

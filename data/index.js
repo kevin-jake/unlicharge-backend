@@ -22,9 +22,27 @@ const productId = [
   new mongoose.Types.ObjectId(),
 ];
 
+const admin = userIds[0];
+const thor = userIds[1];
+const ironman = userIds[2];
+const capAmerica = userIds[3];
+const spiderman = userIds[4];
+
+const productBattReqThor = productId[0];
+const productBattActiveThor = productId[1];
+const productBMSReqThor = productId[2];
+const productABReqIron = productId[3];
+const productBMSReqIron = productId[4];
+const productBattActAdmin = productId[5];
+const productBattActiveThorWithReq = productId[6];
+const productABActIron = productId[7];
+const productBMSActCap = productId[8];
+const productBMSActCapWithReq = productId[9];
+const productABActIronWithReq = productId[10];
+
 export const users = [
   {
-    _id: userIds[0],
+    _id: admin,
     username: "admin",
     firstName: "Administrator",
     lastName: "Casala",
@@ -40,13 +58,13 @@ export const users = [
     role: "Admin",
   },
   {
-    _id: userIds[1],
+    _id: thor,
     username: "thor",
     firstName: "Thor",
     lastName: "Odinson",
     email: "thor@marvel.com",
     password: "$2b$12$IvcJ9EblPMJ7Ehm4GMmtdO8JWGINCHmRnbWHoo4v35E3SGGGb1.D6",
-    imagePath: "public/assets/p3.jpeg",
+    imagePath: "http://localhost:5000/image/thor/thor.png",
     mobileNumber: "09323345672",
     lastLogin: 1595589072,
     createdAt: 1595589072,
@@ -56,13 +74,13 @@ export const users = [
     role: "User",
   },
   {
-    _id: userIds[2],
+    _id: ironman,
     username: "ironman",
     firstName: "Tony",
     lastName: "Stark",
     email: "ilove3000@marvel.com",
     password: "$2b$12$IvcJ9EblPMJ7Ehm4GMmtdO8JWGINCHmRnbWHoo4v35E3SGGGb1.D6",
-    imagePath: "public/assets/p3.jpeg",
+    imagePath: "http://localhost:5000/image/ironman/ironman.png",
     mobileNumber: "09323345673",
     lastLogin: 1219214568,
     createdAt: 1219214568,
@@ -72,13 +90,13 @@ export const users = [
     role: "User",
   },
   {
-    _id: userIds[3],
+    _id: capAmerica,
     username: "capAmerica",
     firstName: "Steve",
     lastName: "Rogers",
     email: "avengers@marvel.com",
     password: "$2b$12$IvcJ9EblPMJ7Ehm4GMmtdO8JWGINCHmRnbWHoo4v35E3SGGGb1.D6",
-    imagePath: "public/assets/p3.jpeg",
+    imagePath: "http://localhost:5000/image/capAmerica/cap.png",
     mobileNumber: "09323345674",
     lastLogin: 1219214568,
     createdAt: 1219214568,
@@ -88,13 +106,13 @@ export const users = [
     role: "User",
   },
   {
-    _id: userIds[4],
+    _id: spiderman,
     username: "spiderman",
     firstName: "Peter",
     lastName: "Parker",
     email: "spidey@marvel.com",
     password: "$2b$12$IvcJ9EblPMJ7Ehm4GMmtdO8JWGINCHmRnbWHoo4v35E3SGGGb1.D6",
-    imagePath: "public/assets/p3.jpeg",
+    imagePath: "http://localhost:5000/image/spiderman/spidey.png",
     mobileNumber: "09323345675",
     lastLogin: 1381326073,
     createdAt: 1381326073,
@@ -106,7 +124,7 @@ export const users = [
 ];
 //   {
 //     _id: new mongoose.Types.ObjectId(),
-//     userId: userIds[1],
+//     userId: thor,
 //     firstName: "Steve",
 //     lastName: "Ralph",
 //     location: "New York, CA",
@@ -114,10 +132,10 @@ export const users = [
 //     picturePath: "post1.jpeg",
 //     userPicturePath: "p3.jpeg",
 //     likes: new Map([
-//       [userIds[0], true],
-//       [userIds[2], true],
-//       [userIds[3], true],
-//       [userIds[4], true],
+//       [admin, true],
+//       [ironman, true],
+//       [capAmerica, true],
+//       [spiderman, true],
 //     ]),
 //     comments: [
 //       "random comment",
@@ -127,7 +145,7 @@ export const users = [
 //   },
 //   {
 //     _id: new mongoose.Types.ObjectId(),
-//     userId: userIds[3],
+//     userId: capAmerica,
 //     firstName: "Whatcha",
 //     lastName: "Doing",
 //     location: "Korea, CA",
@@ -137,9 +155,9 @@ export const users = [
 //     userPicturePath: "p6.jpeg",
 //     likes: new Map([
 //       [userIds[7], true],
-//       [userIds[4], true],
-//       [userIds[1], true],
-//       [userIds[2], true],
+//       [spiderman, true],
+//       [thor, true],
+//       [ironman, true],
 //     ]),
 //     comments: [
 //       "one more random comment",
@@ -150,7 +168,7 @@ export const users = [
 //   },
 //   {
 //     _id: new mongoose.Types.ObjectId(),
-//     userId: userIds[4],
+//     userId: spiderman,
 //     firstName: "Jane",
 //     lastName: "Doe",
 //     location: "Utah, CA",
@@ -159,9 +177,9 @@ export const users = [
 //     picturePath: "post3.jpeg",
 //     userPicturePath: "p5.jpeg",
 //     likes: new Map([
-//       [userIds[1], true],
+//       [thor, true],
 //       [userIds[6], true],
-//       [userIds[3], true],
+//       [capAmerica, true],
 //       [userIds[5], true],
 //     ]),
 //     comments: [
@@ -183,9 +201,9 @@ export const users = [
 //     picturePath: "post4.jpeg",
 //     userPicturePath: "p7.jpeg",
 //     likes: new Map([
-//       [userIds[1], true],
+//       [thor, true],
 //       [userIds[6], true],
-//       [userIds[3], true],
+//       [capAmerica, true],
 //     ]),
 //     comments: [
 //       "I lied again, one more random comment",
@@ -207,8 +225,8 @@ export const users = [
 //     picturePath: "post5.jpeg",
 //     userPicturePath: "p8.jpeg",
 //     likes: new Map([
-//       [userIds[1], true],
-//       [userIds[3], true],
+//       [thor, true],
+//       [capAmerica, true],
 //       [userIds[5], true],
 //       [userIds[7], true],
 //     ]),
@@ -231,8 +249,8 @@ export const users = [
 //     picturePath: "post6.jpeg",
 //     userPicturePath: "p9.jpeg",
 //     likes: new Map([
-//       [userIds[1], true],
-//       [userIds[2], true],
+//       [thor, true],
+//       [ironman, true],
 //     ]),
 
 //     comments: [
@@ -250,11 +268,20 @@ const batterySpecsId = [
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
 ];
+
+const battRequestThor = batterySpecsId[0];
+const batteryActiveThor = batterySpecsId[1];
+const batteryActiveAdmin = batterySpecsId[2];
+const batteryActiveThorwithRequests = batterySpecsId[3];
+const batteryCapEditRequest = batterySpecsId[4];
+const batterySpideyEditRequest = batterySpecsId[5];
 
 export const batterySpecs = [
   {
-    _id: batterySpecsId[0],
+    _id: battRequestThor,
     name: "18650 EVE",
     imagePath: "/test.jpg",
     brand: "Bitek",
@@ -266,13 +293,13 @@ export const batterySpecs = [
     minVoltage: 0,
     capacity: 3.2,
     pricePerPc: 185,
-    specCreator: userIds[1],
+    specCreator: thor,
     editRequest: false,
     status: "Request",
-    productId: productId[0],
+    productId: productBattReqThor,
   },
   {
-    _id: batterySpecsId[1],
+    _id: batteryActiveThor,
     name: "2021 LiitoKala 32700 LiFePO4 3.2V 6500mah 35A",
     imagePath: "/test.jpg",
     brand: "LiitoKala",
@@ -285,13 +312,13 @@ export const batterySpecs = [
     minVoltage: 0,
     capacity: 6.5,
     pricePerPc: 331,
-    specCreator: userIds[1],
+    specCreator: thor,
     editRequest: false,
     status: "Active",
-    productId: productId[1],
+    productId: productBattActiveThor,
   },
   {
-    _id: batterySpecsId[2],
+    _id: batteryActiveAdmin,
     name: "12V 150AH SOLAR GEL Deep Cycle Battery LVTOPSUN",
     imagePath: "/test.jpg",
     brand: "Lvtopsun",
@@ -304,13 +331,13 @@ export const batterySpecs = [
     minVoltage: 0,
     capacity: 150,
     pricePerPc: 9500,
-    specCreator: userIds[0],
+    specCreator: admin,
     editRequest: false,
     status: "Active",
-    productId: productId[5],
+    productId: productBattActAdmin,
   },
   {
-    _id: batterySpecsId[3],
+    _id: batteryActiveThorwithRequests,
     name: "32650 6ah",
     imagePath: "/test.jpg",
     brand: "32650 Generic",
@@ -323,14 +350,55 @@ export const batterySpecs = [
     minVoltage: 0,
     capacity: 6,
     pricePerPc: 95,
-    specCreator: userIds[1],
+    specCreator: thor,
     editRequest: false,
     status: "Active",
-    productId: productId[6],
+    productId: productBattActiveThorWithReq,
+  },
+  {
+    _id: batteryCapEditRequest,
+    name: "32650 (Avengers Edition) 6ah",
+    imagePath:
+      "http://localhost:5000/image/capAmerica/90aa95962b4c332977e531c427c41d03.jpg",
+    brand: "32650 Generic",
+    supplierLink:
+      "https://shopee.ph/32650-lifepo4-battery-6000mAh-3.2V-(PLS-READ-DESCRIPTION)-per-piece-i.45615974.2716937427",
+    supplier: "Dagupan Solar",
+    battType: "LiFePo4",
+    nominalVoltage: 3.2,
+    maxVoltage: 0,
+    minVoltage: 0,
+    capacity: 6,
+    pricePerPc: 100,
+    specCreator: capAmerica,
+    editRequest: true,
+    status: "Request",
+    productId: productBattActiveThorWithReq,
+  },
+  {
+    _id: batterySpideyEditRequest,
+    name: "32650 test-spidey 6ah",
+    imagePath:
+      "http://localhost:5000/image/spiderman/90aa95962b4c332977e531c427c41d03.jpg",
+    brand: "32650 Generic",
+    supplierLink:
+      "https://shopee.ph/32650-lifepo4-battery-6000mAh-3.2V-(PLS-READ-DESCRIPTION)-per-piece-i.45615974.2716937427",
+    supplier: "Dagupan Solar",
+    battType: "LiFePo4",
+    nominalVoltage: 3.2,
+    maxVoltage: 4.2,
+    minVoltage: 2.5,
+    capacity: 6,
+    pricePerPc: 100,
+    specCreator: spiderman,
+    editRequest: true,
+    status: "Request",
+    productId: productBattActiveThorWithReq,
   },
 ];
 
 const bmsSpecsId = [
+  new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
@@ -352,10 +420,10 @@ export const bmsSpecs = [
     portType: "Common",
     voltage: 12,
     price: 455,
-    specCreator: userIds[1],
+    specCreator: thor,
     editRequest: false,
     status: "Active",
-    productId: productId[2],
+    productId: productBMSReqThor,
   },
   {
     _id: bmsSpecsId[1],
@@ -371,10 +439,10 @@ export const bmsSpecs = [
     portType: "Common",
     voltage: 12,
     price: 2199,
-    specCreator: userIds[2],
+    specCreator: ironman,
     editRequest: false,
     status: "Active",
-    productId: productId[4],
+    productId: productBMSReqIron,
   },
   {
     _id: bmsSpecsId[2],
@@ -390,10 +458,10 @@ export const bmsSpecs = [
     portType: "Common",
     voltage: 52,
     price: 4424,
-    specCreator: userIds[3],
+    specCreator: capAmerica,
     editRequest: false,
     status: "Active",
-    productId: productId[8],
+    productId: productBMSActCap,
   },
   {
     _id: bmsSpecsId[3],
@@ -409,14 +477,34 @@ export const bmsSpecs = [
     portType: "Common",
     voltage: 24,
     price: 2903,
-    specCreator: userIds[3],
+    specCreator: capAmerica,
     editRequest: false,
     status: "Active",
-    productId: productId[9],
+    productId: productBMSActCapWithReq,
+  },
+  {
+    _id: bmsSpecsId[4],
+    name: "8S 3.2V  LFP 100A Same Port With Wifi Module",
+    imagePath: "/test.jpg",
+    brand: "JBD",
+    supplierLink:
+      "https://shopee.ph/JBD-BMS-Lifepo4-12V-24V-48V-4S-8S-16S-100A-Same-Port-With-Passive-Balance-Included-Bluetooth-Module-BMS-for-Lifepo4-Battery-for-Lithium-Battery-Applied-in-Electic-vehicles-Storage-Inverter-and-Caravan-Cars-i.564409672.15818548812?sp_atk=b86ca57e-fa13-46fb-ae1e-4a0552f90844&xptdk=b86ca57e-fa13-46fb-ae1e-4a0552f90844",
+    supplier: "Shopee",
+    strings: 16,
+    chargeCurrent: 100,
+    dischargeCurrent: 25,
+    portType: "Common",
+    voltage: 24,
+    price: 2950,
+    specCreator: thor,
+    editRequest: true,
+    status: "Request",
+    productId: productBMSActCapWithReq,
   },
 ];
 
 export const activeBalancerSpecsId = [
+  new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
@@ -435,10 +523,10 @@ export const activeBalancerSpecs = [
     balanceCurrent: 1.2,
     balancingType: "Active",
     price: 209,
-    specCreator: userIds[2],
+    specCreator: ironman,
     editRequest: false,
     status: "Active",
-    productId: productId[3],
+    productId: productABReqIron,
   },
   {
     _id: activeBalancerSpecsId[1],
@@ -452,10 +540,10 @@ export const activeBalancerSpecs = [
     balanceCurrent: 5.5,
     balancingType: "Active",
     price: 1230,
-    specCreator: userIds[2],
+    specCreator: ironman,
     editRequest: false,
     status: "Active",
-    productId: productId[7],
+    productId: productABActIron,
   },
   {
     _id: activeBalancerSpecsId[2],
@@ -469,112 +557,267 @@ export const activeBalancerSpecs = [
     balanceCurrent: 1,
     balancingType: "Active",
     price: 799,
-    specCreator: userIds[2],
+    specCreator: ironman,
     editRequest: false,
     status: "Active",
-    productId: productId[10],
+    productId: productABActIronWithReq,
   },
+  {
+    _id: activeBalancerSpecsId[3],
+    name: "Daly 4S 1A",
+    imagePath: "/test.jpg",
+    brand: "Daly",
+    supplierLink:
+      "https://shopee.ph/3S-4S-8S-Balance-Li-ion-Lifepo4-LTO-Lithium-Battery-Active-Equalizer-Balancer-Board-CapacitorBMS-i.18252381.18643600287?sp_atk=374b8628-a572-4e54-95c3-eadc27430c2d&xptdk=374b8628-a572-4e54-95c3-eadc27430c2d",
+    supplier: "Shopee",
+    strings: 4,
+    balanceCurrent: 1,
+    balancingType: "Active",
+    price: 900,
+    specCreator: thor,
+    editRequest: true,
+    status: "Request",
+    productId: productABActIronWithReq,
+  },
+];
+
+const editRequestsId = [
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+];
+
+const deleteRequestsId = [
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
 ];
 
 export const products = [
   {
-    _id: productId[0],
+    _id: productBattReqThor,
     category: "Battery",
-    specs: batterySpecsId[0],
-    creator: userIds[1],
+    specs: battRequestThor,
+    creator: thor,
     publishStatus: "Request",
     editRequests: [],
     deleteRequests: [],
   },
   {
-    _id: productId[1],
+    _id: productBattActiveThor,
     category: "Battery",
-    specs: batterySpecsId[1],
-    creator: userIds[1],
+    specs: batteryActiveThor,
+    creator: thor,
     publishStatus: "Approved",
     editRequests: [],
     deleteRequests: [],
   },
   {
-    _id: productId[2],
+    _id: productBMSReqThor,
     category: "BMS",
     specs: bmsSpecsId[0],
-    creator: userIds[1],
+    creator: thor,
     publishStatus: "Request",
     editRequests: [],
     deleteRequests: [],
   },
   {
-    _id: productId[3],
+    _id: productABReqIron,
     category: "ActiveBalancer",
     specs: activeBalancerSpecsId[0],
-    creator: userIds[2],
+    creator: ironman,
     publishStatus: "Request",
     editRequests: [],
     deleteRequests: [],
   },
   {
-    _id: productId[4],
+    _id: productBMSReqIron,
     category: "BMS",
     specs: bmsSpecsId[1],
-    creator: userIds[2],
+    creator: ironman,
     publishStatus: "Request",
     editRequests: [],
     deleteRequests: [],
   },
   {
-    _id: productId[5],
+    _id: productBattActAdmin,
     category: "Battery",
-    specs: batterySpecsId[2],
-    creator: userIds[0],
+    specs: batteryActiveAdmin,
+    creator: admin,
     publishStatus: "Approved",
     editRequests: [],
     deleteRequests: [],
   },
   {
-    _id: productId[6],
+    _id: productBattActiveThorWithReq,
     category: "Battery",
-    specs: batterySpecsId[3],
-    creator: userIds[1],
+    specs: batteryActiveThorwithRequests,
+    creator: thor,
     publishStatus: "Approved",
-    editRequests: [],
-    deleteRequests: [],
+    editRequests: [editRequestsId[0], editRequestsId[1]],
+    deleteRequests: [deleteRequestsId[0]],
   },
   {
-    _id: productId[7],
+    _id: productABActIron,
     category: "ActiveBalancer",
     specs: activeBalancerSpecsId[1],
-    creator: userIds[2],
+    creator: ironman,
     publishStatus: "Approved",
     editRequests: [],
     deleteRequests: [],
   },
   {
-    _id: productId[8],
+    _id: productBMSActCap,
     category: "BMS",
     specs: bmsSpecsId[2],
-    creator: userIds[3],
+    creator: capAmerica,
     publishStatus: "Approved",
     editRequests: [],
     deleteRequests: [],
   },
   {
-    _id: productId[9],
+    _id: productBMSActCapWithReq,
     category: "BMS",
     specs: bmsSpecsId[3],
-    creator: userIds[3],
+    creator: capAmerica,
     publishStatus: "Approved",
-    editRequests: [],
-    deleteRequests: [],
+    editRequests: [editRequestsId[2]],
+    deleteRequests: [deleteRequestsId[1]],
   },
   {
-    _id: productId[10],
+    _id: productABActIronWithReq,
     category: "ActiveBalancer",
     specs: activeBalancerSpecsId[2],
-    creator: userIds[2],
+    creator: ironman,
     publishStatus: "Approved",
-    editRequests: [],
-    deleteRequests: [],
+    editRequests: [editRequestsId[3]],
+    deleteRequests: [deleteRequestsId[2]],
   },
 ];
-// TODO: Add edit and delete request dummy data
+
+export const editRequests = [
+  {
+    _id: editRequestsId[0],
+    requestedProduct: productBattActiveThorWithReq,
+    category: "Battery",
+    newSpecs: batteryCapEditRequest,
+    status: "Request",
+    requestor: capAmerica,
+    comment: [],
+  },
+  {
+    _id: editRequestsId[1],
+    requestedProduct: productBattActiveThorWithReq,
+    category: "Battery",
+    newSpecs: batterySpideyEditRequest,
+    status: "Request",
+    requestor: spiderman,
+    comment: [
+      {
+        userId: spiderman,
+        body: "Friendly neighborhood aslkdfjlakj",
+      },
+      {
+        userId: thor,
+        body: "Mjolnir to me!!",
+      },
+      {
+        userId: spiderman,
+        body: "Hi Thor!",
+      },
+    ],
+  },
+  {
+    _id: editRequestsId[2],
+    requestedProduct: productBMSActCapWithReq,
+    category: "BMS",
+    newSpecs: bmsSpecsId[4],
+    status: "Request",
+    requestor: thor,
+    comment: [
+      {
+        userId: thor,
+        body: "Another!!!",
+      },
+      {
+        userId: capAmerica,
+        body: "Back off Thor",
+      },
+      {
+        userId: capAmerica,
+        body: "Ok please backoff",
+      },
+      {
+        userId: thor,
+        body: "No I am fine thank you",
+      },
+    ],
+  },
+  {
+    _id: editRequestsId[3],
+    requestedProduct: productABActIronWithReq,
+    category: "ActiveBalancer",
+    newSpecs: activeBalancerSpecsId[3],
+    status: "Request",
+    requestor: thor,
+    comment: [
+      {
+        userId: thor,
+        body: "Another!!!",
+      },
+      {
+        userId: ironman,
+        body: "Not again Thor",
+      },
+    ],
+  },
+];
+
+export const deleteRequests = [
+  {
+    _id: deleteRequestsId[0],
+    requestedProduct: productBattActiveThorWithReq,
+    category: "Battery",
+    requestor: spiderman,
+    deleteReason: "This is not exisiting anymore",
+    status: "Request",
+    comment: [
+      {
+        userId: thor,
+        body: "What do you mean not exising?",
+      },
+      {
+        userId: spiderman,
+        body: "Check your link there",
+      },
+    ],
+  },
+  {
+    _id: deleteRequestsId[1],
+    requestedProduct: productBMSActCapWithReq,
+    category: "BMS",
+    requestor: ironman,
+    status: "Request",
+    deleteReason: "Wrong information",
+    comment: [
+      {
+        userId: capAmerica,
+        body: "Ok",
+      },
+      {
+        userId: ironman,
+        body: "Thanks",
+      },
+    ],
+  },
+  {
+    _id: deleteRequestsId[2],
+    requestedProduct: productABActIronWithReq,
+    category: "BMS",
+    status: "Rejected",
+    requestor: thor,
+    deleteReason: "Just want to delete it",
+    comment: [],
+  },
+];

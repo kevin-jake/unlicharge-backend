@@ -37,6 +37,10 @@ const EditRequestSchema = new mongoose.Schema(
           min: 2,
           max: 240,
         },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
   },
