@@ -33,8 +33,8 @@ router.post("/:category/:productId/edit", createEditRequest);
 router.post("/:category/:productId/edit/update", updateEditRequest);
 
 // Approve and Rejecting create request
-router.post("/:category/:productId/approve", approveCreateRequest);
-router.post("/:category/:productId/reject", rejectCreateRequest);
+router.post("/:category/:productId/create/approve", approveCreateRequest);
+router.post("/:category/:productId/create/reject", rejectCreateRequest);
 
 // NOTE: request ID is in the request body not in the url
 router.post("/:category/:productId/edit/approve", approveEditRequest);

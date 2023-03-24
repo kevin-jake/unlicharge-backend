@@ -877,7 +877,7 @@ export const getCreateRequests = async (req, res, next) => {
   // Only show your own edit requests if not the admin
   let filter;
   if (req.userData.role === "Admin") {
-    filter = { category, publishStatus: "Request" };
+    filter = { category };
   } else {
     filter = {
       category,
@@ -921,6 +921,7 @@ export const getEditRequests = async (req, res, next) => {
   } else {
     filter = { category, requestor: req.userData.userId };
   }
+  console.log("🚀 ~ file: requests.js:923 ~ getEditRequests ~ filter:", filter);
   try {
     editRequests = await EditRequest.find(filter)
       .populate({
@@ -952,7 +953,7 @@ export const getEditRequests = async (req, res, next) => {
     return res.status(500).json({ message: error.message });
   }
 
-  if (req.query.isMyRequestOnly === "false") {
+  if (req.query.isMyRequestOnly === "false" && req.userData.role === "User") {
     editRequests = editRequests.filter((editRequest) => {
       const requestedProduct = editRequest.requestedProduct;
       return (
@@ -1049,7 +1050,7 @@ export const getDeleteRequests = async (req, res, next) => {
     return res.status(404).json({ message: error.message });
   }
 
-  if (req.query.isMyRequestOnly === "false") {
+  if (req.query.isMyRequestOnly === "false" && req.userData.role === "User") {
     deleteRequests = deleteRequests.filter((deleteRequest) => {
       const requestedProduct = deleteRequest.requestedProduct;
       return (
