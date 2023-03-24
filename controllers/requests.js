@@ -874,7 +874,6 @@ export const getCreateRequests = async (req, res, next) => {
   } else {
     filter = {
       category,
-      publishStatus: "Request",
       creator: req.userData.userId,
     };
   }

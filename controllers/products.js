@@ -128,7 +128,7 @@ export const getProducts = async (req, res, next) => {
       $or: [
         { ...filter, publishStatus: "Approved" },
         { ...filter, publishStatus: "Request", creator: req.userData.userId },
-        { ...filter, publishStatus: "Deleted", creator: req.userData.userId },
+        // { ...filter, publishStatus: "Deleted", creator: req.userData.userId },
       ],
     };
   }
