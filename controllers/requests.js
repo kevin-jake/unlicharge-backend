@@ -249,6 +249,7 @@ export const createEditRequest = async (req, res, next) => {
   const createdEditReq = new EditRequest({
     requestedProduct: req.params.productId,
     processedBy: editReqStatus === "Approved" ? req.userData.userId : null,
+    specsToReplace: editReqStatus === "Approved" ? existingProduct.specs : null,
     category: category,
     newSpecs: newSpec.id,
     status: editReqStatus,
@@ -300,7 +301,7 @@ export const approveEditRequest = async (req, res, next) => {
   // Approving a request:
   // It will change EditRequest status to "Approved" and Specs table status to "Active".
   // Add comments to comment field.
-  // Update old Spec to Product previousData as id reference.
+  // Update Old Spec to Edit Request specsToReplace as id reference.
   // Add editor and approver on Product editor and processedBy fields.
 
   const errors = validationResult(req);
@@ -350,6 +351,7 @@ export const approveEditRequest = async (req, res, next) => {
   // Updating Edit Request
   editRequest.status = "Approved";
   editRequest.processedBy = req.userData.userId;
+  editRequest.specsToReplace = product.specs;
   req.body.commentBody
     ? editRequest.comment.push({
         body: req.body.commentBody,
@@ -392,7 +394,6 @@ export const approveEditRequest = async (req, res, next) => {
   let newProduct = {
     specs: editRequest.newSpecs.id,
     editor: editRequest.requestor,
-    previousData: product.specs,
   };
   try {
     newProduct = await Product.findByIdAndUpdate(
@@ -400,7 +401,7 @@ export const approveEditRequest = async (req, res, next) => {
       newProduct
     ).populate({
       path: "editRequests",
-      select: "newSpecs status requestor createdAt updatedAt",
+      select: "newSpecs specsToReplace status requestor createdAt updatedAt",
       match: { _id: editRequest.id },
     });
   } catch (err) {
@@ -885,7 +886,7 @@ export const getCreateRequests = async (req, res, next) => {
     };
   }
   try {
-    createRequests = await Product.find(filter, "-previousData")
+    createRequests = await Product.find(filter)
       .populate({
         path: "specs",
         populate: {
@@ -921,11 +922,10 @@ export const getEditRequests = async (req, res, next) => {
   } else {
     filter = { category, requestor: req.userData.userId };
   }
-  console.log("🚀 ~ file: requests.js:923 ~ getEditRequests ~ filter:", filter);
   try {
     editRequests = await EditRequest.find(filter)
       .populate({
-        path: "newSpecs",
+        path: "newSpecs specsToReplace",
         populate: {
           path: "specCreator",
           select: "username imagePath",

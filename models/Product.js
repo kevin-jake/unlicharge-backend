@@ -28,11 +28,6 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    previousData: {
-      type: Schema.Types.ObjectId,
-      default: null,
-      refPath: "category",
-    },
     editRequests: {
       type: [Schema.Types.ObjectId],
       ref: "EditRequest",

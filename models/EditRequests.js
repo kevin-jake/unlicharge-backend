@@ -26,6 +26,11 @@ const EditRequestSchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
+    specsToReplace: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      refPath: "category",
+    },
     processedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",

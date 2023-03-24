@@ -569,6 +569,7 @@ export const editRequests = [
     requestedProduct: productBattActiveThorWithReq,
     category: "Battery",
     newSpecs: batteryCapEditRequest,
+    specsToReplace: batteryActiveThorwithRequests,
     status: "Request",
     requestor: capAmerica,
     comment: [],
@@ -578,6 +579,7 @@ export const editRequests = [
     requestedProduct: productBattActiveThorWithReq,
     category: "Battery",
     newSpecs: batterySpideyEditRequest,
+    specsToReplace: batteryActiveThorwithRequests,
     status: "Request",
     requestor: spiderman,
     comment: [
@@ -600,6 +602,7 @@ export const editRequests = [
     requestedProduct: productBMSActCapWithReq,
     category: "BMS",
     newSpecs: bmsSpecsId[4],
+    specsToReplace: bmsSpecsId[3],
     status: "Request",
     requestor: thor,
     comment: [
@@ -626,6 +629,7 @@ export const editRequests = [
     requestedProduct: productABActIronWithReq,
     category: "ActiveBalancer",
     newSpecs: activeBalancerSpecsId[3],
+    specsToReplace: activeBalancerSpecsId[2],
     status: "Request",
     requestor: thor,
     comment: [

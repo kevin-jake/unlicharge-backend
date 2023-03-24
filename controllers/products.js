@@ -134,7 +134,7 @@ export const getProducts = async (req, res, next) => {
   }
 
   try {
-    products = await Product.find(filter, "-previousData")
+    products = await Product.find(filter)
       .populate({
         path: "specs",
         populate: {
@@ -185,8 +185,7 @@ export const getProductById = async (req, res, next) => {
           select: "username",
         },
       })
-      .populate({ path: "creator", select: "username imagePath" })
-      .populate("previousData");
+      .populate({ path: "creator", select: "username imagePath" });
   } catch (err) {
     const error = new Error(
       `Something went wrong, could not find the Product - ${category}`
