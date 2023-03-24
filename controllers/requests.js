@@ -45,7 +45,7 @@ export const approveCreateRequest = async (req, res, next) => {
   // Updating the Product
   let approvedProduct = {
     publishStatus: "Approved",
-    approvedBy: req.userData.userId,
+    processedBy: req.userData.userId,
   };
   try {
     approvedProduct = await Product.findByIdAndUpdate(
@@ -98,6 +98,7 @@ export const rejectCreateRequest = async (req, res, next) => {
   // Updating the Product
   let approvedProduct = {
     publishStatus: "Rejected",
+    processedBy: req.userData.userId,
   };
   try {
     approvedProduct = await Product.findByIdAndUpdate(
@@ -247,6 +248,7 @@ export const createEditRequest = async (req, res, next) => {
   // Create Edit Request if specs creation is successful
   const createdEditReq = new EditRequest({
     requestedProduct: req.params.productId,
+    processedBy: editReqStatus === "Approved" ? req.userData.userId : null,
     category: category,
     newSpecs: newSpec.id,
     status: editReqStatus,
@@ -299,7 +301,7 @@ export const approveEditRequest = async (req, res, next) => {
   // It will change EditRequest status to "Approved" and Specs table status to "Active".
   // Add comments to comment field.
   // Update old Spec to Product previousData as id reference.
-  // Add editor and approver on Product editor and approvedBy fields.
+  // Add editor and approver on Product editor and processedBy fields.
 
   const errors = validationResult(req);
   const category = categoryFormat(req.params.category);
@@ -347,6 +349,7 @@ export const approveEditRequest = async (req, res, next) => {
 
   // Updating Edit Request
   editRequest.status = "Approved";
+  editRequest.processedBy = req.userData.userId;
   req.body.commentBody
     ? editRequest.comment.push({
         body: req.body.commentBody,
@@ -389,7 +392,6 @@ export const approveEditRequest = async (req, res, next) => {
   let newProduct = {
     specs: editRequest.newSpecs.id,
     editor: editRequest.requestor,
-    approvedBy: req.userData.userId,
     previousData: product.specs,
   };
   try {
@@ -468,6 +470,7 @@ export const rejectEditRequest = async (req, res, next) => {
 
   // Updating Edit Request
   editRequest.status = "Rejected";
+  editRequest.processedBy = req.userData.userId;
   if (req.body.commentBody) {
     editRequest.comment.push({
       body: req.body.commentBody,
@@ -491,6 +494,7 @@ export const rejectEditRequest = async (req, res, next) => {
   res.status(201).json({ editRequest: editRequest });
 };
 
+// TODO: Implement updating of request
 export const updateEditRequest = async (req, res, next) => {
   // body: {
   //   reqId: "",
@@ -649,6 +653,7 @@ export const createDeleteRequest = async (req, res, next) => {
   // Create Delete Request if specs creation is successful
   const createdDelReq = new DeleteRequest({
     requestedProduct: req.params.productId,
+    processedBy: deleteReqStatus === "Approved" ? req.userData.userId : null,
     category: category,
     status: deleteReqStatus,
     requestor: req.userData.userId,
@@ -702,7 +707,7 @@ export const approveDeleteRequest = async (req, res, next) => {
   // Approving a request:
   // It will change DeleteRequst status to "Approved" and Product table status to "Deleted".
   // Add comments to comment field.
-  // Add editor and approver on Product editor and approvedBy fields.
+  // Add editor and approver on Product editor and processedBy fields.
 
   const errors = validationResult(req);
   const category = categoryFormat(req.params.category);
@@ -748,6 +753,7 @@ export const approveDeleteRequest = async (req, res, next) => {
 
   // Updating Delete Request
   deleteRequest.status = "Approved";
+  deleteRequest.processedBy = req.userData.userId;
   req.body.commentBody
     ? deleteRequest.comment.push({
         body: req.body.commentBody,
@@ -839,6 +845,7 @@ export const rejectDeleteRequest = async (req, res, next) => {
 
   // Updating Delete Request
   deleteRequest.status = "Rejected";
+  deleteRequest.processedBy = req.userData.userId;
   if (req.body.commentBody) {
     deleteRequest.comment.push({
       body: req.body.commentBody,
@@ -886,7 +893,7 @@ export const getCreateRequests = async (req, res, next) => {
           select: "username imagePath",
         },
       })
-      .populate({ path: "creator", select: "username imagePath" });
+      .populate({ path: "creator processedBy", select: "username imagePath" });
   } catch (err) {
     const error = new Error(
       `Something went wrong, could not find the Create Request - ${category}`
@@ -929,7 +936,7 @@ export const getEditRequests = async (req, res, next) => {
           path: "specs creator",
         },
       })
-      .populate({ path: "requestor", select: "username imagePath" })
+      .populate({ path: "requestor processedBy", select: "username imagePath" })
       .populate({
         path: "comment",
         populate: {
@@ -983,7 +990,7 @@ export const getEditRequestByProductId = async (req, res, next) => {
           select: "username imagePath",
         },
       })
-      .populate({ path: "requestor", select: "username imagePath" })
+      .populate({ path: "requestor ", select: "username imagePath" })
       .populate({
         path: "comment",
         populate: {
@@ -1020,7 +1027,7 @@ export const getDeleteRequests = async (req, res, next) => {
 
   try {
     deleteRequests = await DeleteRequest.find(filter)
-      .populate({ path: "requestor", select: "username imagePath" })
+      .populate({ path: "requestor processedBy", select: "username imagePath" })
       .populate({
         path: "requestedProduct",
         populate: {

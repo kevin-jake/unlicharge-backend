@@ -27,6 +27,10 @@ const DeleteRequestSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    processedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     comment: [
       {
         userId: {

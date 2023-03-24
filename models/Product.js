@@ -20,7 +20,7 @@ const productSchema = mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    arpprovedBy: {
+    processedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },

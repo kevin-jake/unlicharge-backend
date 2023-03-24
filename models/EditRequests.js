@@ -26,6 +26,10 @@ const EditRequestSchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
+    processedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     comment: [
       {
         userId: {
