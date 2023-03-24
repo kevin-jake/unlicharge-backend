@@ -9,6 +9,60 @@ import mongoose from "mongoose";
 import DeleteRequest from "../models/DeleteRequests.js";
 
 /* CREATE */
+export const approveCreateRequest = async (req, res, next) => {
+  // Approving a request:
+  // It will change publishStatus to "Approved" on the Product table
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new Error("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  // Get Product details
+  let product;
+  try {
+    product = await Product.findById(req.params.productId);
+  } catch (err) {
+    const error = new Error("Finding product failed, please try again later.");
+    console.log(err);
+    return res.status(500).json({ message: error.message });
+  }
+
+  if (!product) {
+    const error = new Error(`Product ID: (${req.params.productId}) not found`);
+    return res.status(404).json({ message: error.message });
+  }
+
+  if (product.publishStatus === "Deleted") {
+    const error = new Error(
+      `Product ID: (${req.params.productId}) is already deleted`
+    );
+    return res.status(400).json({ message: error.message });
+  }
+
+  // Updating the Product
+  let approvedProduct = {
+    publishStatus: "Approved",
+    approvedBy: req.userData.userId,
+  };
+  try {
+    approvedProduct = await Product.findByIdAndUpdate(
+      req.params.productId,
+      approvedProduct,
+      { new: true }
+    );
+  } catch (err) {
+    const error = new Error(
+      "Approving Product create request failed, please try again."
+    );
+    console.log(err);
+    return res.status(500).json({ message: error.message });
+  }
+  res.status(201).json({ approvedProduct: approvedProduct });
+};
+
 export const createEditRequest = async (req, res, next) => {
   const errors = validationResult(req);
   const category = categoryFormat(req.params.category);
@@ -228,8 +282,15 @@ export const approveEditRequest = async (req, res, next) => {
   }
 
   if (!product) {
-    const error = new Error(`Product ID - (${req.params.productId}) not found`);
+    const error = new Error(`Product ID: (${req.params.productId}) not found`);
     return res.status(404).json({ message: error.message });
+  }
+
+  if (product.publishStatus === "Deleted") {
+    const error = new Error(
+      `Product ID: (${req.params.productId}) is already deleted`
+    );
+    return res.status(400).json({ message: error.message });
   }
 
   // Updating Edit Request
@@ -298,52 +359,6 @@ export const approveEditRequest = async (req, res, next) => {
   res.status(201).json({ newProduct: newProduct });
 };
 
-export const approveCreateRequest = async (req, res, next) => {
-  // Approving a request:
-  // It will change publishStatus to "Approved" on the Product table
-
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(
-      new Error("Invalid inputs passed, please check your data.", 422)
-    );
-  }
-
-  // Get Product details
-  let product;
-  try {
-    product = await Product.findById(req.params.productId);
-  } catch (err) {
-    const error = new Error("Finding product failed, please try again later.");
-    console.log(err);
-    return res.status(500).json({ message: error.message });
-  }
-
-  if (!product) {
-    const error = new Error(`Product ID - (${req.params.productId}) not found`);
-    return res.status(404).json({ message: error.message });
-  }
-  // Updating the Product
-  let approvedProduct = {
-    publishStatus: "Approved",
-    approvedBy: req.userData.userId,
-  };
-  try {
-    approvedProduct = await Product.findByIdAndUpdate(
-      req.params.productId,
-      approvedProduct,
-      { new: true }
-    );
-  } catch (err) {
-    const error = new Error(
-      "Approving Product create request failed, please try again."
-    );
-    console.log(err);
-    return res.status(500).json({ message: error.message });
-  }
-  res.status(201).json({ approvedProduct: approvedProduct });
-};
-
 export const rejectEditRequest = async (req, res, next) => {
   // body: {
   //   reqId: "",
@@ -352,6 +367,7 @@ export const rejectEditRequest = async (req, res, next) => {
 
   // Rejecting a request:
   // It will change EditRequest status to "Rejected".
+  // Check if product is already "Deleted"
   // Add comments to comment field reject comment is required.
   // Add userid on comment.
 
@@ -374,6 +390,28 @@ export const rejectEditRequest = async (req, res, next) => {
     );
     console.log(err);
     return res.status(500).json({ message: error.message });
+  }
+
+  // Get Product details
+  let product;
+  try {
+    product = await Product.findById(req.params.productId);
+  } catch (err) {
+    const error = new Error("Finding product failed, please try again later.");
+    console.log(err);
+    return res.status(500).json({ message: error.message });
+  }
+
+  if (!product) {
+    const error = new Error(`Product ID: (${req.params.productId}) not found`);
+    return res.status(404).json({ message: error.message });
+  }
+
+  if (product.publishStatus === "Deleted") {
+    const error = new Error(
+      `Product ID: (${req.params.productId}) is already deleted`
+    );
+    return res.status(400).json({ message: error.message });
   }
 
   // Updating Edit Request
@@ -614,7 +652,6 @@ export const approveDeleteRequest = async (req, res, next) => {
   // Add comments to comment field.
   // Add editor and approver on Product editor and approvedBy fields.
 
-  // TODO: Add error handling for deleted products
   const errors = validationResult(req);
   const category = categoryFormat(req.params.category);
   if (!errors.isEmpty()) {
@@ -646,8 +683,15 @@ export const approveDeleteRequest = async (req, res, next) => {
   }
 
   if (!product) {
-    const error = new Error(`Product ID - (${req.params.productId}) not found`);
+    const error = new Error(`Product ID: (${req.params.productId}) not found`);
     return res.status(404).json({ message: error.message });
+  }
+
+  if (product.publishStatus === "Deleted") {
+    const error = new Error(
+      `Product ID: (${req.params.productId}) is already deleted`
+    );
+    return res.status(400).json({ message: error.message });
   }
 
   // Updating Delete Request
@@ -696,10 +740,10 @@ export const rejectDeleteRequest = async (req, res, next) => {
 
   // Rejecting a request:
   // It will change DeleteRequest status to "Rejected".
+  // Check if product is already "Deleted"
   // Add comments to comment field reject comment is required.
   // Add userid on comment.
 
-  // TODO: Add error handling for deleted products
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -717,6 +761,28 @@ export const rejectDeleteRequest = async (req, res, next) => {
     );
     console.log(err);
     return res.status(500).json({ message: error.message });
+  }
+
+  // Get Product details
+  let product;
+  try {
+    product = await Product.findById(req.params.productId);
+  } catch (err) {
+    const error = new Error("Finding product failed, please try again later.");
+    console.log(err);
+    return res.status(500).json({ message: error.message });
+  }
+
+  if (!product) {
+    const error = new Error(`Product ID: (${req.params.productId}) not found`);
+    return res.status(404).json({ message: error.message });
+  }
+
+  if (product.publishStatus === "Deleted") {
+    const error = new Error(
+      `Product ID: (${req.params.productId}) is already deleted`
+    );
+    return res.status(400).json({ message: error.message });
   }
 
   // Updating Delete Request
