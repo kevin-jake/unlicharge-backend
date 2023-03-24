@@ -63,6 +63,58 @@ export const approveCreateRequest = async (req, res, next) => {
   res.status(201).json({ approvedProduct: approvedProduct });
 };
 
+export const rejectCreateRequest = async (req, res, next) => {
+  // Rejecting a create request:
+  // It will change publishStatus to "Rejected" on the Product table
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Invalid inputs passed, please check your data.");
+    return res.status(422).json({ message: error.message });
+  }
+
+  // Get Product details
+  let product;
+  try {
+    product = await Product.findById(req.params.productId);
+  } catch (err) {
+    const error = new Error("Finding product failed, please try again later.");
+    console.log(err);
+    return res.status(500).json({ message: error.message });
+  }
+
+  if (!product) {
+    const error = new Error(`Product ID: (${req.params.productId}) not found`);
+    return res.status(404).json({ message: error.message });
+  }
+
+  if (product.publishStatus === "Deleted") {
+    const error = new Error(
+      `Product ID: (${req.params.productId}) is already deleted`
+    );
+    return res.status(400).json({ message: error.message });
+  }
+
+  // Updating the Product
+  let approvedProduct = {
+    publishStatus: "Rejected",
+  };
+  try {
+    approvedProduct = await Product.findByIdAndUpdate(
+      req.params.productId,
+      approvedProduct,
+      { new: true }
+    );
+  } catch (err) {
+    const error = new Error(
+      "Rejecting Product create request failed, please try again."
+    );
+    console.log(err);
+    return res.status(500).json({ message: error.message });
+  }
+  res.status(201).json({ approvedProduct: approvedProduct });
+};
+
 export const createEditRequest = async (req, res, next) => {
   const errors = validationResult(req);
   const category = categoryFormat(req.params.category);
