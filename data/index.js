@@ -683,6 +683,7 @@ export const deleteRequests = [
     requestedProduct: productABActIronWithReq,
     category: "ActiveBalancer",
     status: "Rejected",
+    processedBy: ironman,
     requestor: thor,
     deleteReason: "Just want to delete it",
     comment: [],
