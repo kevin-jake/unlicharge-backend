@@ -92,7 +92,9 @@ export const getImage = async (req, res) => {
     res.setHeader("Content-Disposition", `inline; filename="${key}"`);
     stream.pipe(res);
   } catch (error) {
-    console.log(error);
+    console.log(
+      `[S3 ERROR] Code: ${error.httpStatusCode} message: ${error.Code}: ${error.message}`
+    );
     res.status(404).send(`Object not found for key ${key}`);
   }
 };
