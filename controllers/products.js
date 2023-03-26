@@ -4,6 +4,7 @@ import Battery from "../models/specsModel/Battery.js";
 import BMS from "../models/specsModel/BMS.js";
 import ActiveBalancer from "../models/specsModel/ActiveBalancer.js";
 import { categoryFormat } from "../util/categoryFormat.js";
+import { batterySummary } from "../logic/batteryComputations.js";
 
 /* CREATE */
 export const createProduct = async (req, res, next) => {
@@ -151,7 +152,20 @@ export const getProducts = async (req, res, next) => {
     return res.status(500).json({ message: error.message });
   }
 
-  // console.log("🚀 ~ file: products.js:150 ~ getProducts ~ products:", products);
+  const { initParams } = req.query || {};
+  if (Boolean(initParams)) {
+    const initialParams = JSON.parse(initParams);
+    if (Boolean(initialParams?.batteryVoltage) && category === "Battery") {
+      console.log("computing");
+      products.map((product) => {
+        const { specs } = product;
+        const computedSpecs = batterySummary(specs, initialParams);
+        const computedProductSpecs = { ...specs._doc, computedSpecs };
+        product.specs._doc = computedProductSpecs;
+      });
+    }
+  }
+
   res.json({
     products: products.map((product) => product.toObject({ getters: true })),
   });
