@@ -5,6 +5,7 @@ import BMS from "../models/specsModel/BMS.js";
 import ActiveBalancer from "../models/specsModel/ActiveBalancer.js";
 import { categoryFormat } from "../util/categoryFormat.js";
 import { batterySummary } from "../logic/batteryComputations.js";
+import { sortResults } from "../util/sortResults.js";
 
 /* CREATE */
 export const createProduct = async (req, res, next) => {
@@ -122,18 +123,41 @@ export const getProducts = async (req, res, next) => {
   let filter = {
     category,
   };
+
+  const { initParams, pagination, filters } = req.query || {};
+  const frontEndFilters = JSON.parse(filters);
+
+  let specIds = [];
+
+  if (category === "Battery") {
+    const searchBattType = frontEndFilters?.battType || [
+      "LiFePo4",
+      "Li-On",
+      "Lead Acid",
+    ];
+    const searchMinPrice = +frontEndFilters?.minPrice || 0;
+    const searchMaxPrice = +frontEndFilters?.maxPrice || 1000000;
+    specIds = (
+      await Battery.find({
+        battType: { $in: searchBattType },
+        pricePerPc: { $gt: searchMinPrice, $lt: searchMaxPrice },
+      }).distinct("_id")
+    ).map((id) => id.toString());
+    console.log("🚀 ~ file: products.js:141 ~ getProducts ~ specIds:", specIds);
+  }
+
   if (!req.userData) {
     filter = { ...filter, publishStatus: "Approved" };
   } else if (req.userData.role === "User") {
     filter = {
       $or: [
-        { ...filter, publishStatus: "Approved" },
+        { ...filter, publishStatus: "Approved", specs: { $in: specIds } },
         { ...filter, publishStatus: "Request", creator: req.userData.userId },
         // { ...filter, publishStatus: "Deleted", creator: req.userData.userId },
       ],
     };
   }
-  const { initParams, pagination } = req.query || {};
+  // TODO: Fix to be more human-readable
   let pages = JSON.parse(pagination);
   const page = parseInt(pages.page) - 1 || 0;
   const limit = parseInt(pages.limit) || 5;
@@ -171,22 +195,8 @@ export const getProducts = async (req, res, next) => {
     }
   }
 
-  // products.sort((a, b) => {
-  //   let fa = a.specs.name.toLowerCase(),
-  //     fb = b.specs.name.toLowerCase();
-
-  //   if (fa < fb) {
-  //     return -1;
-  //   }
-  //   if (fa > fb) {
-  //     return 1;
-  //   }
-  //   return 0;
-  // });
-
-  // products.sort((a, b) => {
-  //   return a.specs.pricePerPc - b.specs.pricePerPc;
-  // });
+  // TODO: replace by frontend parameters
+  products = sortResults(products, "pricePerPc", "asc");
 
   const total = await Product.countDocuments(filter);
   const response = {
