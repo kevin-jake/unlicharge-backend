@@ -133,6 +133,10 @@ export const getProducts = async (req, res, next) => {
       ],
     };
   }
+  const { initParams, pagination } = req.query || {};
+  let pages = JSON.parse(pagination);
+  const page = parseInt(pages.page) - 1 || 0;
+  const limit = parseInt(pages.limit) || 5;
 
   try {
     products = await Product.find(filter)
@@ -143,7 +147,9 @@ export const getProducts = async (req, res, next) => {
           select: "username",
         },
       })
-      .populate({ path: "creator", select: "username imagePath" });
+      .populate({ path: "creator", select: "username imagePath" })
+      .skip(page * limit)
+      .limit(limit);
   } catch (err) {
     const error = new Error(
       `Something went wrong, could not find the Product - ${category}`
@@ -152,7 +158,6 @@ export const getProducts = async (req, res, next) => {
     return res.status(500).json({ message: error.message });
   }
 
-  const { initParams } = req.query || {};
   if (Boolean(initParams)) {
     const initialParams = JSON.parse(initParams);
     if (Boolean(initialParams?.batteryVoltage) && category === "Battery") {
@@ -166,8 +171,36 @@ export const getProducts = async (req, res, next) => {
     }
   }
 
+  // products.sort((a, b) => {
+  //   let fa = a.specs.name.toLowerCase(),
+  //     fb = b.specs.name.toLowerCase();
+
+  //   if (fa < fb) {
+  //     return -1;
+  //   }
+  //   if (fa > fb) {
+  //     return 1;
+  //   }
+  //   return 0;
+  // });
+
+  // products.sort((a, b) => {
+  //   return a.specs.pricePerPc - b.specs.pricePerPc;
+  // });
+
+  const total = await Product.countDocuments(filter);
+  const response = {
+    total,
+    page: page + 1,
+    limit,
+    products,
+  };
+
   res.json({
-    products: products.map((product) => product.toObject({ getters: true })),
+    ...response,
+    products: response.products.map((product) =>
+      product.toObject({ getters: true })
+    ),
   });
 };
 
