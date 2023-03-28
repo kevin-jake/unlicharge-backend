@@ -149,11 +149,10 @@ export const getProducts = async (req, res, next) => {
     const searchMinPrice = +minPrice || 0;
     const searchMaxPrice = +maxPrice || 1000000;
     if (category === "Battery") {
-      const searchBattType = JSON.parse(battType) || [
-        "LiFePo4",
-        "Li-On",
-        "Lead Acid",
-      ];
+      const searchBattType =
+        JSON.parse(battType).length > 0
+          ? JSON.parse(battType)
+          : ["LiFePo4", "Li-On", "Lead Acid"];
       specIds = (
         await Battery.find({
           battType: { $in: searchBattType },
