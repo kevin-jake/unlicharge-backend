@@ -5,7 +5,7 @@ import BMS from "../models/specsModel/BMS.js";
 import ActiveBalancer from "../models/specsModel/ActiveBalancer.js";
 import { categoryFormat } from "../util/categoryFormat.js";
 import { batterySummary } from "../logic/batteryComputations.js";
-import { sortResults } from "../util/sortResults.js";
+import { sortByStatus, sortResults } from "../util/sortResults.js";
 
 /* CREATE */
 export const createProduct = async (req, res, next) => {
@@ -120,34 +120,48 @@ export const createProduct = async (req, res, next) => {
 export const getProducts = async (req, res, next) => {
   let products;
   const category = categoryFormat(req.params.category);
+  console.log("🚀 ~ file: products.js:123 ~ getProducts ~ category:", category);
   let filter = {
     category,
   };
 
-  const { initParams, pagination, filters } = req.query || {};
-  const frontEndFilters = JSON.parse(filters);
+  const { inputVoltage, inputCapacity, sortBy, sortArrangement, filters } =
+    req.query || {};
+  const page = parseInt(req.query.page) - 1 || 0;
+  const limit = parseInt(req.query.limit) || 5;
+  console.log(
+    "🚀 ~ file: products.js:128 ~ getProducts ~ req.query:",
+    req.query
+  );
 
+  // Filtering the results based on the filter inputs
   let specIds = [];
-
-  if (category === "Battery") {
-    const searchBattType = frontEndFilters?.battType || [
-      "LiFePo4",
-      "Li-On",
-      "Lead Acid",
-    ];
-    const searchMinPrice = +frontEndFilters?.minPrice || 0;
-    const searchMaxPrice = +frontEndFilters?.maxPrice || 1000000;
-    specIds = (
-      await Battery.find({
-        battType: { $in: searchBattType },
-        pricePerPc: { $gt: searchMinPrice, $lt: searchMaxPrice },
-      }).distinct("_id")
-    ).map((id) => id.toString());
-    console.log("🚀 ~ file: products.js:141 ~ getProducts ~ specIds:", specIds);
+  try {
+    if (category === "Battery") {
+      const searchBattType = filters?.battType || [
+        "LiFePo4",
+        "Li-On",
+        "Lead Acid",
+      ];
+      const searchMinPrice = +filters?.minPrice || 0;
+      const searchMaxPrice = +filters?.maxPrice || 1000000;
+      specIds = (
+        await Battery.find({
+          battType: { $in: searchBattType },
+          pricePerPc: { $gt: searchMinPrice, $lt: searchMaxPrice },
+        }).distinct("_id")
+      ).map((id) => id.toString());
+    }
+  } catch (err) {
+    const error = new Error(
+      `Something went wrong, could not filter the product`
+    );
+    console.log(err);
+    return res.status(500).json({ message: error.message });
   }
 
   if (!req.userData) {
-    filter = { ...filter, publishStatus: "Approved" };
+    filter = { ...filter, publishStatus: "Approved", specs: { $in: specIds } };
   } else if (req.userData.role === "User") {
     filter = {
       $or: [
@@ -157,10 +171,6 @@ export const getProducts = async (req, res, next) => {
       ],
     };
   }
-  // TODO: Fix to be more human-readable
-  let pages = JSON.parse(pagination);
-  const page = parseInt(pages.page) - 1 || 0;
-  const limit = parseInt(pages.limit) || 5;
 
   try {
     products = await Product.find(filter)
@@ -171,9 +181,9 @@ export const getProducts = async (req, res, next) => {
           select: "username",
         },
       })
-      .populate({ path: "creator", select: "username imagePath" })
-      .skip(page * limit)
-      .limit(limit);
+      .populate({ path: "creator", select: "username imagePath" });
+    // .skip(page * limit)
+    // .limit(limit);
   } catch (err) {
     const error = new Error(
       `Something went wrong, could not find the Product - ${category}`
@@ -182,21 +192,41 @@ export const getProducts = async (req, res, next) => {
     return res.status(500).json({ message: error.message });
   }
 
-  if (Boolean(initParams)) {
-    const initialParams = JSON.parse(initParams);
-    if (Boolean(initialParams?.batteryVoltage) && category === "Battery") {
-      console.log("computing");
+  // Computation of battery build initial parameters
+  // TODO: put inside a try-catch block
+  if (Boolean(inputVoltage) && Boolean(inputCapacity)) {
+    if (Boolean(inputVoltage) && category === "Battery") {
       products.map((product) => {
         const { specs } = product;
-        const computedSpecs = batterySummary(specs, initialParams);
+        const computedSpecs = batterySummary(
+          specs,
+          inputVoltage,
+          inputCapacity
+        );
         const computedProductSpecs = { ...specs._doc, computedSpecs };
         product.specs._doc = computedProductSpecs;
       });
     }
   }
 
-  // TODO: replace by frontend parameters
-  products = sortResults(products, "pricePerPc", "asc");
+  // Sorting of results
+  if (Boolean(sortBy) && Boolean(sortArrangement)) {
+    try {
+      products = sortResults(products, sortBy, sortArrangement, category);
+      if (true) {
+        products = sortByStatus(products);
+      }
+    } catch (err) {
+      const error = new Error(
+        `Something went wrong, could not sort the product`
+      );
+      console.log(err);
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
+  // Implementing custom pagination
+  products = products.slice(page * limit, page * limit + limit);
 
   const total = await Product.countDocuments(filter);
   const response = {

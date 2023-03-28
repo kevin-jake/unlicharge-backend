@@ -64,15 +64,22 @@ const batteryTotalLimits = (
   return null;
 };
 
-const batterySummary = (data_battery, input_parameters) => {
+const batterySummary = (
+  data_battery,
+  input_batteryVoltage,
+  input_batteryCapacity,
+  input_dod,
+  input_maxVoltage,
+  input_minVoltage
+) => {
   var totalLimits, totalPrice;
   const totalCapacity = batteryTotalCapacity(
-    +input_parameters.dod,
-    +input_parameters.batteryCapacity,
+    +input_dod,
+    +input_batteryCapacity,
     data_battery.battType
   );
   const totalNumber = batteryNumber(
-    +input_parameters.batteryVoltage,
+    +input_batteryVoltage,
     +data_battery.nominalVoltage,
     +data_battery.capacity,
     totalCapacity
