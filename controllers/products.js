@@ -125,8 +125,17 @@ export const getProducts = async (req, res, next) => {
     category,
   };
 
-  const { inputVoltage, inputCapacity, sortBy, sortArrangement, filters } =
-    req.query || {};
+  // Deconstructing pagination, sort and filters
+  const {
+    inputVoltage,
+    inputCapacity,
+    sortBy,
+    sortArrangement,
+    search,
+    battType,
+    minPrice,
+    maxPrice,
+  } = req.query || {};
   const page = parseInt(req.query.page) - 1 || 0;
   const limit = parseInt(req.query.limit) || 5;
   console.log(
@@ -137,18 +146,35 @@ export const getProducts = async (req, res, next) => {
   // Filtering the results based on the filter inputs
   let specIds = [];
   try {
+    const searchMinPrice = +minPrice || 0;
+    const searchMaxPrice = +maxPrice || 1000000;
     if (category === "Battery") {
-      const searchBattType = filters?.battType || [
+      const searchBattType = JSON.parse(battType) || [
         "LiFePo4",
         "Li-On",
         "Lead Acid",
       ];
-      const searchMinPrice = +filters?.minPrice || 0;
-      const searchMaxPrice = +filters?.maxPrice || 1000000;
       specIds = (
         await Battery.find({
           battType: { $in: searchBattType },
           pricePerPc: { $gt: searchMinPrice, $lt: searchMaxPrice },
+          name: { $regex: search || "", $options: "i" },
+        }).distinct("_id")
+      ).map((id) => id.toString());
+    }
+    if (category === "BMS") {
+      specIds = (
+        await BMS.find({
+          price: { $gt: searchMinPrice, $lt: searchMaxPrice },
+          name: { $regex: search || "", $options: "i" },
+        }).distinct("_id")
+      ).map((id) => id.toString());
+    }
+    if (category === "ActiveBalancer") {
+      specIds = (
+        await ActiveBalancer.find({
+          price: { $gt: searchMinPrice, $lt: searchMaxPrice },
+          name: { $regex: search || "", $options: "i" },
         }).distinct("_id")
       ).map((id) => id.toString());
     }
@@ -159,19 +185,32 @@ export const getProducts = async (req, res, next) => {
     console.log(err);
     return res.status(500).json({ message: error.message });
   }
+  console.log("🚀 ~ file: products.js:156 ~ getProducts ~ specIds:", specIds);
+
+  // Adding filters into the main query
+  if (
+    specIds.length > 0 ||
+    (Boolean(battType) && category === "Battery") ||
+    Boolean(maxPrice) ||
+    Boolean(minPrice) ||
+    Boolean(search)
+  ) {
+    filter = { ...filter, specs: { $in: specIds } };
+  }
 
   if (!req.userData) {
-    filter = { ...filter, publishStatus: "Approved", specs: { $in: specIds } };
+    filter = { ...filter, publishStatus: "Approved" };
   } else if (req.userData.role === "User") {
     filter = {
       $or: [
-        { ...filter, publishStatus: "Approved", specs: { $in: specIds } },
+        { ...filter, publishStatus: "Approved" },
         { ...filter, publishStatus: "Request", creator: req.userData.userId },
         // { ...filter, publishStatus: "Deleted", creator: req.userData.userId },
       ],
     };
   }
 
+  console.log("🚀 ~ file: products.js:197 ~ getProducts ~ filter:", filter);
   try {
     products = await Product.find(filter)
       .populate({
