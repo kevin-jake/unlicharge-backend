@@ -2,6 +2,8 @@ export const sortResults = (arrayToSort, sortBy = "name", arrangement) => {
   let result = [];
   const numberSpecs = [
     "pricePerPc",
+    "price",
+    "capacity",
     "totalCapacity",
     "totalVoltage",
     "totalPrice",
@@ -24,9 +26,28 @@ export const sortResults = (arrayToSort, sortBy = "name", arrangement) => {
     });
   else
     result = arrayToSort.sort((a, b) => {
-      const ret = a.specs[sortBy] - b.specs[sortBy];
+      const isComputedSpecs = /total/.test(sortBy);
+      let ret;
+      isComputedSpecs
+        ? (ret =
+            a.specs._doc.computedSpecs[sortBy] -
+            b.specs._doc.computedSpecs[sortBy])
+        : (ret = a.specs[sortBy] - b.specs[sortBy]);
       return arrangement === "asc" ? ret : -1 * ret;
     });
+
+  return result;
+};
+
+export const sortByStatus = (arrayToSort) => {
+  let result = [];
+  const order = { Request: 1, Approved: 2 };
+
+  result = arrayToSort.sort(
+    (a, b) =>
+      (order[a.publishStatus] || Number.MAX_VALUE) -
+      (order[b.publishStatus] || Number.MAX_VALUE)
+  );
 
   return result;
 };
