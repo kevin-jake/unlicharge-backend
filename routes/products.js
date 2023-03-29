@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createProduct,
+  getBattery,
   getProductById,
   getProducts,
 } from "../controllers/products.js";
@@ -12,6 +13,7 @@ router.use(checkAuth);
 
 // GET / READ Products
 router.get("/:category", getProducts);
+router.get("/battspec/:id", getBattery);
 router.get("/:category/:id", getProductById);
 
 // CREATE /POST Products

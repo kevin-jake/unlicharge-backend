@@ -119,6 +119,7 @@ export const rejectCreateRequest = async (req, res, next) => {
 export const createEditRequest = async (req, res, next) => {
   const errors = validationResult(req);
   const category = categoryFormat(req.params.category);
+
   if (!errors.isEmpty()) {
     return next(
       new Error("Invalid inputs passed, please check your data.", 422)
@@ -195,6 +196,7 @@ export const createEditRequest = async (req, res, next) => {
       portType,
       price,
     } = req.body;
+
     newSpec = new BMS({
       ...req.body,
       strings: +strings,
@@ -207,6 +209,10 @@ export const createEditRequest = async (req, res, next) => {
       productId: req.params.id,
       status,
     });
+    console.log(
+      "🚀 ~ file: requests.js:201 ~ createEditRequest ~ newSpec:",
+      req.params
+    );
   } else if (category === "ActiveBalancer") {
     const { strings, balanceCurrent, balancingType, price } = req.body;
     newSpec = new ActiveBalancer({
@@ -220,6 +226,10 @@ export const createEditRequest = async (req, res, next) => {
       status,
     });
   }
+  console.log(
+    "🚀 ~ file: requests.js:199 ~ createEditRequest ~ newSpec:",
+    newSpec.productId
+  );
 
   // Check if there are already existing request for the spec
   let duplicateRequest;

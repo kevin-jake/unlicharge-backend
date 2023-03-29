@@ -52,7 +52,7 @@ export const createProduct = async (req, res, next) => {
       dischargeCRate: +dischargeCRate,
       maxDischargeRate: +maxDischargeRate,
       specCreator: req.userData.userId,
-      productId: req.params.id,
+      productId: req.params.productId,
       status,
     });
   } else if (category === "BMS") {
@@ -73,7 +73,7 @@ export const createProduct = async (req, res, next) => {
       price: +price,
       portType,
       specCreator: req.userData.userId,
-      productId: req.params.id,
+      productId: req.params.productId,
       status,
     });
   } else if (category === "ActiveBalancer") {
@@ -85,7 +85,7 @@ export const createProduct = async (req, res, next) => {
       price: +price,
       balancingType,
       specCreator: req.userData.userId,
-      productId: req.params.id,
+      productId: req.params.productId,
       status,
     });
   }
@@ -139,7 +139,9 @@ export const getProducts = async (req, res, next) => {
   };
 
   // Deconstructing pagination, sort and filters
+  // TODO: Add selected battery on not filters or always show it
   const {
+    selectedBattery,
     inputVoltage,
     inputCapacity,
     sortBy,
@@ -294,6 +296,38 @@ export const getProducts = async (req, res, next) => {
       product.toObject({ getters: true })
     ),
   });
+};
+
+export const getBattery = async (req, res, next) => {
+  let battSpec;
+  // Deconstructing pagination, sort and filters
+  const { inputVoltage, inputCapacity, minPrice, maxPrice } = req.query || {};
+  console.log(
+    "🚀 ~ file: products.js:128 ~ getProducts ~ req.query:",
+    req.query
+  );
+
+  try {
+    battSpec = await Battery.findById(req.params.id).populate({
+      path: "specCreator",
+      select: "username",
+    });
+  } catch (err) {
+    const error = new Error(`Something went wrong, could not sort the product`);
+    console.log(err);
+    return res.status(500).json({ message: error.message });
+  }
+
+  // Computation of battery build initial parameters
+  // TODO: put inside a try-catch block
+  if (Boolean(inputVoltage) && Boolean(inputCapacity)) {
+    battSpec._doc.computedSpecs = batterySummary(
+      battSpec._doc,
+      inputVoltage,
+      inputCapacity
+    );
+  }
+  res.json(battSpec.toObject({ getters: true }));
 };
 
 export const getProductById = async (req, res, next) => {
