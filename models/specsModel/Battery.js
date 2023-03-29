@@ -50,7 +50,7 @@ const BatterySchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
-    internalReisistance: {
+    internalResistance: {
       type: Number,
       default: null,
     },

@@ -35,7 +35,7 @@ export const createProduct = async (req, res, next) => {
       pricePerPc,
       maxVoltage,
       minVoltage,
-      internalReisistance,
+      internalResistance,
       chargeCRate,
       dischargeCRate,
       maxDischargeRate,
@@ -47,7 +47,7 @@ export const createProduct = async (req, res, next) => {
       pricePerPc: +pricePerPc,
       maxVoltage: +maxVoltage,
       minVoltage: +minVoltage,
-      internalReisistance: +internalReisistance,
+      internalResistance: +internalResistance,
       chargeCRate: +chargeCRate,
       dischargeCRate: +dischargeCRate,
       maxDischargeRate: +maxDischargeRate,
@@ -337,5 +337,3 @@ export const getProductById = async (req, res, next) => {
     product,
   });
 };
-
-// TODO: get products sorted or filtered from frontend
