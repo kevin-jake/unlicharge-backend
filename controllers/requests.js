@@ -160,18 +160,30 @@ export const createEditRequest = async (req, res, next) => {
   // Initialize Specs creation
   let newSpec;
   if (category === "Battery") {
-    const { nominalVoltage, capacity, pricePerPc, maxVoltage, minVoltage } =
-      req.body;
+    const {
+      nominalVoltage,
+      capacity,
+      pricePerPc,
+      maxVoltage,
+      minVoltage,
+      internalReisistance,
+      chargeCRate,
+      dischargeCRate,
+      maxDischargeRate,
+    } = req.body;
     newSpec = new Battery({
       ...req.body,
-      nominalVoltage: +nominalVoltage || 0,
-      capacity: +capacity || 0,
-      pricePerPc: +pricePerPc || 0,
-      maxVoltage: +maxVoltage || 0,
-      minVoltage: +minVoltage || 0,
+      nominalVoltage: +nominalVoltage,
+      capacity: +capacity,
+      pricePerPc: +pricePerPc,
+      maxVoltage: +maxVoltage,
+      minVoltage: +minVoltage,
+      internalReisistance: +internalReisistance,
+      chargeCRate: +chargeCRate,
+      dischargeCRate: +dischargeCRate,
+      maxDischargeRate: +maxDischargeRate,
       specCreator: req.userData.userId,
-      productId: req.params.productId,
-      editRequest: true,
+      productId: req.params.id,
       status,
     });
   } else if (category === "BMS") {
@@ -185,28 +197,26 @@ export const createEditRequest = async (req, res, next) => {
     } = req.body;
     newSpec = new BMS({
       ...req.body,
-      strings: +strings || 0,
-      chargeCurrent: +chargeCurrent || 0,
-      dischargeCurrent: +dischargeCurrent || 0,
-      voltage: +voltage || 0,
-      price: +price || 0,
+      strings: +strings,
+      chargeCurrent: +chargeCurrent,
+      dischargeCurrent: +dischargeCurrent,
+      voltage: +voltage,
+      price: +price,
       portType,
       specCreator: req.userData.userId,
-      productId: req.params.productId,
-      editRequest: true,
+      productId: req.params.id,
       status,
     });
   } else if (category === "ActiveBalancer") {
     const { strings, balanceCurrent, balancingType, price } = req.body;
     newSpec = new ActiveBalancer({
       ...req.body,
-      strings: +strings || 0,
-      balanceCurrent: +balanceCurrent || 0,
-      price: +price || 0,
+      strings: +strings,
+      balanceCurrent: +balanceCurrent,
+      price: +price,
       balancingType,
       specCreator: req.userData.userId,
-      productId: req.params.productId,
-      editRequest: true,
+      productId: req.params.id,
       status,
     });
   }

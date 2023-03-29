@@ -29,15 +29,28 @@ export const createProduct = async (req, res, next) => {
   // Initialize Specs creation
   let newSpec;
   if (category === "Battery") {
-    const { nominalVoltage, capacity, pricePerPc, maxVoltage, minVoltage } =
-      req.body;
+    const {
+      nominalVoltage,
+      capacity,
+      pricePerPc,
+      maxVoltage,
+      minVoltage,
+      internalReisistance,
+      chargeCRate,
+      dischargeCRate,
+      maxDischargeRate,
+    } = req.body;
     newSpec = new Battery({
       ...req.body,
-      nominalVoltage: +nominalVoltage || 0,
-      capacity: +capacity || 0,
-      pricePerPc: +pricePerPc || 0,
-      maxVoltage: +maxVoltage || 0,
-      minVoltage: +minVoltage || 0,
+      nominalVoltage: +nominalVoltage,
+      capacity: +capacity,
+      pricePerPc: +pricePerPc,
+      maxVoltage: +maxVoltage,
+      minVoltage: +minVoltage,
+      internalReisistance: +internalReisistance,
+      chargeCRate: +chargeCRate,
+      dischargeCRate: +dischargeCRate,
+      maxDischargeRate: +maxDischargeRate,
       specCreator: req.userData.userId,
       productId: req.params.id,
       status,
@@ -53,11 +66,11 @@ export const createProduct = async (req, res, next) => {
     } = req.body;
     newSpec = new BMS({
       ...req.body,
-      strings: +strings || 0,
-      chargeCurrent: +chargeCurrent || 0,
-      dischargeCurrent: +dischargeCurrent || 0,
-      voltage: +voltage || 0,
-      price: +price || 0,
+      strings: +strings,
+      chargeCurrent: +chargeCurrent,
+      dischargeCurrent: +dischargeCurrent,
+      voltage: +voltage,
+      price: +price,
       portType,
       specCreator: req.userData.userId,
       productId: req.params.id,
@@ -67,9 +80,9 @@ export const createProduct = async (req, res, next) => {
     const { strings, balanceCurrent, balancingType, price } = req.body;
     newSpec = new ActiveBalancer({
       ...req.body,
-      strings: +strings || 0,
-      balanceCurrent: +balanceCurrent || 0,
-      price: +price || 0,
+      strings: +strings,
+      balanceCurrent: +balanceCurrent,
+      price: +price,
       balancingType,
       specCreator: req.userData.userId,
       productId: req.params.id,
@@ -150,7 +163,7 @@ export const getProducts = async (req, res, next) => {
     const searchMaxPrice = +maxPrice || 1000000;
     if (category === "Battery") {
       const searchBattType =
-        JSON.parse(battType).length > 0
+        Boolean(battType) && JSON.parse(battType).length > 0
           ? JSON.parse(battType)
           : ["LiFePo4", "Li-On", "Lead Acid"];
       specIds = (
@@ -251,6 +264,7 @@ export const getProducts = async (req, res, next) => {
   if (Boolean(sortBy) && Boolean(sortArrangement)) {
     try {
       products = sortResults(products, sortBy, sortArrangement, category);
+      // TODO: Change into filter query
       if (true) {
         products = sortByStatus(products);
       }

@@ -14,6 +14,10 @@ const BatterySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    model: {
+      type: String,
+      default: "",
+    },
     supplierLink: {
       type: String,
       default: "",
@@ -40,11 +44,27 @@ const BatterySchema = new mongoose.Schema(
     },
     maxVoltage: {
       type: Number,
-      required: true,
+      default: null,
     },
     minVoltage: {
       type: Number,
-      required: true,
+      default: null,
+    },
+    internalReisistance: {
+      type: Number,
+      default: null,
+    },
+    chargeCRate: {
+      type: Number,
+      default: null,
+    },
+    dischargeCRate: {
+      type: Number,
+      default: null,
+    },
+    maxDischargeRate: {
+      type: Number,
+      default: null,
     },
     productId: {
       type: Schema.Types.ObjectId,
