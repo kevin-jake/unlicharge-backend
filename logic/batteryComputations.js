@@ -64,15 +64,29 @@ const batteryTotalLimits = (
   return null;
 };
 
+// Computes the charge C rate and discharge C rate
+const batteryCRates = (
+  total_parallel,
+  data_capacity,
+  data_chargeCRate,
+  data_dischargeCRate
+) => {
+  const total_chargeCRate = total_parallel * (data_chargeCRate * data_capacity);
+  const total_dischargeCRate =
+    total_parallel * (data_dischargeCRate * data_capacity);
+  if (total_parallel) {
+    return { total_chargeCRate, total_dischargeCRate };
+  }
+  return null;
+};
+
 const batterySummary = (
   data_battery,
   input_batteryVoltage,
   input_batteryCapacity,
-  input_dod,
-  input_maxVoltage,
-  input_minVoltage
+  input_dod
 ) => {
-  var totalLimits, totalPrice;
+  var totalLimits, totalPrice, cRates;
   const totalCapacity = batteryTotalCapacity(
     +input_dod,
     +input_batteryCapacity,
@@ -91,11 +105,19 @@ const batterySummary = (
       +data_battery.minVoltage
     );
     totalPrice = totalNumber.total_quantity * +data_battery.pricePerPc;
+    cRates = batteryCRates(
+      totalNumber.total_parallel,
+      +data_battery.capacity,
+      +data_battery.chargeCRate,
+      +data_battery.dischargeCRate
+    );
   }
   if (totalNumber && totalLimits)
     return {
       totalCapacity,
       totalPrice,
+      totalchargeCrate: cRates.total_chargeCRate,
+      totalDischargeCRate: cRates.total_dischargeCRate,
       totalSeries: totalNumber.total_series,
       totalParallel: totalNumber.total_parallel,
       totalQty: totalNumber.total_quantity,

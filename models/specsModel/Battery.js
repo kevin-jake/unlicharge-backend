@@ -86,6 +86,7 @@ const BatterySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// TODO: Add virtual field for computation of charge and discharge current
 
 const Battery = mongoose.model("Battery", BatterySchema);
 export default Battery;
