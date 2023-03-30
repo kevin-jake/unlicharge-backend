@@ -252,6 +252,22 @@ export const createEditRequest = async (req, res, next) => {
     return res.status(400).json({ message: error.message });
   }
 
+  // Updating of old spec status on the table
+  if (editReqStatus === "Approved") {
+    try {
+      await mongoose
+        .model(category)
+        .findByIdAndUpdate(existingProduct.specs.toString(), {
+          status: "Replaced",
+        });
+    } catch (err) {
+      const error = new Error(`Updating ${category} failed, please try again.`);
+      console.log(err);
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
+  // TODO: Implement rollback on failure???
   // Saving of new specs on the table
   try {
     await newSpec.save();
