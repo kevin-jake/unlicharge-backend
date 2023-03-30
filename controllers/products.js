@@ -52,7 +52,7 @@ export const createProduct = async (req, res, next) => {
       dischargeCRate: +dischargeCRate,
       maxDischargeRate: +maxDischargeRate,
       specCreator: req.userData.userId,
-      productId: req.params.productId,
+      productId: req.params.id,
       status,
     });
   } else if (category === "BMS") {
@@ -73,7 +73,7 @@ export const createProduct = async (req, res, next) => {
       price: +price,
       portType,
       specCreator: req.userData.userId,
-      productId: req.params.productId,
+      productId: req.params.id,
       status,
     });
   } else if (category === "ActiveBalancer") {
@@ -85,7 +85,7 @@ export const createProduct = async (req, res, next) => {
       price: +price,
       balancingType,
       specCreator: req.userData.userId,
-      productId: req.params.productId,
+      productId: req.params.id,
       status,
     });
   }

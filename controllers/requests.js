@@ -184,7 +184,7 @@ export const createEditRequest = async (req, res, next) => {
       dischargeCRate: +dischargeCRate,
       maxDischargeRate: +maxDischargeRate,
       specCreator: req.userData.userId,
-      productId: req.params.id,
+      productId: req.params.productId,
       status,
     });
   } else if (category === "BMS") {
@@ -206,13 +206,9 @@ export const createEditRequest = async (req, res, next) => {
       price: +price,
       portType,
       specCreator: req.userData.userId,
-      productId: req.params.id,
+      productId: req.params.productId,
       status,
     });
-    console.log(
-      "🚀 ~ file: requests.js:201 ~ createEditRequest ~ newSpec:",
-      req.params
-    );
   } else if (category === "ActiveBalancer") {
     const { strings, balanceCurrent, balancingType, price } = req.body;
     newSpec = new ActiveBalancer({
@@ -222,7 +218,7 @@ export const createEditRequest = async (req, res, next) => {
       price: +price,
       balancingType,
       specCreator: req.userData.userId,
-      productId: req.params.id,
+      productId: req.params.productId,
       status,
     });
   }
