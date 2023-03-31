@@ -116,13 +116,13 @@ const batterySummary = (
     return {
       totalCapacity,
       totalPrice,
-      totalchargeCrate: cRates.total_chargeCRate,
       totalDischargeCRate: cRates.total_dischargeCRate,
       totalSeries: totalNumber.total_series,
       totalParallel: totalNumber.total_parallel,
-      totalQty: totalNumber.total_quantity,
       totalMaxVolt: totalLimits.total_MaxVolt,
       totalMinVolt: totalLimits.total_MinVolt,
+      totalQty: totalNumber.total_quantity,
+      totalchargeCrate: cRates.total_chargeCRate,
     };
   else return null;
 };
