@@ -28,7 +28,7 @@ const batteryTotalCapacity = (input_dod, input_capacity, data_battType) => {
   const total_batteryCapacity = Math.ceil(
     Math.round(input_capacity * (1 + (1 - defaultDod / 100)) * 100) / 100
   );
-  return total_batteryCapacity;
+  return { total_batteryCapacity, defaultDod };
 };
 
 // Computes how many batteries in series and in parallel
@@ -53,13 +53,15 @@ const batteryTotalLimits = (
   // input_MaxVolt,
   // input_MinVolt,
   total_SeriesBatteries,
+  data_nominalVoltage,
   data_maxVoltage,
   data_minVoltage
 ) => {
+  const total_nominalVoltage = total_SeriesBatteries * data_nominalVoltage;
   const total_MaxVolt = total_SeriesBatteries * data_maxVoltage;
   const total_MinVolt = total_SeriesBatteries * data_minVoltage;
   if (total_SeriesBatteries) {
-    return { total_MaxVolt, total_MinVolt };
+    return { total_MaxVolt, total_MinVolt, total_nominalVoltage };
   }
   return null;
 };
@@ -96,11 +98,12 @@ const batterySummary = (
     +input_batteryVoltage,
     +data_battery.nominalVoltage,
     +data_battery.capacity,
-    totalCapacity
+    totalCapacity.total_batteryCapacity
   );
   if (totalNumber) {
     totalLimits = batteryTotalLimits(
       +totalNumber.total_series,
+      +data_battery.nominalVoltage,
       +data_battery.maxVoltage,
       +data_battery.minVoltage
     );
@@ -112,17 +115,23 @@ const batterySummary = (
       +data_battery.dischargeCRate
     );
   }
+  console.log(
+    "🚀 ~ file: batteryComputations.js:97 ~ totalCapacity:",
+    totalCapacity
+  );
   if (totalNumber && totalLimits)
     return {
-      totalCapacity,
+      totalCapacity: totalCapacity.total_batteryCapacity,
       totalPrice,
       totalDischargeCRate: cRates.total_dischargeCRate,
       totalSeries: totalNumber.total_series,
       totalParallel: totalNumber.total_parallel,
-      totalMaxVolt: totalLimits.total_MaxVolt,
+      totalNominalVolt: totalLimits.total_nominalVoltage,
       totalMinVolt: totalLimits.total_MinVolt,
+      totalMaxVolt: totalLimits.total_MaxVolt,
       totalQty: totalNumber.total_quantity,
       totalchargeCrate: cRates.total_chargeCRate,
+      totaldod: totalCapacity.defaultDod,
     };
   else return null;
 };

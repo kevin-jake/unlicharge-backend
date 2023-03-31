@@ -144,6 +144,7 @@ export const getProducts = async (req, res, next) => {
     selectedBattery,
     inputVoltage,
     inputCapacity,
+    inputDod,
     sortBy,
     sortArrangement,
     search,
@@ -254,7 +255,8 @@ export const getProducts = async (req, res, next) => {
         const computedSpecs = batterySummary(
           specs,
           inputVoltage,
-          inputCapacity
+          inputCapacity,
+          inputDod
         );
         const computedProductSpecs = { ...specs._doc, computedSpecs };
         product.specs._doc = computedProductSpecs;
@@ -306,16 +308,19 @@ export const getBattery = async (req, res, next) => {
     "🚀 ~ file: products.js:128 ~ getProducts ~ req.query:",
     req.query
   );
-
-  try {
-    battSpec = await Battery.findById(req.params.id).populate({
-      path: "specCreator",
-      select: "username",
-    });
-  } catch (err) {
-    const error = new Error(`Something went wrong, could not sort the product`);
-    console.log(err);
-    return res.status(500).json({ message: error.message });
+  if (Boolean(req.params.id)) {
+    try {
+      battSpec = await Battery.findById(req.params.id).populate({
+        path: "specCreator",
+        select: "username",
+      });
+    } catch (err) {
+      const error = new Error(
+        `Something went wrong, could not sort the product`
+      );
+      console.log(err);
+      return res.status(500).json({ message: error.message });
+    }
   }
 
   // Computation of battery build initial parameters
