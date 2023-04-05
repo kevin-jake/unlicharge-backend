@@ -222,10 +222,6 @@ export const createEditRequest = async (req, res, next) => {
       status,
     });
   }
-  console.log(
-    "🚀 ~ file: requests.js:199 ~ createEditRequest ~ newSpec:",
-    newSpec.productId
-  );
 
   // Check if there are already existing request for the spec
   let duplicateRequest;

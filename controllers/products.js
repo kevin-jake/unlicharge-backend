@@ -133,7 +133,6 @@ export const createProduct = async (req, res, next) => {
 export const getProducts = async (req, res, next) => {
   let products;
   const category = categoryFormat(req.params.category);
-  console.log("🚀 ~ file: products.js:123 ~ getProducts ~ category:", category);
   let filter = {
     category,
   };
@@ -154,10 +153,6 @@ export const getProducts = async (req, res, next) => {
   } = req.query || {};
   const page = parseInt(req.query.page) - 1 || 0;
   const limit = parseInt(req.query.limit) || 5;
-  console.log(
-    "🚀 ~ file: products.js:128 ~ getProducts ~ req.query:",
-    req.query
-  );
 
   // Filtering the results based on the filter inputs
   let specIds = [];
@@ -200,7 +195,6 @@ export const getProducts = async (req, res, next) => {
     console.log(err);
     return res.status(500).json({ message: error.message });
   }
-  console.log("🚀 ~ file: products.js:156 ~ getProducts ~ specIds:", specIds);
 
   // Adding filters into the main query
   if (
@@ -224,8 +218,6 @@ export const getProducts = async (req, res, next) => {
       ],
     };
   }
-
-  console.log("🚀 ~ file: products.js:197 ~ getProducts ~ filter:", filter);
   try {
     products = await Product.find(filter)
       .populate({
@@ -304,10 +296,6 @@ export const getBattery = async (req, res, next) => {
   let battSpec;
   // Deconstructing pagination, sort and filters
   const { inputVoltage, inputCapacity, minPrice, maxPrice } = req.query || {};
-  console.log(
-    "🚀 ~ file: products.js:128 ~ getProducts ~ req.query:",
-    req.query
-  );
   if (Boolean(req.params.id)) {
     try {
       battSpec = await Battery.findById(req.params.id).populate({

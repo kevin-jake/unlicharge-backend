@@ -148,7 +148,7 @@ export const batterySpecs = [
     model: "18650",
     supplierLink: "https://www.facebook.com/LionDecour",
     supplier: "Lion Decour",
-    battType: "Lithium Ion",
+    battType: "Li-On",
     nominalVoltage: 3.6,
     capacity: 3.2,
     // maxVoltage: null,

@@ -115,10 +115,6 @@ const batterySummary = (
       +data_battery.dischargeCRate
     );
   }
-  console.log(
-    "🚀 ~ file: batteryComputations.js:97 ~ totalCapacity:",
-    totalCapacity
-  );
   if (totalNumber && totalLimits)
     return {
       totalCapacity: totalCapacity.total_batteryCapacity,
