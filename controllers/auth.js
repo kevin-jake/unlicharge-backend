@@ -16,7 +16,6 @@ export const register = async (req, res, next) => {
     imagePath,
     mobileNumber,
     location,
-    occupation,
   } = req.body;
 
   const errors = validationResult(req);
@@ -70,7 +69,6 @@ export const register = async (req, res, next) => {
     imagePath,
     mobileNumber,
     location,
-    occupation,
     role: "User",
     lastLogin: datePh,
   });
@@ -114,7 +112,6 @@ export const register = async (req, res, next) => {
     mobileNumber: newUser.mobileNumber,
     location: newUser.location,
     role: newUser.role,
-    occupation: newUser.occupation,
     token,
   });
 };
@@ -212,7 +209,6 @@ export const login = async (req, res, next) => {
     mobileNumber: existingUser.mobileNumber,
     location: existingUser.location,
     role: existingUser.role,
-    occupation: existingUser.occupation,
     token,
   };
   res.json(response);
