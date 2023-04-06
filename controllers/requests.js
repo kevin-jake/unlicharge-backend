@@ -647,12 +647,11 @@ export const createDeleteRequest = async (req, res, next) => {
   }
 
   //TODO: Improve status changing
-  let status, deleteReqStatus;
+  let deleteReqStatus;
   if (
     req.userData.role == "Admin" ||
     req.userData.userId == existingProduct.creator
   ) {
-    status = "Deleted";
     deleteReqStatus = "Approved";
   } else {
     deleteReqStatus = "Request";
@@ -711,8 +710,8 @@ export const createDeleteRequest = async (req, res, next) => {
 
   // Save new Product status
   existingProduct.deleteRequests.push(delReq.id);
-  if (status === "Deleted") {
-    existingProduct.status = status;
+  if (deleteReqStatus === "Approved") {
+    existingProduct.status = "Deleted";
   }
   try {
     await existingProduct.save();
