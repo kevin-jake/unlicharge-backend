@@ -40,7 +40,7 @@ app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 moment.tz.setDefault("Asia/Manila");
-
+app.enable("trust proxy");
 app.use(
   morgan(
     ':remote-addr - :remote-user":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"',
