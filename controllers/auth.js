@@ -140,7 +140,6 @@ export const login = async (req, res, next) => {
   if (!existingUser) {
     const error = new Error("Invalid credentials, could not log you in.");
     console.log(error);
-    // TODO: Change all error messages to this format
     return res.status(403).json({ message: error.message });
   }
 
@@ -171,9 +170,8 @@ export const login = async (req, res, next) => {
         email: existingUser.email,
         role: existingUser.role,
       },
-      process.env.JWT_SECRET
-      // FIXME: Change this if going to prod
-      // { expiresIn: "1h" }
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
     );
   } catch (err) {
     const error = new Error("Logging in failed, please try again later.");

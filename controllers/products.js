@@ -258,10 +258,7 @@ export const getProducts = async (req, res, next) => {
   if (Boolean(sortBy) && Boolean(sortArrangement)) {
     try {
       products = sortResults(products, sortBy, sortArrangement, category);
-      // TODO: Change into filter query
-      if (true) {
-        products = sortByStatus(products);
-      }
+      products = sortByStatus(products);
     } catch (err) {
       const error = new Error(
         `Something went wrong, could not sort the product`
