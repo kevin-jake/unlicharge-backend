@@ -88,7 +88,7 @@ const batterySummary = (
   input_batteryCapacity,
   input_dod
 ) => {
-  var totalLimits, totalPrice, cRates;
+  var totalLimits, totalPrice, totalWh, cRates;
   const totalCapacity = batteryTotalCapacity(
     +input_dod,
     +input_batteryCapacity,
@@ -114,10 +114,13 @@ const batterySummary = (
       +data_battery.chargeCRate,
       +data_battery.dischargeCRate
     );
+    totalWh =
+      totalCapacity.total_batteryCapacity * totalLimits.total_nominalVoltage;
   }
   if (totalNumber && totalLimits)
     return {
       totalCapacity: totalCapacity.total_batteryCapacity,
+      totalWh,
       totalPrice,
       totalDischargeCRate: cRates.total_dischargeCRate,
       totalSeries: totalNumber.total_series,
