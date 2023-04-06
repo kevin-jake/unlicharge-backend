@@ -64,7 +64,8 @@ export const users = [
     lastName: "Odinson",
     email: "thor@marvel.com",
     password: "$2b$12$IvcJ9EblPMJ7Ehm4GMmtdO8JWGINCHmRnbWHoo4v35E3SGGGb1.D6",
-    imagePath: "http://localhost:5000/image/thor/thor.png",
+    imagePath:
+      "https://unlicharge-backend-service.onrender.com/image/thor/thor.png",
     mobileNumber: "09323345672",
     lastLogin: 1595589072,
     createdAt: 1595589072,
@@ -80,7 +81,8 @@ export const users = [
     lastName: "Stark",
     email: "ilove3000@marvel.com",
     password: "$2b$12$IvcJ9EblPMJ7Ehm4GMmtdO8JWGINCHmRnbWHoo4v35E3SGGGb1.D6",
-    imagePath: "http://localhost:5000/image/ironman/ironman.png",
+    imagePath:
+      "https://unlicharge-backend-service.onrender.com/image/ironman/ironman.png",
     mobileNumber: "09323345673",
     lastLogin: 1219214568,
     createdAt: 1219214568,
@@ -96,7 +98,8 @@ export const users = [
     lastName: "Rogers",
     email: "avengers@marvel.com",
     password: "$2b$12$IvcJ9EblPMJ7Ehm4GMmtdO8JWGINCHmRnbWHoo4v35E3SGGGb1.D6",
-    imagePath: "http://localhost:5000/image/capAmerica/cap.png",
+    imagePath:
+      "https://unlicharge-backend-service.onrender.com/image/capAmerica/cap.png",
     mobileNumber: "09323345674",
     lastLogin: 1219214568,
     createdAt: 1219214568,
@@ -112,7 +115,8 @@ export const users = [
     lastName: "Parker",
     email: "spidey@marvel.com",
     password: "$2b$12$IvcJ9EblPMJ7Ehm4GMmtdO8JWGINCHmRnbWHoo4v35E3SGGGb1.D6",
-    imagePath: "http://localhost:5000/image/spiderman/spidey.png",
+    imagePath:
+      "https://unlicharge-backend-service.onrender.com/image/spiderman/spidey.png",
     mobileNumber: "09323345675",
     lastLogin: 1381326073,
     createdAt: 1381326073,
@@ -241,7 +245,7 @@ export const batterySpecs = [
     _id: batteryCapEditRequest,
     name: "32650 (Avengers Edition) 6ah",
     imagePath:
-      "http://localhost:5000/image/capAmerica/90aa95962b4c332977e531c427c41d03.jpg",
+      "https://unlicharge-backend-service.onrender.com/image/capAmerica/90aa95962b4c332977e531c427c41d03.jpg",
     brand: "32650 Generic",
     supplierLink:
       "https://shopee.ph/32650-lifepo4-battery-6000mAh-3.2V-(PLS-READ-DESCRIPTION)-per-piece-i.45615974.2716937427",
@@ -266,7 +270,7 @@ export const batterySpecs = [
     _id: batterySpideyEditRequest,
     name: "32650 test-spidey 6ah",
     imagePath:
-      "http://localhost:5000/image/spiderman/90aa95962b4c332977e531c427c41d03.jpg",
+      "https://unlicharge-backend-service.onrender.com/image/spiderman/90aa95962b4c332977e531c427c41d03.jpg",
     brand: "32650 Generic",
     supplierLink:
       "https://shopee.ph/32650-lifepo4-battery-6000mAh-3.2V-(PLS-READ-DESCRIPTION)-per-piece-i.45615974.2716937427",

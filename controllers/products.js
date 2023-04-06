@@ -138,9 +138,7 @@ export const getProducts = async (req, res, next) => {
   };
 
   // Deconstructing pagination, sort and filters
-  // TODO: Add selected battery on not filters or always show it
   const {
-    selectedBattery,
     inputVoltage,
     inputCapacity,
     inputDod,

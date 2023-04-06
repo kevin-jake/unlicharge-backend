@@ -10,7 +10,7 @@ dotenv.config();
 
 const BUCKET = process.env.BUCKET;
 const REGION = process.env.AWS_REGION;
-const API_URL = `${process.env.APP_URL}:${process.env.PORT}`;
+const API_URL = `${process.env.API_URL}`;
 
 const config = {
   region: REGION,

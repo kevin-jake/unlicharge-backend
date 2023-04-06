@@ -92,7 +92,7 @@ mongoose
   .then((res) => {
     console.log("🧮 Mongodb connected at: " + res.connection.host);
     app.listen(PORT);
-    console.log(`🚀 Server ready at ${process.env.APP_URL}:${PORT}`);
+    console.log(`🚀 Server ready at ${process.env.API_URL}`);
 
     // Uncomment the following lines to delete the tables
     // clearCollections();
