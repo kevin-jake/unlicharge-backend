@@ -42,7 +42,7 @@ export const register = async (req, res, next) => {
 
   if (existingUser) {
     const error = new Error(
-      "User, Email or Mobile Number exists already, please login instead."
+      "Username, Email or Mobile Number exists already, please login instead."
     );
     error.status = 422;
     return res.status(422).json({ message: error.message });
