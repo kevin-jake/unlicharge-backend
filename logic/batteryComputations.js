@@ -17,7 +17,7 @@ const batteryTotalCapacity = (input_dod, input_capacity, data_battType) => {
         defaultDod = 50;
         break;
       }
-      case "Li-on": {
+      case "Li-On": {
         defaultDod = 80;
         break;
       }
