@@ -21,6 +21,7 @@ const config = {
 };
 const s3 = new S3Client(config);
 
+// TODO: Use tinypng to compress images
 export const uploadToS3 = async ({ file, user }) => {
   let key = `${user?.username}/${file.originalname}`;
   let objectExists = false;

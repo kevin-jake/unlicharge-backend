@@ -11,6 +11,7 @@ import multer, { memoryStorage } from "multer";
 import authRoutes from "./routes/auth.js";
 import requestRoutes from "./routes/requests.js";
 import productRoutes from "./routes/products.js";
+import userRoutes from "./routes/users.js";
 
 import { getImage } from "./middleware/s3.js";
 import { uploadImage } from "./controllers/imageHandling.js";
@@ -43,7 +44,7 @@ moment.tz.setDefault("Asia/Manila");
 app.enable("trust proxy");
 app.use(
   morgan(
-    ':remote-addr - :remote-user":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"',
+    ':remote-addr - :remote-user - :method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"',
     {
       stream: {
         write: function (message) {
@@ -68,6 +69,7 @@ app.get("/image/:key(*)", getImage);
 
 /* ROUTES */
 app.use("/auth", authRoutes);
+app.use("/profile", userRoutes);
 app.use("/requests", requestRoutes);
 app.use("/products", productRoutes);
 
