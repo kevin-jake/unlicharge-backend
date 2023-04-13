@@ -207,6 +207,7 @@ export const login = async (req, res, next) => {
     mobileNumber: existingUser.mobileNumber,
     location: existingUser.location,
     role: existingUser.role,
+    timeToLogout: new Date(new Date().getTime() + 1000 * 10),
     token,
   };
   res.json(response);
