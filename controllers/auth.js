@@ -111,6 +111,7 @@ export const register = async (req, res, next) => {
     imagePath: newUser.imagePath,
     mobileNumber: newUser.mobileNumber,
     location: newUser.location,
+    timeToLogout: new Date(new Date().getTime() + 1000 * 10),
     role: newUser.role,
     token,
   });
